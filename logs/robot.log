@@ -1,0 +1,1557 @@
+{
+    "update_id": 690453380,
+    "message": {
+        "message_id": 445,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": -1002082724892,
+            "title": "GeogramTest",
+            "type": "supergroup"
+        },
+        "date": 1712557457,
+        "location": {
+            "latitude": 43.44264,
+            "longitude": 3.69028
+        }
+    }
+}
+microtime: 1.4335851669312
+No results found or query error.
+microtime: 1.6800191402435 savelogSart
+microtime: 1.8751940727234 savelogEnd
+To delete 2
+microtime: 2.3810031414032 Virtual finish
+08.04.24 08:24 (4.5772) End location 
+---
+{
+    "update_id": 690453380,
+    "message": {
+        "message_id": 445,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": -1002082724892,
+            "title": "GeogramTest",
+            "type": "supergroup"
+        },
+        "date": 1712557457,
+        "location": {
+            "latitude": 43.44264,
+            "longitude": 3.69028
+        }
+    }
+}
+microtime: 1.4335851669312
+No results found or query error.
+microtime: 1.6800191402435 savelogSart
+microtime: 1.8751940727234 savelogEnd
+To delete 2
+microtime: 2.3810031414032 Virtual finish
+08.04.24 08:24 (4.5772) End location 
+---
+microtime: 4.577632188797 Cron start
+Archive chats
+Clean chats
+microtime: 7.1298611164093 Cron end
+{
+    "update_id": 690453381,
+    "message": {
+        "message_id": 447,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": -1002082724892,
+            "title": "GeogramTest",
+            "type": "supergroup"
+        },
+        "date": 1712557937,
+        "text": "Temps gris"
+    }
+}
+microtime: 0.24598503112793
+To delete 1
+08.04.24 08:32 (1.2199) text 
+---
+{
+    "update_id": 690453382,
+    "message": {
+        "message_id": 448,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": -1002082724892,
+            "title": "GeogramTest",
+            "type": "supergroup"
+        },
+        "date": 1712558194,
+        "location": {
+            "latitude": 43.458574,
+            "longitude": 3.423156
+        }
+    }
+}
+microtime: 0.23954582214355
+microtime: 0.58055090904236 savelogSart
+microtime: 0.78570294380188 savelogEnd
+To delete 2
+microtime: 1.2408909797668 Virtual finish
+08.04.24 08:36 (3.4348) End location 
+---
+{
+    "update_id": 690453384,
+    "message": {
+        "message_id": 47,
+        "from": {
+            "id": 7083037895,
+            "is_bot": false,
+            "first_name": "Francis",
+            "last_name": "Colombié",
+            "username": "Courril"
+        },
+        "chat": {
+            "id": -1001932602338,
+            "title": "i727_2024",
+            "type": "supergroup"
+        },
+        "date": 1712560923,
+        "text": "Bonjour Thierry,\n\nEst que la trace GPS du circuit sera disponible quelques jours avant le départ du 8 mai ?\nÇa permettrait de faire nos étapes.\n\nMerci pour l’organisation"
+    }
+}
+microtime: 0.24649000167847
+To delete 1
+08.04.24 09:22 (0.6627) text 
+---
+{
+    "update_id": 690453385,
+    "message": {
+        "message_id": 48,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": -1001932602338,
+            "title": "i727_2024",
+            "type": "supergroup"
+        },
+        "date": 1712560994,
+        "text": "Trace finale logiquement en fin de semaine… mais elle est déjà quasi finale cf le site"
+    }
+}
+microtime: 0.032114028930664
+To delete 1
+08.04.24 09:23 (0.3488) text 
+---
+{
+    "update_id": 690453386,
+    "message": {
+        "message_id": 49,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": -1001932602338,
+            "title": "i727_2024",
+            "type": "supergroup"
+        },
+        "date": 1712561764,
+        "text": "https:\/\/727.tcrouzet.com\/i727\/",
+        "entities": [
+            {
+                "offset": 0,
+                "length": 30,
+                "type": "url"
+            }
+        ],
+        "link_preview_options": {
+            "url": "https:\/\/727.tcrouzet.com\/i727\/"
+        }
+    }
+}
+microtime: 0.050688982009888
+To delete 1
+08.04.24 09:36 (0.3330) text 
+---
+{
+    "update_id": 690453386,
+    "message": {
+        "message_id": 49,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": -1001932602338,
+            "title": "i727_2024",
+            "type": "supergroup"
+        },
+        "date": 1712561764,
+        "text": "https:\/\/727.tcrouzet.com\/i727\/",
+        "entities": [
+            {
+                "offset": 0,
+                "length": 30,
+                "type": "url"
+            }
+        ],
+        "link_preview_options": {
+            "url": "https:\/\/727.tcrouzet.com\/i727\/"
+        }
+    }
+}
+microtime: 0.050688982009888
+To delete 1
+08.04.24 09:36 (0.3330) text 
+---
+microtime: 0.3336820602417 Cron start
+Archive chats
+Clean chats
+microtime: 2.0271570682526 Cron end
+{
+    "update_id": 690453387,
+    "message": {
+        "message_id": 50,
+        "from": {
+            "id": 6804220061,
+            "is_bot": false,
+            "first_name": "Danny",
+            "username": "Dannythedog34"
+        },
+        "chat": {
+            "id": -1001932602338,
+            "title": "i727_2024",
+            "type": "supergroup"
+        },
+        "date": 1712563941,
+        "text": "Saint Guilhem en descente pour une fois ça me change de la montée..\nJe vois que les membres sont très prévoyants pour le circuit..en tant que grand débutant l improvisation a une place de choix dans mon \"organisation\".."
+    }
+}
+microtime: 0.26415300369263
+To delete 1
+08.04.24 10:12 (0.6474) text 
+---
+{
+    "update_id": 690453388,
+    "callback_query": {
+        "id": "8414635427865151486",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 299,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1002082724892,
+                "title": "GeogramTest",
+                "type": "supergroup"
+            },
+            "date": 1712410942,
+            "edit_date": 1712510592,
+            "text": "GeogramTest dashboard.",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "GeogramTest",
+                            "url": "https:\/\/geogram.tcrouzet.com\/GeogramTest"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "User",
+                            "callback_data": "user"
+                        },
+                        {
+                            "text": "Admin",
+                            "callback_data": "admin"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-5955551877322868110",
+        "data": "admin"
+    }
+}
+microtime: 0.057839870452881
+{
+    "chat_id": -1002082724892,
+    "message_id": 299,
+    "text": "GeogramTest admin dashboard…",
+    "reply_markup": "{\"inline_keyboard\":[[{\"text\":\" < \",\"callback_data\":\"goback\"}],[{\"text\":\"Info\",\"callback_data\":\"info\"},{\"text\":\"Help\",\"url\":\"http:\\\/\\\/geogram.tcrouzet.com\\\/help#help_admin\"}],[{\"text\":\"Start\",\"callback_data\":\"start\"},{\"text\":\"Archive\",\"callback_data\":\"stop\"}],[{\"text\":\"Description\",\"callback_data\":\"description\"},{\"text\":\"Rename\",\"callback_data\":\"rename\"},{\"text\":\"Share\",\"callback_data\":\"share\"}],[{\"text\":\"Mode\",\"callback_data\":\"mode\"},{\"text\":\"Real time\",\"callback_data\":\"realtime_set\"},{\"text\":\"Units\",\"callback_data\":\"units\"}],[{\"text\":\"Purge\",\"callback_data\":\"purge\"},{\"text\":\"Delete\",\"callback_data\":\"delete\"}]]}",
+    "disable_notification": true
+}
+08.04.24 10:25 (0.6017) End Callback 
+---
+{
+    "update_id": 690453389,
+    "callback_query": {
+        "id": "8414635426417650280",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 299,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1002082724892,
+                "title": "GeogramTest",
+                "type": "supergroup"
+            },
+            "date": 1712410942,
+            "edit_date": 1712564752,
+            "text": "GeogramTest admin dashboard…",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": " < ",
+                            "callback_data": "goback"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Info",
+                            "callback_data": "info"
+                        },
+                        {
+                            "text": "Help",
+                            "url": "http:\/\/geogram.tcrouzet.com\/help#help_admin"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Start",
+                            "callback_data": "start"
+                        },
+                        {
+                            "text": "Archive",
+                            "callback_data": "stop"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Description",
+                            "callback_data": "description"
+                        },
+                        {
+                            "text": "Rename",
+                            "callback_data": "rename"
+                        },
+                        {
+                            "text": "Share",
+                            "callback_data": "share"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Mode",
+                            "callback_data": "mode"
+                        },
+                        {
+                            "text": "Real time",
+                            "callback_data": "realtime_set"
+                        },
+                        {
+                            "text": "Units",
+                            "callback_data": "units"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Purge",
+                            "callback_data": "purge"
+                        },
+                        {
+                            "text": "Delete",
+                            "callback_data": "delete"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-5955551877322868110",
+        "data": "goback"
+    }
+}
+microtime: 0.12018203735352
+keyboard {
+    "ok": true,
+    "result": {
+        "message_id": 299,
+        "from": {
+            "id": 5833754831,
+            "is_bot": true,
+            "first_name": "GeoBikepacking",
+            "username": "GeoBikepacking_bot"
+        },
+        "chat": {
+            "id": -1002082724892,
+            "title": "GeogramTest",
+            "type": "supergroup"
+        },
+        "date": 1712410942,
+        "edit_date": 1712564950,
+        "text": "GeogramTest dashboard.",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "GeogramTest",
+                        "url": "http:\/\/geogram.tcrouzet.com\/\/GeogramTest"
+                    }
+                ],
+                [
+                    {
+                        "text": "User",
+                        "callback_data": "user"
+                    },
+                    {
+                        "text": "Admin",
+                        "callback_data": "admin"
+                    }
+                ]
+            ]
+        }
+    }
+}
+keyboardID 299
+08.04.24 10:29 (0.8515) End Callback 
+---
+{
+    "update_id": 690453390,
+    "callback_query": {
+        "id": "8414635425258572345",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 299,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1002082724892,
+                "title": "GeogramTest",
+                "type": "supergroup"
+            },
+            "date": 1712410942,
+            "edit_date": 1712564950,
+            "text": "GeogramTest dashboard.",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "GeogramTest",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/GeogramTest"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "User",
+                            "callback_data": "user"
+                        },
+                        {
+                            "text": "Admin",
+                            "callback_data": "admin"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-5955551877322868110",
+        "data": "user"
+    }
+}
+microtime: 0.25028109550476
+08.04.24 10:31 (1.1319) End Callback 
+---
+{
+    "update_id": 690453391,
+    "callback_query": {
+        "id": "8414635424580896557",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 299,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1002082724892,
+                "title": "GeogramTest",
+                "type": "supergroup"
+            },
+            "date": 1712410942,
+            "edit_date": 1712565116,
+            "text": "First, you have to geolocate to start your history on GeogramTest.\nIf you have a profile picture (or have updated it), use \"Avatar\" to upload or reupload it on Geogram.\nSelecting \"Disappear\" will delete all your history from Geogram. You will reappear if you geolocate again.",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": " < ",
+                            "callback_data": "goback"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1002082724892\/6254152278\/avatar.jpeg?1712493000"
+                        },
+                        {
+                            "text": "History",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/GeogramTest\/user\/6254152278"
+                        },
+                        {
+                            "text": "Help",
+                            "url": "http:\/\/geogram.tcrouzet.com\/help#join"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Reupload avatar",
+                            "callback_data": "avatar"
+                        },
+                        {
+                            "text": "Disappear",
+                            "callback_data": "disappear"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-5955551877322868110",
+        "data": "goback"
+    }
+}
+microtime: 0.034533023834229
+keyboard {
+    "ok": true,
+    "result": {
+        "message_id": 299,
+        "from": {
+            "id": 5833754831,
+            "is_bot": true,
+            "first_name": "GeoBikepacking",
+            "username": "GeoBikepacking_bot"
+        },
+        "chat": {
+            "id": -1002082724892,
+            "title": "GeogramTest",
+            "type": "supergroup"
+        },
+        "date": 1712410942,
+        "edit_date": 1712565281,
+        "text": "GeogramTest dashboard.",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "GeogramTest",
+                        "url": "http:\/\/geogram.tcrouzet.com\/\/GeogramTest"
+                    }
+                ],
+                [
+                    {
+                        "text": "User",
+                        "callback_data": "user"
+                    },
+                    {
+                        "text": "Admin",
+                        "callback_data": "admin"
+                    }
+                ]
+            ]
+        }
+    }
+}
+keyboardID 299
+08.04.24 10:34 (0.4896) End Callback 
+---
+{
+    "update_id": 690453392,
+    "callback_query": {
+        "id": "8414635426499151578",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 299,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1002082724892,
+                "title": "GeogramTest",
+                "type": "supergroup"
+            },
+            "date": 1712410942,
+            "edit_date": 1712565281,
+            "text": "GeogramTest dashboard.",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "GeogramTest",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/GeogramTest"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "User",
+                            "callback_data": "user"
+                        },
+                        {
+                            "text": "Admin",
+                            "callback_data": "admin"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-5955551877322868110",
+        "data": "admin"
+    }
+}
+microtime: 0.0082371234893799
+{
+    "chat_id": -1002082724892,
+    "message_id": 299,
+    "text": "GeogramTest admin dashboard…",
+    "reply_markup": "{\"inline_keyboard\":[[{\"text\":\" < \",\"callback_data\":\"goback\"}],[{\"text\":\"Info\",\"callback_data\":\"info\"},{\"text\":\"Help\",\"url\":\"http:\\\/\\\/geogram.tcrouzet.com\\\/help#help_admin\"}],[{\"text\":\"Start\",\"callback_data\":\"start\"},{\"text\":\"Archive\",\"callback_data\":\"stop\"}],[{\"text\":\"Description\",\"callback_data\":\"description\"},{\"text\":\"Rename\",\"callback_data\":\"rename\"},{\"text\":\"Share\",\"callback_data\":\"share\"}],[{\"text\":\"Mode\",\"callback_data\":\"mode\"},{\"text\":\"Real time\",\"callback_data\":\"realtime_set\"},{\"text\":\"Units\",\"callback_data\":\"units\"}],[{\"text\":\"Purge\",\"callback_data\":\"purge\"},{\"text\":\"Delete\",\"callback_data\":\"delete\"}]]}",
+    "disable_notification": true
+}
+08.04.24 10:34 (0.4023) End Callback 
+---
+{
+    "update_id": 690453393,
+    "callback_query": {
+        "id": "8414635425585113963",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 299,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1002082724892,
+                "title": "GeogramTest",
+                "type": "supergroup"
+            },
+            "date": 1712410942,
+            "edit_date": 1712565283,
+            "text": "GeogramTest admin dashboard…",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": " < ",
+                            "callback_data": "goback"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Info",
+                            "callback_data": "info"
+                        },
+                        {
+                            "text": "Help",
+                            "url": "http:\/\/geogram.tcrouzet.com\/help#help_admin"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Start",
+                            "callback_data": "start"
+                        },
+                        {
+                            "text": "Archive",
+                            "callback_data": "stop"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Description",
+                            "callback_data": "description"
+                        },
+                        {
+                            "text": "Rename",
+                            "callback_data": "rename"
+                        },
+                        {
+                            "text": "Share",
+                            "callback_data": "share"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Mode",
+                            "callback_data": "mode"
+                        },
+                        {
+                            "text": "Real time",
+                            "callback_data": "realtime_set"
+                        },
+                        {
+                            "text": "Units",
+                            "callback_data": "units"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Purge",
+                            "callback_data": "purge"
+                        },
+                        {
+                            "text": "Delete",
+                            "callback_data": "delete"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-5955551877322868110",
+        "data": "info"
+    }
+}
+microtime: 0.16958284378052
+08.04.24 10:51 (0.6416) End Callback 
+---
+{
+    "update_id": 690453393,
+    "callback_query": {
+        "id": "8414635425585113963",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 299,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1002082724892,
+                "title": "GeogramTest",
+                "type": "supergroup"
+            },
+            "date": 1712410942,
+            "edit_date": 1712565283,
+            "text": "GeogramTest admin dashboard…",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": " < ",
+                            "callback_data": "goback"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Info",
+                            "callback_data": "info"
+                        },
+                        {
+                            "text": "Help",
+                            "url": "http:\/\/geogram.tcrouzet.com\/help#help_admin"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Start",
+                            "callback_data": "start"
+                        },
+                        {
+                            "text": "Archive",
+                            "callback_data": "stop"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Description",
+                            "callback_data": "description"
+                        },
+                        {
+                            "text": "Rename",
+                            "callback_data": "rename"
+                        },
+                        {
+                            "text": "Share",
+                            "callback_data": "share"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Mode",
+                            "callback_data": "mode"
+                        },
+                        {
+                            "text": "Real time",
+                            "callback_data": "realtime_set"
+                        },
+                        {
+                            "text": "Units",
+                            "callback_data": "units"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Purge",
+                            "callback_data": "purge"
+                        },
+                        {
+                            "text": "Delete",
+                            "callback_data": "delete"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-5955551877322868110",
+        "data": "info"
+    }
+}
+microtime: 0.16958284378052
+08.04.24 10:51 (0.6416) End Callback 
+---
+microtime: 0.66693687438965 Cron start
+Archive chats
+Clean chats
+microtime: 1.2401399612427 Cron end
+{
+    "update_id": 690453394,
+    "callback_query": {
+        "id": "8414635427916766276",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 726,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1001938350205,
+                "title": "g727_2023",
+                "type": "supergroup"
+            },
+            "date": 1712394110,
+            "edit_date": 1712554416,
+            "text": "g727_2023 dashboard.",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "g727_2023",
+                            "url": "https:\/\/geogram.tcrouzet.com\/g727_2023"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "User",
+                            "callback_data": "user"
+                        },
+                        {
+                            "text": "Admin",
+                            "callback_data": "admin"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-1134110846905878404",
+        "data": "admin"
+    }
+}
+microtime: 0.0072839260101318
+{
+    "chat_id": -1001938350205,
+    "message_id": 726,
+    "text": "g727_2023 admin dashboard…",
+    "reply_markup": "{\"inline_keyboard\":[[{\"text\":\" < \",\"callback_data\":\"goback\"}],[{\"text\":\"Info\",\"callback_data\":\"info\"},{\"text\":\"Help\",\"url\":\"http:\\\/\\\/geogram.tcrouzet.com\\\/help#help_admin\"}],[{\"text\":\"Start\",\"callback_data\":\"start\"},{\"text\":\"Archived\",\"callback_data\":\"stopped\"}],[{\"text\":\"Description\",\"callback_data\":\"description\"},{\"text\":\"Rename\",\"callback_data\":\"rename\"},{\"text\":\"Share\",\"callback_data\":\"share\"}],[{\"text\":\"Mode\",\"callback_data\":\"mode\"},{\"text\":\"Real time\",\"callback_data\":\"realtime_set\"},{\"text\":\"Units\",\"callback_data\":\"units\"}],[{\"text\":\"Purge\",\"callback_data\":\"purge\"},{\"text\":\"Delete\",\"callback_data\":\"delete\"}]]}",
+    "disable_notification": true
+}
+08.04.24 10:51 (0.3765) End Callback 
+---
+{
+    "update_id": 690453395,
+    "callback_query": {
+        "id": "8414635426883906297",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 726,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1001938350205,
+                "title": "g727_2023",
+                "type": "supergroup"
+            },
+            "date": 1712394110,
+            "edit_date": 1712566317,
+            "text": "g727_2023 admin dashboard…",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": " < ",
+                            "callback_data": "goback"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Info",
+                            "callback_data": "info"
+                        },
+                        {
+                            "text": "Help",
+                            "url": "http:\/\/geogram.tcrouzet.com\/help#help_admin"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Start",
+                            "callback_data": "start"
+                        },
+                        {
+                            "text": "Archived",
+                            "callback_data": "stopped"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Description",
+                            "callback_data": "description"
+                        },
+                        {
+                            "text": "Rename",
+                            "callback_data": "rename"
+                        },
+                        {
+                            "text": "Share",
+                            "callback_data": "share"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Mode",
+                            "callback_data": "mode"
+                        },
+                        {
+                            "text": "Real time",
+                            "callback_data": "realtime_set"
+                        },
+                        {
+                            "text": "Units",
+                            "callback_data": "units"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Purge",
+                            "callback_data": "purge"
+                        },
+                        {
+                            "text": "Delete",
+                            "callback_data": "delete"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-1134110846905878404",
+        "data": "info"
+    }
+}
+microtime: 0.0061440467834473
+08.04.24 10:51 (0.5722) End Callback 
+---
+{
+    "update_id": 690453396,
+    "callback_query": {
+        "id": "8414635425704364007",
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "en"
+        },
+        "message": {
+            "message_id": 726,
+            "from": {
+                "id": 5833754831,
+                "is_bot": true,
+                "first_name": "GeoBikepacking",
+                "username": "GeoBikepacking_bot"
+            },
+            "chat": {
+                "id": -1001938350205,
+                "title": "g727_2023",
+                "type": "supergroup"
+            },
+            "date": 1712394110,
+            "edit_date": 1712566318,
+            "text": "g727_2023\n-1001938350205\nTout de l'Hérault gravel\nCreation: 2023-09-22 06:09\nUpdated: 2024-04-06 11:04\nGPX: 711km\/8 088m\nUnit: metric\nPrivate group",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": " < ",
+                            "callback_data": "goback"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Geogram page",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Adventure picture",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/chatphoto.jpeg?1712394110"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "francois carpente",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/1917428774"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/1917428774\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_1917428774_francois carpente"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "CARTRON",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/1934640167"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/1934640167\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_1934640167_CARTRON"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Gaël Ninot",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/5538122019"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/5538122019\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_5538122019_Gaël Ninot"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "JM_Dubouloz",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/5802271022"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/5802271022\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_5802271022_JM_Dubouloz"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Felix Ruiz",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/5874568016"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/5874568016\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_5874568016_Felix Ruiz"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Alex Roulleaux",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/5899188199"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/5899188199\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_5899188199_Alex Roulleaux"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Frédéric MURRIA",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/5993189872"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/5993189872\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_5993189872_Frédéric MURRIA"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Erick Tonnel",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6154018376"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6154018376\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6154018376_Erick Tonnel"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Nicolas Gueranger",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6171971530"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6171971530\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6171971530_Nicolas Gueranger"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "PaTVenture",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6177793235"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6177793235\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6177793235_PaTVenture"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Louis Delannoy",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6189311277"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6189311277\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6189311277_Louis Delannoy"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Samuel Langevin",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6201167046"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6201167046\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6201167046_Samuel Langevin"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Baron De Ruse",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6227819820"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6227819820\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6227819820_Baron De Ruse"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Fred80250",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6288495135"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6288495135\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6288495135_Fred80250"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "jean gautier",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6306349539"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6306349539\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6306349539_jean gautier"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Julien Gay",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6390806378"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6390806378\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6390806378_Julien Gay"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Mimi11",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6404769742"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6404769742\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6404769742_Mimi11"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Antho",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6485627841"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6485627841\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6485627841_Antho"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Lucas Bouvard",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6514972587"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6514972587\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6514972587_Lucas Bouvard"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Dalmau Oscar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6526198156"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6526198156\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6526198156_Dalmau Oscar"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Francis Vernier",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6547642609"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6547642609\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6547642609_Francis Vernier"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Florent",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6588560526"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6588560526\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6588560526_Florent"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "Philippe",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023\/user\/6627578395"
+                        },
+                        {
+                            "text": "Avatar",
+                            "url": "http:\/\/geogram.tcrouzet.com\/\/userimg\/-1001938350205\/6627578395\/avatar.jpeg?1712394110"
+                        },
+                        {
+                            "text": "DELETE",
+                            "callback_data": "info_delete_6627578395_Philippe"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "-1134110846905878404",
+        "data": "goback"
+    }
+}
+microtime: 0.11007285118103
+keyboard {
+    "ok": true,
+    "result": {
+        "message_id": 726,
+        "from": {
+            "id": 5833754831,
+            "is_bot": true,
+            "first_name": "GeoBikepacking",
+            "username": "GeoBikepacking_bot"
+        },
+        "chat": {
+            "id": -1001938350205,
+            "title": "g727_2023",
+            "type": "supergroup"
+        },
+        "date": 1712394110,
+        "edit_date": 1712566410,
+        "text": "g727_2023 dashboard.",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "g727_2023",
+                        "url": "http:\/\/geogram.tcrouzet.com\/\/g727_2023"
+                    }
+                ],
+                [
+                    {
+                        "text": "User",
+                        "callback_data": "user"
+                    },
+                    {
+                        "text": "Admin",
+                        "callback_data": "admin"
+                    }
+                ]
+            ]
+        }
+    }
+}
+keyboardID 726
+08.04.24 10:53 (0.5368) End Callback 
+---
+{
+    "update_id": 690453397,
+    "message": {
+        "message_id": 51,
+        "from": {
+            "id": 5002174298,
+            "is_bot": false,
+            "first_name": "Bill",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": -1001932602338,
+            "title": "i727_2024",
+            "type": "supergroup"
+        },
+        "date": 1712569682,
+        "text": "Pour ma part l'option 5 jours me semble improbable, même si j'y travaille ! 😁"
+    }
+}
+microtime: 1.0896770954132
+Error sql 2 - no log for the user
+To delete 1
+08.04.24 11:48 (1.9259) text 
+---
+{
+    "update_id": 690453398,
+    "message": {
+        "message_id": 52,
+        "from": {
+            "id": 6254152278,
+            "is_bot": false,
+            "first_name": "Thierry",
+            "last_name": "Crouzet",
+            "username": "tcrouzet",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": -1001932602338,
+            "title": "i727_2024",
+            "type": "supergroup"
+        },
+        "date": 1712569715,
+        "text": "No stress"
+    }
+}
+microtime: 0.35358190536499
+To delete 1
+08.04.24 11:48 (3.9188) text 
+---

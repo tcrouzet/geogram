@@ -1,0 +1,5 @@
+[08-Apr-2024 08:39:03 Europe/Amsterdam] PHP Fatal error:  Uncaught Error: Call to a member function set_charset() on bool in /volume1/web/geogram/admin/functions.php:14
+Stack trace:
+#0 /volume1/web/geogram/telegram.php(33): init()
+#1 {main}
+  thrown in /volume1/web/geogram/admin/functions.php on line 14

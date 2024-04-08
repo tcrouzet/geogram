@@ -1,0 +1,397 @@
+============[Date]============
+[ 2024-04-08 07:38:22  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453374
+ref.message.message_id= 42
+ref.message.from.id= 6333151890
+ref.message.from.is_bot= false
+ref.message.from.first_name= Stéphane
+ref.message.from.last_name= B.
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712554700
+ref.message.text= Bonjour à toutes et à tous. Le jour j approchant, les premières questions (et inquiétudes !) arrivent. Devant achever la trace avant dimanche soir, je pensais faire une première étape un peu longue. Mais tout dépend du terrain : est-ce suffisamment roulant pour maintenir le 12km/h sur les 150 premier km du i727 version 2024? (D+ équivalent aux 110 premiers km du dernier i727 ) ? (Seule expérience dans l'Hérault pour moi, la gtmc... Avec des passages très usants...). Merci
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 42
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 42)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 07:40:22  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453375
+ref.message.message_id= 43
+ref.message.from.id= 6333151890
+ref.message.from.is_bot= false
+ref.message.from.first_name= Stéphane
+ref.message.from.last_name= B.
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712554821
+ref.message.text= Autre question : pourra t'on dormir dimanche soir dans la salle du mardi, ou faut il prévoir un autre lieu ?
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 43
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 43)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 07:42:54  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453376
+ref.message.message_id= 44
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= en
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712554974
+ref.message.text= Pour la plupart, nous pensons terminer avant le dimanche soir… faut pas trop s'énerver le premier jour, à mon avis, beaucoup de singles. La salle ne sera pas ouverte le dimanche, mais il y aura la douche au stade… et possibilité de trouver des coins de bivouac.
+
+Je reviens vers vous avec les détails…
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 44
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 44)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 07:47:54  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453377
+ref.message.message_id= 45
+ref.message.from.id= 6333151890
+ref.message.from.is_bot= false
+ref.message.from.first_name= Stéphane
+ref.message.from.last_name= B.
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712555271
+ref.message.text= Merci, saint Guilhem le vendredi soir est donc peut être ambitieux...
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 45
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 45)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 07:49:36  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453378
+ref.message.message_id= 46
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712555376
+ref.message.text= Non, c’est l’objectif pour un 5 jours… du moins le col des Lavagnes juste avant
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 46
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 46)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 09:22:04  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453384
+ref.message.message_id= 47
+ref.message.from.id= 7083037895
+ref.message.from.is_bot= false
+ref.message.from.first_name= Francis
+ref.message.from.last_name= Colombié
+ref.message.from.username= Courril
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712560923
+ref.message.text= Bonjour Thierry,
+
+Est que la trace GPS du circuit sera disponible quelques jours avant le départ du 8 mai ?
+Ça permettrait de faire nos étapes.
+
+Merci pour l’organisation
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 47
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/admin/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 47)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 09:23:14  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453385
+ref.message.message_id= 48
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712560994
+ref.message.text= Trace finale logiquement en fin de semaine… mais elle est déjà quasi finale cf le site
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 48
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/admin/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 48)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 09:36:05  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453386
+ref.message.message_id= 49
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= en
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712561764
+ref.message.text= https://727.tcrouzet.com/i727/
+ref.message.entities.0.offset= 0
+ref.message.entities.0.length= 30
+ref.message.entities.0.type= url
+ref.message.link_preview_options.url= https://727.tcrouzet.com/i727/
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 49
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/admin/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 49)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 10:12:22  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453387
+ref.message.message_id= 50
+ref.message.from.id= 6804220061
+ref.message.from.is_bot= false
+ref.message.from.first_name= Danny
+ref.message.from.username= Dannythedog34
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712563941
+ref.message.text= Saint Guilhem en descente pour une fois ça me change de la montée..
+Je vois que les membres sont très prévoyants pour le circuit..en tant que grand débutant l improvisation a une place de choix dans mon "organisation"..
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 50
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/admin/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 50)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 11:48:05  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453397
+ref.message.message_id= 51
+ref.message.from.id= 5002174298
+ref.message.from.is_bot= false
+ref.message.from.first_name= Bill
+ref.message.from.language_code= fr
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712569682
+ref.message.text= Pour ma part l'option 5 jours me semble improbable, même si j'y travaille ! 😁
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 51
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/admin/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 51)
+#5 {main}
+
+============[Date]============
+[ 2024-04-08 11:48:40  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453398
+ref.message.message_id= 52
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712569715
+ref.message.text= No stress
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 52
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/admin/functions_robot.php(494): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 52)
+#5 {main}
+

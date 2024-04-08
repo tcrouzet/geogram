@@ -1,0 +1,14 @@
+{
+    "require": {
+        "raiym/instagram-php-scraper": "^0.12.9",
+        "phpfastcache/phpfastcache": "^8.1",
+        "symfony/var-dumper": "^5.4",
+        "guzzlehttp/guzzle": "^7.0",
+        "eleirbag89/telegrambotphp": "^1.4",
+        "sibyx/phpgpx": "^1.2",
+        "maxh/php-nominatim": "^2.3",
+        "cmfcmf/openweathermap-php-api": "^3.3",
+        "http-interop/http-factory-guzzle": "^1.0",
+        "php-http/guzzle7-adapter": "^1.0"
+    }
+}

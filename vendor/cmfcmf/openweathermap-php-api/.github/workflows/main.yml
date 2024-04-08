@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # https://www.php.net/supported-versions.php
+        php-versions: ['7.3', '7.4', '8.0']
+        # https://phpunit.de/supported-versions.html
+        phpunit-versions: ['9.5.4']
+        experimental: [false]
+        include:
+        - php-versions: '7.1'
+          phpunit-versions: '7.5.20'
+          experimental: false
+        - php-versions: '7.2'
+          phpunit-versions: '8.5.15'
+          experimental: false
+        - php-versions: '8.1'
+          phpunit-versions: '9.5.14'
+          experimental: false
+
+        # PHPUnit's dependencies do not support PHP 8.2 yet.
+        # - php-versions: '8.2'
+        #   phpunit-versions: '9.5.11'
+        #   experimental: true
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        tools: composer, phpunit:${{ matrix.phpunit-versions }}
+        coverage: xdebug
+        # Report deprecation errors.
+        ini-values: error_reporting=E_ALL
+
+    - name: Setup problem matchers for PHP
+      run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+    - name: Setup problem matchers for PHPUnit
+      run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: Install dependencies
+      # Use composer update instead of composer install to install a working set of
+      # dependencies on all PHP versions.
+      run: composer update --prefer-dist
+
+    - name: Test
+      run: phpunit --coverage-text --coverage-clover=coverage.xml
+
+    - name: Upload coverage data to codecov
+      if: matrix.php-versions == '7.4'
+      uses: codecov/codecov-action@v1
+
+    - name: Upload coverage data to scrutinizer
+      if: matrix.php-versions == '7.4'
+      run: |
+        wget https://scrutinizer-ci.com/ocular.phar
+        php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+         # fetch complete history so that the "last updated by" texts can be set correctly
+        fetch-depth: 0
+    - name: Use Node.js 14.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Build Docs
+      run: |
+        cd docs
+        yarn install
+        yarn build
+        touch build/.nojekyll
+    - name: Upload to GitHub Pages
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: docs/build/OpenWeatherMap-PHP-API
+        CLEAN: true
+        SINGLE_COMMIT: true
+        GIT_CONFIG_NAME: GitHub Actions
+        GIT_CONFIG_EMAIL: gh-actions@example.com

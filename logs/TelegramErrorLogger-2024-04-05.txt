@@ -1,0 +1,138 @@
+============[Date]============
+[ 2024-04-05 19:58:23  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message to delete not found
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453002
+ref.message.message_id= 265
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1002082724892
+ref.message.chat.title= GeogramTest
+ref.message.chat.type= supergroup
+ref.message.date= 1712339902
+ref.message.message_thread_id= 264
+ref.message.reply_to_message.message_id= 264
+ref.message.reply_to_message.from.id= 5833754831
+ref.message.reply_to_message.from.is_bot= true
+ref.message.reply_to_message.from.first_name= GeoBikepacking
+ref.message.reply_to_message.from.username= GeoBikepacking_bot
+ref.message.reply_to_message.chat.id= -1002082724892
+ref.message.reply_to_message.chat.title= GeogramTest
+ref.message.reply_to_message.chat.type= supergroup
+ref.message.reply_to_message.date= 1712339846
+ref.message.reply_to_message.text= Respond to this message with a description of your Geogram; otherwise, delete the message.
+ref.message.text= Vv
+
+
+[ref]
+ref.message_id= 265
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/callback.php(954): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(173): ReplyManager(-1002082724892, 265, Array, 'Respond to this...')
+#5 {main}
+
+============[Date]============
+[ 2024-04-05 20:01:19  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message to delete not found
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453007
+ref.message.message_id= 268
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1002082724892
+ref.message.chat.title= GeogramTest
+ref.message.chat.type= supergroup
+ref.message.date= 1712340078
+ref.message.message_thread_id= 267
+ref.message.reply_to_message.message_id= 267
+ref.message.reply_to_message.from.id= 5833754831
+ref.message.reply_to_message.from.is_bot= true
+ref.message.reply_to_message.from.first_name= GeoBikepacking
+ref.message.reply_to_message.from.username= GeoBikepacking_bot
+ref.message.reply_to_message.chat.id= -1002082724892
+ref.message.reply_to_message.chat.title= GeogramTest
+ref.message.reply_to_message.chat.type= supergroup
+ref.message.reply_to_message.date= 1712340058
+ref.message.reply_to_message.text= Respond to this message with the invitation link of your group; otherwise, delete the message. Your adventure will be open to everyone. Respond with "none" to delete the link.
+ref.message.text= Xx
+
+
+[ref]
+ref.message_id= 268
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/callback.php(954): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(174): ReplyManager(-1002082724892, 268, Array, 'Respond to this...')
+#5 {main}
+
+============[Date]============
+[ 2024-04-05 20:39:01  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message to delete not found
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453022
+ref.message.message_id= 277
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1002082724892
+ref.message.chat.title= GeogramTest
+ref.message.chat.type= supergroup
+ref.message.date= 1712342339
+ref.message.message_thread_id= 276
+ref.message.reply_to_message.message_id= 276
+ref.message.reply_to_message.from.id= 5833754831
+ref.message.reply_to_message.from.is_bot= true
+ref.message.reply_to_message.from.first_name= GeoBikepacking
+ref.message.reply_to_message.from.username= GeoBikepacking_bot
+ref.message.reply_to_message.chat.id= -1002082724892
+ref.message.reply_to_message.chat.title= GeogramTest
+ref.message.reply_to_message.chat.type= supergroup
+ref.message.reply_to_message.date= 1712342143
+ref.message.reply_to_message.text= Respond to this message with a description of your Geogram; otherwise, delete the message.
+ref.message.text= Test
+
+
+[ref]
+ref.message_id= 277
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/callback.php(952): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(173): ReplyManager(-1002082724892, 277, Array, 'Respond to this...')
+#5 {main}
+

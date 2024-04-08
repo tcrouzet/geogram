@@ -1,0 +1,2326 @@
+============[Date]============
+[ 2024-04-06 12:53:24  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453120
+ref.callback_query.id= 8414635428398669548
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712400799
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(858): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(140): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 12:53:28  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453121
+ref.callback_query.id= 8414635425897270942
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712400799
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(858): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(140): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 12:53:30  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453122
+ref.callback_query.id= 8414635425756862968
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712400799
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(858): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(140): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 12:53:32  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453123
+ref.callback_query.id= 8414635424581518587
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712400799
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(858): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(140): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 12:53:42  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453124
+ref.callback_query.id= 8414635426273239520
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712400799
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(858): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(140): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:11:20  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: invalid file_id
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453131
+ref.callback_query.id= 8414635427105812834
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.file_id.file_id= AQADBAADhrsxG0ujsVEACAIAAzlz5bYW____XNHe_RIjp8U0BA
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(443): Telegram->endpoint('getFile', Array)
+#3 /volume1/web/geogram/callback.php(361): Telegram->getFile(Array)
+#4 /volume1/web/geogram/callback.php(140): update_photoprofil(-1001953856711)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:11:23  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453131
+ref.callback_query.id= 8414635427105812834
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(900): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(141): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:12:39  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: invalid file_id
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453132
+ref.callback_query.id= 8414635424614463621
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.file_id.file_id= AQADBAADhrsxG0ujsVEACAIAAzlz5bYW____XNHe_RIjp8U0BA
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(443): Telegram->endpoint('getFile', Array)
+#3 /volume1/web/geogram/callback.php(362): Telegram->getFile(Array)
+#4 /volume1/web/geogram/callback.php(140): update_photoprofil(-1001953856711)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:12:42  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453132
+ref.callback_query.id= 8414635424614463621
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(141): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:15:35  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: file_id not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453133
+ref.callback_query.id= 8414635424859489494
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.file_id= 
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(443): Telegram->endpoint('getFile', Array)
+#3 /volume1/web/geogram/callback.php(362): Telegram->getFile(NULL)
+#4 /volume1/web/geogram/callback.php(140): update_photoprofil(-1001953856711)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:15:37  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453133
+ref.callback_query.id= 8414635424859489494
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(141): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:16:39  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: invalid file_id
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453134
+ref.callback_query.id= 8414635427629653855
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.file_id= AQADhrsxG0ujsVEAAQ
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(443): Telegram->endpoint('getFile', Array)
+#3 /volume1/web/geogram/callback.php(362): Telegram->getFile('AQADhrsxG0ujsVE...')
+#4 /volume1/web/geogram/callback.php(140): update_photoprofil(-1001953856711)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:16:41  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453134
+ref.callback_query.id= 8414635427629653855
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Send adventure picture","callback_data":"sendchatphoto"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(141): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:40:17  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: inline keyboard button URL '/userimg/0/chatphoto.jpeg?' is invalid: URL host is empty
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453135
+ref.callback_query.id= 8414635424905285451
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 233
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1001953856711
+ref.callback_query.message.chat.title= 727itt
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712399973
+ref.callback_query.message.edit_date= 1712401866
+ref.callback_query.message.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.entities.0.offset= 174
+ref.callback_query.message.entities.0.length= 30
+ref.callback_query.message.entities.0.type= url
+ref.callback_query.message.link_preview_options.url= https://t.me/+6tyilUgu7FdjZGI0
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Geogram page
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.url= https://geogram.tcrouzet.com/727itt
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= Send adventure picture
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= sendchatphoto
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.url= https://geogram.tcrouzet.com/727itt/user/235152871
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/235152871/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= info_delete_235152871_quentin_fr
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Matt
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.url= https://geogram.tcrouzet.com/727itt/user/1623121212
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/1623121212/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= info_delete_1623121212_Matt
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.url= https://geogram.tcrouzet.com/727itt/user/6177793235
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6177793235/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.5.2.callback_data= info_delete_6177793235_PaTVenture
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.text= Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.6.0.url= https://geogram.tcrouzet.com/727itt/user/6278110536
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.6.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6278110536/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.6.2.callback_data= info_delete_6278110536_Phil90
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.text= Oli'vert
+ref.callback_query.message.reply_markup.inline_keyboard.7.0.url= https://geogram.tcrouzet.com/727itt/user/6287126105
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.text= Avatar
+ref.callback_query.message.reply_markup.inline_keyboard.7.1.url= https://geogram.tcrouzet.com/userimg/-1001953856711/6287126105/avatar.jpeg?1712399973
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.text= DELETE
+ref.callback_query.message.reply_markup.inline_keyboard.7.2.callback_data= info_delete_6287126105_Oli'vert
+ref.callback_query.chat_instance= 9052995574490181292
+ref.callback_query.data= sendchatphoto
+
+
+[ref]
+ref.message_id= 233
+ref.text= 727itt
+-1001953856711
+Bikepacking around Hérault, south of France.
+Creation: 2023-05-08 08:05
+Updated: 2024-04-06 12:04
+GPX: 595km/9 000m
+Unit: metricPublic invitation link: https://t.me/+6tyilUgu7FdjZGI0
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/727itt"}],[{"text":"Adventure picture","url":"\/userimg\/0\/chatphoto.jpeg?"}],[{"text":"quentin_fr","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/235152871"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/235152871\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_235152871_quentin_fr"}],[{"text":"Matt","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/1623121212"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/1623121212\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_1623121212_Matt"}],[{"text":"PaTVenture","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6177793235"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6177793235\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6177793235_PaTVenture"}],[{"text":"Phil90","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6278110536"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6278110536\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6278110536_Phil90"}],[{"text":"Oli'vert","url":"https:\/\/geogram.tcrouzet.com\/727itt\/user\/6287126105"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1001953856711\/6287126105\/avatar.jpeg?1712399973"},{"text":"DELETE","callback_data":"info_delete_6287126105_Oli'vert"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(141): sendMenuInfo(-1001953856711, 233, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:41:05  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: inline keyboard button URL '/userimg/0/chatphoto.jpeg?' is invalid: URL host is empty
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453138
+ref.callback_query.id= 8414635425461681725
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 181
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1002082724892
+ref.callback_query.message.chat.title= GeogramTest
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712042385
+ref.callback_query.message.edit_date= 1712403663
+ref.callback_query.message.text= GeogramTest admin dashboard…
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Info
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.callback_data= info
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.text= Help
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.url= https://geogram.tcrouzet.com/help#help_admin
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= 18h 15min
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= started
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.text= Archive
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.callback_data= stop
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= Description
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.callback_data= description
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.callback_data= rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= Share
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= share
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.callback_data= mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Real time
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.callback_data= realtime_set
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= Units
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= units
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= Purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.callback_data= purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Delete
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.callback_data= delete
+ref.callback_query.chat_instance= -5955551877322868110
+ref.callback_query.data= info
+
+
+[ref]
+ref.message_id= 181
+ref.text= GeogramTest
+-1002082724892
+Tester, encore tester
+Creation: 2023-06-27 13:06
+Updated: 2024-04-06 09:04
+GPX: 539km/10 400m
+Unit: metricNo public invitation link.
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest"}],[{"text":"Adventure picture","url":"\/userimg\/0\/chatphoto.jpeg?"}],[{"text":"Isabelle Crouzet","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest\/user\/6894536438"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1002082724892\/6894536438\/avatar.jpeg?1712388378"},{"text":"DELETE","callback_data":"info_delete_6894536438_Isabelle Crouzet"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(28): sendMenuInfo(-1002082724892, 181, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:41:08  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: inline keyboard button URL '/userimg/0/chatphoto.jpeg?' is invalid: URL host is empty
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453139
+ref.callback_query.id= 8414635426074602642
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 181
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1002082724892
+ref.callback_query.message.chat.title= GeogramTest
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712042385
+ref.callback_query.message.edit_date= 1712403663
+ref.callback_query.message.text= GeogramTest admin dashboard…
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Info
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.callback_data= info
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.text= Help
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.url= https://geogram.tcrouzet.com/help#help_admin
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= 18h 15min
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= started
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.text= Archive
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.callback_data= stop
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= Description
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.callback_data= description
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.callback_data= rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= Share
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= share
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.callback_data= mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Real time
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.callback_data= realtime_set
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= Units
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= units
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= Purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.callback_data= purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Delete
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.callback_data= delete
+ref.callback_query.chat_instance= -5955551877322868110
+ref.callback_query.data= info
+
+
+[ref]
+ref.message_id= 181
+ref.text= GeogramTest
+-1002082724892
+Tester, encore tester
+Creation: 2023-06-27 13:06
+Updated: 2024-04-06 09:04
+GPX: 539km/10 400m
+Unit: metricNo public invitation link.
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest"}],[{"text":"Adventure picture","url":"\/userimg\/0\/chatphoto.jpeg?"}],[{"text":"Isabelle Crouzet","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest\/user\/6894536438"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1002082724892\/6894536438\/avatar.jpeg?1712388378"},{"text":"DELETE","callback_data":"info_delete_6894536438_Isabelle Crouzet"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(28): sendMenuInfo(-1002082724892, 181, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:41:17  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: inline keyboard button URL '/userimg/0/chatphoto.jpeg?' is invalid: URL host is empty
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453142
+ref.callback_query.id= 8414635424823687589
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 181
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1002082724892
+ref.callback_query.message.chat.title= GeogramTest
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712042385
+ref.callback_query.message.edit_date= 1712403675
+ref.callback_query.message.text= GeogramTest admin dashboard…
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Info
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.callback_data= info
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.text= Help
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.url= https://geogram.tcrouzet.com/help#help_admin
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= 18h 15min
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= started
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.text= Archive
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.callback_data= stop
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= Description
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.callback_data= description
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.callback_data= rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= Share
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= share
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.callback_data= mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Real time
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.callback_data= realtime_set
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= Units
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= units
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= Purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.callback_data= purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Delete
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.callback_data= delete
+ref.callback_query.chat_instance= -5955551877322868110
+ref.callback_query.data= info
+
+
+[ref]
+ref.message_id= 181
+ref.text= GeogramTest
+-1002082724892
+Tester, encore tester
+Creation: 2023-06-27 13:06
+Updated: 2024-04-06 09:04
+GPX: 539km/10 400m
+Unit: metricNo public invitation link.
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest"}],[{"text":"Adventure picture","url":"\/userimg\/0\/chatphoto.jpeg?"}],[{"text":"Isabelle Crouzet","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest\/user\/6894536438"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1002082724892\/6894536438\/avatar.jpeg?1712388378"},{"text":"DELETE","callback_data":"info_delete_6894536438_Isabelle Crouzet"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(28): sendMenuInfo(-1002082724892, 181, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:43:14  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: inline keyboard button URL '/userimg/0/chatphoto.jpeg?' is invalid: URL host is empty
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453143
+ref.callback_query.id= 8414635425237943592
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 181
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1002082724892
+ref.callback_query.message.chat.title= GeogramTest
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712042385
+ref.callback_query.message.edit_date= 1712403675
+ref.callback_query.message.text= GeogramTest admin dashboard…
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Info
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.callback_data= info
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.text= Help
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.url= https://geogram.tcrouzet.com/help#help_admin
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= 18h 15min
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= started
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.text= Archive
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.callback_data= stop
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= Description
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.callback_data= description
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.callback_data= rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= Share
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= share
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.callback_data= mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Real time
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.callback_data= realtime_set
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= Units
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= units
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= Purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.callback_data= purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Delete
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.callback_data= delete
+ref.callback_query.chat_instance= -5955551877322868110
+ref.callback_query.data= info
+
+
+[ref]
+ref.message_id= 181
+ref.text= GeogramTest
+-1002082724892
+Tester, encore tester
+Creation: 2023-06-27 13:06
+Updated: 2024-04-06 09:04
+GPX: 539km/10 400m
+Unit: metricNo public invitation link.
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest"}],[{"text":"Adventure picture","url":"\/userimg\/0\/chatphoto.jpeg?"}],[{"text":"Isabelle Crouzet","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest\/user\/6894536438"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1002082724892\/6894536438\/avatar.jpeg?1712388378"},{"text":"DELETE","callback_data":"info_delete_6894536438_Isabelle Crouzet"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(901): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(28): sendMenuInfo(-1002082724892, 181, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:45:26  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: inline keyboard button URL '/userimg/0/chatphoto.jpeg?' is invalid: URL host is empty
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453144
+ref.callback_query.id= 8414635426555552429
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 181
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1002082724892
+ref.callback_query.message.chat.title= GeogramTest
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712042385
+ref.callback_query.message.edit_date= 1712403675
+ref.callback_query.message.text= GeogramTest admin dashboard…
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Info
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.callback_data= info
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.text= Help
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.url= https://geogram.tcrouzet.com/help#help_admin
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= 18h 15min
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= started
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.text= Archive
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.callback_data= stop
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= Description
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.callback_data= description
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.callback_data= rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= Share
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= share
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.callback_data= mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Real time
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.callback_data= realtime_set
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= Units
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= units
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= Purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.callback_data= purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Delete
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.callback_data= delete
+ref.callback_query.chat_instance= -5955551877322868110
+ref.callback_query.data= info
+
+
+[ref]
+ref.message_id= 181
+ref.text= GeogramTest
+-1002082724892
+Tester, encore tester
+Creation: 2023-06-27 13:06
+Updated: 2024-04-06 09:04
+GPX: 539km/10 400m
+Unit: metricNo public invitation link.
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest"}],[{"text":"Adventure picture","url":"\/userimg\/0\/chatphoto.jpeg?"}],[{"text":"Isabelle Crouzet","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest\/user\/6894536438"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1002082724892\/6894536438\/avatar.jpeg?1712388378"},{"text":"DELETE","callback_data":"info_delete_6894536438_Isabelle Crouzet"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(903): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(28): sendMenuInfo(-1002082724892, 181, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 13:45:38  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: inline keyboard button URL '/userimg/0/chatphoto.jpeg?' is invalid: URL host is empty
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453145
+ref.callback_query.id= 8414635425746091822
+ref.callback_query.from.id= 6254152278
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Thierry
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.username= tcrouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 181
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1002082724892
+ref.callback_query.message.chat.title= GeogramTest
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712042385
+ref.callback_query.message.edit_date= 1712403675
+ref.callback_query.message.text= GeogramTest admin dashboard…
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text=  < 
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.callback_data= goback
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= Info
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.callback_data= info
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.text= Help
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.url= https://geogram.tcrouzet.com/help#help_admin
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.text= 18h 15min
+ref.callback_query.message.reply_markup.inline_keyboard.2.0.callback_data= started
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.text= Archive
+ref.callback_query.message.reply_markup.inline_keyboard.2.1.callback_data= stop
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.text= Description
+ref.callback_query.message.reply_markup.inline_keyboard.3.0.callback_data= description
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.text= Rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.1.callback_data= rename
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.text= Share
+ref.callback_query.message.reply_markup.inline_keyboard.3.2.callback_data= share
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.text= Mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.0.callback_data= mode
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.text= Real time
+ref.callback_query.message.reply_markup.inline_keyboard.4.1.callback_data= realtime_set
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.text= Units
+ref.callback_query.message.reply_markup.inline_keyboard.4.2.callback_data= units
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.text= Purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.0.callback_data= purge
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.text= Delete
+ref.callback_query.message.reply_markup.inline_keyboard.5.1.callback_data= delete
+ref.callback_query.chat_instance= -5955551877322868110
+ref.callback_query.data= info
+
+
+[ref]
+ref.message_id= 181
+ref.text= GeogramTest
+-1002082724892
+Tester, encore tester
+Creation: 2023-06-27 13:06
+Updated: 2024-04-06 09:04
+GPX: 539km/10 400m
+Unit: metricNo public invitation link.
+ref.reply_markup= {"inline_keyboard":[[{"text":" < ","callback_data":"goback"}],[{"text":"Geogram page","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest"}],[{"text":"Adventure picture","url":"\/userimg\/0\/chatphoto.jpeg?"}],[{"text":"Isabelle Crouzet","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest\/user\/6894536438"},{"text":"Avatar","url":"https:\/\/geogram.tcrouzet.com\/userimg\/-1002082724892\/6894536438\/avatar.jpeg?1712388378"},{"text":"DELETE","callback_data":"info_delete_6894536438_Isabelle Crouzet"}]]}
+ref.disable_notification= true
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(903): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(28): sendMenuInfo(-1002082724892, 181, 6254152278)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 15:41:17  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message can't be deleted
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453182
+ref.message.message_id= 296
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1002082724892
+ref.message.chat.title= GeogramTest
+ref.message.chat.type= supergroup
+ref.message.date= 1712410874
+ref.message.text= /menu
+ref.message.entities.0.offset= 0
+ref.message.entities.0.length= 5
+ref.message.entities.0.type= bot_command
+
+
+[ref]
+ref.message_id= 181
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/telegram.php(92): Telegram->deleteMessage(Array)
+#4 {main}
+
+============[Date]============
+[ 2024-04-06 16:08:51  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453228
+ref.callback_query.id= 1941692413054048246
+ref.callback_query.from.id= 6894536438
+ref.callback_query.from.is_bot= false
+ref.callback_query.from.first_name= Isabelle
+ref.callback_query.from.last_name= Crouzet
+ref.callback_query.from.language_code= fr
+ref.callback_query.message.message_id= 299
+ref.callback_query.message.from.id= 5833754831
+ref.callback_query.message.from.is_bot= true
+ref.callback_query.message.from.first_name= GeoBikepacking
+ref.callback_query.message.from.username= GeoBikepacking_bot
+ref.callback_query.message.chat.id= -1002082724892
+ref.callback_query.message.chat.title= GeogramTest
+ref.callback_query.message.chat.type= supergroup
+ref.callback_query.message.date= 1712410942
+ref.callback_query.message.edit_date= 1712412521
+ref.callback_query.message.text= GeogramTest dashboard.
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.text= GeogramTest
+ref.callback_query.message.reply_markup.inline_keyboard.0.0.url= https://geogram.tcrouzet.com/GeogramTest
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.text= User
+ref.callback_query.message.reply_markup.inline_keyboard.1.0.callback_data= user
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.text= Admin
+ref.callback_query.message.reply_markup.inline_keyboard.1.1.callback_data= admin
+ref.callback_query.chat_instance= -5955551877322868110
+ref.callback_query.data= user
+
+
+[ref]
+ref.text= GeogramTest dashboard.
+ref.reply_markup= {"inline_keyboard":[[{"text":"GeogramTest","url":"https:\/\/geogram.tcrouzet.com\/GeogramTest"}],[{"text":"User","callback_data":"user"},{"text":"Admin","callback_data":"admin"}]]}
+ref.disable_notification= true
+ref.message_id= 299
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(687): Telegram->endpoint('editMessageText', Array)
+#3 /volume1/web/geogram/callback.php(526): Telegram->editMessageText(Array)
+#4 /volume1/web/geogram/callback.php(175): sendMenu(Array, 299)
+#5 /volume1/web/geogram/telegram.php(40): callback_manager(Array)
+#6 {main}
+
+============[Date]============
+[ 2024-04-06 17:30:17  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453254
+ref.message.message_id= 30
+ref.message.from.id= 6804220061
+ref.message.from.is_bot= false
+ref.message.from.first_name= Danny
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712417416
+ref.message.text= néophyte c'est parti pour le dépucelage
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 30
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(435): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(188): todelete(false, 30)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 18:19:15  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453256
+ref.message.message_id= 32
+ref.message.from.id= 5002174298
+ref.message.from.is_bot= false
+ref.message.from.first_name= Bill
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712420354
+ref.message.message_thread_id= 30
+ref.message.reply_to_message.message_id= 30
+ref.message.reply_to_message.from.id= 6804220061
+ref.message.reply_to_message.from.is_bot= false
+ref.message.reply_to_message.from.first_name= Danny
+ref.message.reply_to_message.chat.id= -1001932602338
+ref.message.reply_to_message.chat.title= i727_2024
+ref.message.reply_to_message.chat.type= supergroup
+ref.message.reply_to_message.date= 1712417416
+ref.message.reply_to_message.text= néophyte c'est parti pour le dépucelage
+ref.message.text= 😂😂
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 32
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(435): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(188): todelete(false, 32)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:41:10  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453268
+ref.message.message_id= 33
+ref.message.from.id= 6804220061
+ref.message.from.is_bot= false
+ref.message.from.first_name= Danny
+ref.message.from.username= Dannythedog34
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432469
+ref.message.text= Avec un VTT en configuration "porte contener" quelle est la fourchette de la moyenne horaire grosso modo?
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 33
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 33)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:43:30  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453269
+ref.message.message_id= 34
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432609
+ref.message.text= Tout dépend des jambes et du d+, mais sur la journée en moyenne 10km/h comptant les arrêts… on aura de longues journées :-)
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 34
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 34)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:44:01  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453270
+ref.message.message_id= 35
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= fr
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432641
+ref.message.text= Dans mes récits je publie les moyennes
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 35
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 35)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:44:40  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453271
+ref.message.message_id= 36
+ref.message.from.id= 6804220061
+ref.message.from.is_bot= false
+ref.message.from.first_name= Danny
+ref.message.from.username= Dannythedog34
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432679
+ref.message.text= Mais  tu es un aguerri
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 36
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 36)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:45:02  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453272
+ref.message.message_id= 37
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= en
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432702
+ref.message.text= Mais plus tout jeune :-)
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 37
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 37)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:45:40  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453273
+ref.message.message_id= 38
+ref.message.from.id= 6804220061
+ref.message.from.is_bot= false
+ref.message.from.first_name= Danny
+ref.message.from.username= Dannythedog34
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432739
+ref.message.text= Donc de l expérience en plus..c est redoutable
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 38
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 38)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:46:31  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453274
+ref.message.message_id= 39
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= en
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432790
+ref.message.photo.0.file_id= AgACAgQAAx0CczEr4gADJ2YRppZkVEGw66-1hlZmAezuN3v0AAJGwjEbweOIUI0xgi_2xOcCAQADAgADcwADNAQ
+ref.message.photo.0.file_unique_id= AQADRsIxG8HjiFB4
+ref.message.photo.0.file_size= 995
+ref.message.photo.0.width= 90
+ref.message.photo.0.height= 27
+ref.message.photo.1.file_id= AgACAgQAAx0CczEr4gADJ2YRppZkVEGw66-1hlZmAezuN3v0AAJGwjEbweOIUI0xgi_2xOcCAQADAgADbQADNAQ
+ref.message.photo.1.file_unique_id= AQADRsIxG8HjiFBy
+ref.message.photo.1.file_size= 14550
+ref.message.photo.1.width= 320
+ref.message.photo.1.height= 96
+ref.message.photo.2.file_id= AgACAgQAAx0CczEr4gADJ2YRppZkVEGw66-1hlZmAezuN3v0AAJGwjEbweOIUI0xgi_2xOcCAQADAgADeAADNAQ
+ref.message.photo.2.file_unique_id= AQADRsIxG8HjiFB9
+ref.message.photo.2.file_size= 55727
+ref.message.photo.2.width= 800
+ref.message.photo.2.height= 239
+ref.message.photo.3.file_id= AgACAgQAAx0CczEr4gADJ2YRppZkVEGw66-1hlZmAezuN3v0AAJGwjEbweOIUI0xgi_2xOcCAQADAgADeQADNAQ
+ref.message.photo.3.file_unique_id= AQADRsIxG8HjiFB-
+ref.message.photo.3.file_size= 80217
+ref.message.photo.3.width= 1100
+ref.message.photo.3.height= 328
+ref.message.caption= Stat i727 2022 mais conditions très très difficiles
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 39
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(218): todelete(false, 39)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:47:05  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453275
+ref.message.message_id= 40
+ref.message.from.id= 6254152278
+ref.message.from.is_bot= false
+ref.message.from.first_name= Thierry
+ref.message.from.last_name= Crouzet
+ref.message.from.username= tcrouzet
+ref.message.from.language_code= en
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712432824
+ref.message.text= On avait coupé des secteurs à cause de la neige et le parcours était aussi un plus court
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 40
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 40)
+#5 {main}
+
+============[Date]============
+[ 2024-04-06 21:50:39  Europe/Amsterdam ] 
+==========[Response]==========
+ok:			False
+error_code:		400
+description:		Bad Request: chat identifier is not specified
+=========[Sent Data]==========
+[ref]
+ref.update_id= 690453277
+ref.message.message_id= 41
+ref.message.from.id= 6804220061
+ref.message.from.is_bot= false
+ref.message.from.first_name= Danny
+ref.message.from.username= Dannythedog34
+ref.message.chat.id= -1001932602338
+ref.message.chat.title= i727_2024
+ref.message.chat.type= supergroup
+ref.message.date= 1712433039
+ref.message.text= Merci Thierry. Je choisis mon vélo dans la semaine et je commence mes configurations..
+Grand pas dans l inconnu et c'est ce qui fait le piment.
+
+
+[ref]
+ref.chat_id= 
+ref.message_id= 41
+
+
+============[Trace]===========
+#0 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1797): TelegramErrorLogger::log(Array, Array)
+#1 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(119): Telegram->sendAPIRequest('https://api.tel...', Array)
+#2 /volume1/web/geogram/vendor/eleirbag89/telegrambotphp/Telegram.php(1649): Telegram->endpoint('deleteMessage', Array)
+#3 /volume1/web/geogram/functions_robot.php(662): Telegram->deleteMessage(Array)
+#4 /volume1/web/geogram/telegram.php(187): todelete(false, 41)
+#5 {main}
+
