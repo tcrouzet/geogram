@@ -10,16 +10,16 @@ function callback_manager($callbackQuery){
     $brut_userid=get_userid($callbackQuery["from"]);
     $chatId = $callbackQuery['message']['chat']['id'];
     $chat_title = get_chatitle($callbackQuery['message']);
+    $chat = get_chat($chatId);
     //lecho("callBack",$chatId);
     $callbackData = $callbackQuery['data'];
     $messageId = $callbackQuery['message']['message_id'];
     $userAction = $callbackQuery['data'];
     //lecho("callBack",$messageId);
 
-    $admin_flag = is_admin($chatId, $brut_userid);
+    $admin_flag = is_admin($chat, $brut_userid);
 
     if($userAction=="goback"){
-        $chat = get_chat($chatId);
         sendMenu($chat, $messageId);
     }elseif($userAction=="cansel" && $admin_flag){
         sendMenuAdmin($chatId,$messageId);
@@ -71,22 +71,18 @@ function callback_manager($callbackQuery){
 
     //MODES
     }elseif($userAction=="mode" && $admin_flag){
-        $chat = get_chat($chatId);
         sendMenuMode($chatId,$messageId,$chat);
     }elseif(strpos($userAction, "mode_") !== false && $admin_flag){
         update_mode($chatId,$userAction);
-        $chat = get_chat($chatId);
         sendMenuMode($chatId,$messageId,$chat);
 
     //UNITS
     }elseif($userAction=="units" && $admin_flag){
-        $chat = get_chat($chatId);
         sendMenuUnits($chatId,$messageId,$chat);
     }elseif($userAction=="unit_timediff" && $admin_flag){
         $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_TIMEDIFF]);
     }elseif(strpos($userAction, "unit_") !== false && $admin_flag){
         update_unit($chatId,$userAction);
-        $chat = get_chat($chatId);
         sendMenuUnits($chatId,$messageId,$chat);
 
     //REAL TIME
@@ -95,7 +91,6 @@ function callback_manager($callbackQuery){
         sendMenuAdmin($chatId,$messageId,"Real time mode updated!");
     }elseif($userAction=="realtime_reset" && $admin_flag){
         update_real_time($chatId,0);
-        $chat = get_chat($chatId);        
         sendMenuAdmin($chatId,$messageId,"Real time mode updated!");
 
     //DESCRIPTION
@@ -113,17 +108,14 @@ function callback_manager($callbackQuery){
     //START/STOP
     }elseif($userAction=="start" && $admin_flag){
         set_start($chatId,time());
-        set_stop($chatId, 0);
         sendMenuAdmin($chatId,$messageId,"Adventure started! Time is counting…");
     }elseif($userAction=="started" && $admin_flag){
-        $chat = get_chat($chatId);
         sendMenuStarted($chatId,$messageId,$chat);
     }elseif($userAction=="start0" && $admin_flag){
         set_start($chatId,0);
         set_stop($chatId, 0);
         sendMenuAdmin($chatId,$messageId,"Adventure started time reset to zero!");
     }elseif($userAction=="stop" && $admin_flag){
-        $chat = get_chat($chatId);
         $msg = "Do you really want to stop and archive ".(string)$chat['chatname']."?";
         $msg .= " Adventures are automatically archived after one week of inactivity.";
         sendMenuConfirm($chatId,$messageId,$msg,"stopconfirm");
@@ -173,12 +165,28 @@ function callback_manager($callbackQuery){
 
     //DEFAULT
     }else{
-        $chat = get_chat($chatId);
         sendMenu($chat, $messageId);
     }
 
     lexit("End Callback");
 
+}
+
+function is_admin($chat, $userid){
+    global $telegram;
+
+    if($chat['adminid']==round($userid)) return true;
+
+    $member = $telegram->getChatMember(array('chat_id' => $chat['chatid'], 'user_id' => round($userid)));
+    //lecho("is_admin",$chatid,$userid,$member);
+
+    if(!isset($member["result"]))
+        return false;
+    if($member["result"]["status"] == 'creator' || $member["result"]["status"] == 'administrator'){
+        update_adminid($chat['chatid'], $userid);
+        return true;
+    }else
+        return false;
 }
 
 function insert_chat($chatid,$chat_name){
@@ -305,6 +313,16 @@ function update_menuid($chatid,$id){
 
     lecho("update_menuid",$id);
     $query = "UPDATE `chats` SET menuid = ? WHERE chatid=?;";
+    $stmt_photo = $mysqli->prepare($query);
+    $stmt_photo->bind_param("ii", $id, round($chatid));
+    $stmt_photo->execute();
+}
+
+function update_adminid($chatid,$id){
+    global $mysqli;
+
+    lecho("update_adminid",$id);
+    $query = "UPDATE `chats` SET adminid = ? WHERE chatid=?;";
     $stmt_photo = $mysqli->prepare($query);
     $stmt_photo->bind_param("ii", $id, round($chatid));
     $stmt_photo->execute();

@@ -306,20 +306,6 @@ function gpx_geojson($chatid){
     
 }
 
-function is_admin($chatid, $userid){
-    global $telegram;
-    $member = $telegram->getChatMember(array('chat_id' => round($chatid), 'user_id' => round($userid)));
-    //lecho("is_admin",$chatid,$userid,$member);
-
-    if(!isset($member["result"]))
-        return false;
-    if($member["result"]["status"] == 'creator' || $member["result"]["status"] == 'administrator')
-        return true;
-    else
-        return false;
-}
-
-
 function city($latitude,$longitude){
 
     $url = "http://nominatim.openstreetmap.org/";

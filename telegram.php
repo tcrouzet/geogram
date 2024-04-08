@@ -112,19 +112,21 @@ if(isset($message["location"])){
         lexit("no username");
     }
 
-    //No more than one location/10minutes
-    $query = "SELECT EXISTS(SELECT 1 FROM logs WHERE userid = ? AND timestamp > (UNIX_TIMESTAMP() - 600))";
-    $stmt_lastuser = $mysqli->prepare($query);
-    $stmt_lastuser->bind_param("i", $userid);
-    $stmt_lastuser->execute();
-    $result = $stmt_lastuser->get_result()->fetch_row();
-    if ($result && $result[0]) {
-        //Posted location during last 10 minutes
-        if($chat_obj['real_time']==0){
-            $telegram->deleteMessage(array('chat_id' => $chatid,'message_id' => $message_id));
-            ShortLivedMessage($brut_chatid,"$username, you are too fast. Next localisation will be possible in 10 minutes.");
+    //No more than one location/10minutes except for the admin and test purpose
+    if(!(is_admin($chat_obj, $userid) && $chat_obj['real_time']==0)){
+        $query = "SELECT EXISTS(SELECT 1 FROM logs WHERE userid = ? AND timestamp > (UNIX_TIMESTAMP() - 600))";
+        $stmt_lastuser = $mysqli->prepare($query);
+        $stmt_lastuser->bind_param("i", $userid);
+        $stmt_lastuser->execute();
+        $result = $stmt_lastuser->get_result()->fetch_row();
+        if ($result && $result[0]) {
+            //Posted location during last 10 minutes
+            if($chat_obj['real_time']==0){
+                $telegram->deleteMessage(array('chat_id' => $chatid,'message_id' => $message_id));
+                ShortLivedMessage($brut_chatid,"$username, you are too fast. Next localisation will be possible in 10 minutes.");
+            }
+            lexit("Too fast");
         }
-        lexit("Too fast");
     }
 
     $latitude = $message["location"]["latitude"];
@@ -163,7 +165,7 @@ if(isset($message["location"])){
 //REPLY
 if( isset($message["reply_to_message"])){
 
-    if(is_admin($chatid, $userid)){
+    if(is_admin($chat_obj, $userid)){
     
         ReplyManager($chatid, $message_id, $message, REPLY_RENAME);
         ReplyManager($chatid, $message_id, $message, REPLY_TIMEDIFF);

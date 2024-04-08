@@ -78,7 +78,7 @@ if($page=="user" && isset($id)){
 
             if($row["gpx_point"]>-1){
                 $temps=heureminutes($duree);
-                $sidebar.="Route: ".meters_to_distance( $row["km"], $chatObj );
+                $sidebar.="Route: ".meters_to_distance( $row["km"], $chatObj )."/".meters_to_dev($row["dev"],$chatObj);
                 if($start>0 ) $sidebar.=" ".SPACE2. speed_unit($row["km"],$duree) . SPACE2.$temps;
                 $sidebar.="</br>";
 
@@ -87,22 +87,25 @@ if($page=="user" && isset($id)){
 
                 if(!empty($oldrow)){
                     $etape=$row["km"]-$oldrow["km"];
+                    $etape_dev=$row["dev"]-$oldrow["dev"];
 
                     if( $etape<0 ){
                         if($total==0){
-                            $query="SELECT km FROM `gpx` WHERE chatid = ? ORDER BY `km` DESC LIMIT 1";
+                            $query="SELECT km,dev FROM `gpx` WHERE chatid = ? ORDER BY `km` DESC LIMIT 1";
                             $stmt_total = $mysqli->prepare($query);
                             $stmt_total->bind_param("i", $group_id);
                             $stmt_total->execute();
                             $total = $stmt_total->get_result()->fetch_assoc()['km'];
+                            $total_dev = $stmt_total->get_result()->fetch_assoc()['dev'];
                         }
                         $etape+=$total;
+                        $etape_dev+=$total_dev;
                     }
  
                     //$km=intval($etape/1000);
                     $duree = $row["timestamp"] - $oldrow["timestamp"];
                     $temps=heureminutes($duree);
-                    $sidebar.="Segment: ".meters_to_distance( $etape, $chatObj).SPACE2.speed_unit($etape,$duree).SPACE2.$temps."</br>";
+                    $sidebar.="Segment: ".meters_to_distance( $etape, $chatObj)."/".meters_to_dev($etape_dev,$chatObj).SPACE2.speed_unit($etape,$duree).SPACE2.$temps."</br>";
 
                     //$dt=$row["timestamp"]-$oldrow["timestamp"];
                     //$sidebar.=$row["timestamp"]." ".$oldrow["timestamp"]." DT:$dt"." S:".$start." D:$duree<br>";
