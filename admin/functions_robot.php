@@ -341,11 +341,9 @@ function city($latitude,$longitude){
 
 function weather($lat,$lon){
 
-    $apiKey = '1304c2c7ef3281b10bfa515dc0759333';
-
     $httpRequestFactory = new RequestFactory();
     $httpClient = GuzzleAdapter::createWithConfig([]);
-    $owm = new OpenWeatherMap($apiKey, $httpClient, $httpRequestFactory);
+    $owm = new OpenWeatherMap(WEATHER_API, $httpClient, $httpRequestFactory);
     
     try {
         //$weather = $owm->getWeather('Berlin', 'metric', 'de');
