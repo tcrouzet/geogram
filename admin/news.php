@@ -5,8 +5,12 @@ baseline("news");
 ?>
 <div id="containerText" >
 
-<p><a href="https://geogram.tcrouzet.com/" target="_blank">Geogram</a> est une application de suivi d’aventures en semi-temps réel qui ne nécessite aucun autre outil qu’un téléphone avec l’application <a data-tooltip-position="top" aria-label="https://telegram.org/apps" rel="noopener" class="external-link" href="https://telegram.org/apps" target="_blank">Telegram</a>. Je l’ai créée en mars 2023 pour le <a data-tooltip-position="top" aria-label="https://727.tcrouzet.com/" rel="noopener" class="external-link" href="https://727.tcrouzet.com/" target="_blank">727</a>. J’étais fatigué de voir des applications onéreuses et lourdes à mettre en œuvre (surtout pour les organisateurs d’évènements, avec location des balises, demande de caution, assurances…).
-Depuis, Geogram a été utilisée par des centaines d’aventuriers.</p>
+<a href="/images/logo.png"><img src="/images/logo.png" /></a>
+
+<p><a href="https://geogram.tcrouzet.com/" target="_blank">Geogram</a> est une application de suivi d’aventures en semi-temps réel qui ne nécessite aucun autre outil qu’un téléphone avec l’application <a data-tooltip-position="top" aria-label="https://telegram.org/apps" rel="noopener" class="external-link" href="https://telegram.org/apps" target="_blank">Telegram</a>. Je l’ai créée en mars 2023 pour le <a data-tooltip-position="top" aria-label="https://727.tcrouzet.com/" rel="noopener" class="external-link" href="https://727.tcrouzet.com/" target="_blank">727</a>.
+J’étais fatigué de voir des solutions onéreuses et lourdes à mettre en œuvre (surtout pour les organisateurs d’évènements, avec location des balises, demande de caution, assurances…).
+Depuis, Geogram a été utilisée par des centaines d’aventuriers.
+On peut non seulement se géolocaliser, mais partager des photos, des textes, tant avec les autres aventuriers que ses proches.</p>
 
 <h2>Avril 2024</h3>
 <p>Je viens de passer dix jours à réviser le code de Geogram pour le rendre plus réactif et simplifier l’interface.
@@ -30,16 +34,17 @@ Depuis, Geogram a été utilisée par des centaines d’aventuriers.</p>
 <a href="/images/news/menu-info.jpg"><img src="/images/news/menu-info.jpg" /></a>
 
 <p>L’administrateur peut même gérer individuellement les aventuriers.</p>
-<p>Pour réafficher le menu en bas du groupe, il faut envoyer le message "/menu". Il n’y a plus d’autres commandes obscures à connaître.</p>
+<p>La commande "/menu" réaffiche le menu en bas du groupe. Il n’y a plus d’autres commandes obscures à connaître.</p>
 
 <a href="/images/news/menu-user.jpg"><img src="/images/news/i727map.jpg" /></a>
 
 <p>Initialement, uniquement les GPX avec une seule trace étaient acceptés.
     J’ai ouvert la possibilité de traces multiples. J’avais besoin de cette fonction pour <a data-tooltip-position="top" aria-label="https://727.tcrouzet.com/i727/" rel="noopener" class="external-link" href="https://727.tcrouzet.com/i727/" target="_blank">le i727&nbsp;2024</a> qui offre un itinéraire principal et trois short cuts. Logiquement le système supporte des traces de plus de 3&nbsp;000&nbsp;km (en fait il n’y a pas vraiment de limites et je peux jouer sur ce paramètre).</p>
 <p>Côté interface web, <a href="https://geogram.tcrouzet.com/g727_2023" target="_blank">exemple du g727 2023</a>, je n’ai pas changé grand-chose.
-Si la plupart des aventures sont réservées aux aventuriers disposant du lien d’invitation envoyé par l’administrateur du groupe Telegram,
-il est aussi possible de créer des aventures ouvertes en ITT, <a href="https://geogram.tcrouzet.com/727itt/info" target="_blank">par exemple le 727</a>.
-Tout le monde peut rejoindre librement. En revanche, après une semaine d’inactivité, les aventuriers disparaissent (leurs historiques ne sont pas pour autant effacés et on peut les retrouver dans <a data-tooltip-position="top" aria-label="https://geogram.tcrouzet.com/727itt/story" rel="noopener" class="external-link" href="https://geogram.tcrouzet.com/727itt/story" target="_blank">la story du groupe</a>).</p>
+La plupart des aventures sont réservées aux aventuriers disposant du lien d’invitation envoyé par l’administrateur du groupe Telegram,
+mais il est possible de créer des aventures ouvertes en ITT, <a href="https://geogram.tcrouzet.com/727itt/info" target="_blank">par exemple le 727</a>.
+Tout le monde peut rejoindre librement le groupe et se géolocaliser.
+En revanche, après une semaine d’inactivité, les aventuriers disparaissent (leurs historiques ne sont pas pour autant effacés et on peut les retrouver dans <a data-tooltip-position="top" aria-label="https://geogram.tcrouzet.com/727itt/story" rel="noopener" class="external-link" href="https://geogram.tcrouzet.com/727itt/story" target="_blank">la story du groupe</a>).</p>
 <p>Cette nouvelle version de Geogram sera mise à l’épreuve lors du i727 qui part le 8 mai 2024.</p>
 <p><em>PS&nbsp;: En tant que projet Open Source, Geogram est actuellement hébergé sur mon serveur personnel, un vieux NAS Synology, qui risque de crouler sous les requêtes si des centaines d’aventuriers se mettent à échanger des messages. Si un sponsor veut financer l’hébergement, j’en serai ravi, tout comme développer des versions de Geogram à son image.</em></p>
 
