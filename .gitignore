@@ -1,2 +1,7 @@
+.DS_Store
 admin/secret.php
 admin/telegram.md
+logs/*
+!logs/.gitkeep
+userimg/*
+!userimg/.gitkeep

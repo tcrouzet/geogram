@@ -10,7 +10,7 @@ Depuis, Geogram a été utilisée par des centaines d’aventuriers.</p>
 
 <h2>Avril 2024</h3>
 <p>Je viens de passer dix jours à réviser le code de Geogram pour le rendre plus réactif et simplifier l’interface.
-    J’en profite pour distribuer le code sur GitHub (sans lui associer de documentation).</p>
+    <a href="https://github.com/tcrouzet/geogram">J’en profite pour distribuer le code sur GitHub</a> (sans lui associer de documentation).</p>
 <p>L’application repose sur <a data-tooltip-position="top" aria-label="https://t.me/GeoBikepacking" rel="noopener" class="external-link" href="https://t.me/GeoBikepacking" target="_blank">@GeoBikepacking_bot</a>, un bot Telegram <a data-tooltip-position="top" aria-label="https://geogram.tcrouzet.com/help#help_admin" rel="noopener" class="external-link" href="https://geogram.tcrouzet.com/help#help_admin" target="_blank">qui peut être invité dans des groupes pour gérer la géolocalisation des utilisateurs, alias aventuriers</a>.</p>
 <p>Désormais, dès qu’un message est posté sur le groupe, il est immédiatement pris en charge par Geogram (alors qu’initialement la prise en charge ne s’effectuait que toutes les dix minutes —&nbsp;j’ai remplacé le cron par un webhook).</p>
 <p>Cette nouvelle approche permet de faire apparaître dans les groupes un menu pour piloter Geogram.</p>
