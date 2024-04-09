@@ -12,7 +12,7 @@ function init(){
     }
 
     $mysqli -> set_charset("utf8mb4");
-    $mysqli -> select_db("bikepacking");
+    $mysqli -> select_db(MYSQL_BASE);
 }
 
 function prepare_queries(){
@@ -152,6 +152,8 @@ function html_header($pagename=""){
     global $group,$page,$id,$chatObj,$fileManager;
 
     //dump($chatObj);
+    //$version=time();
+    $version="A1";
 
     $url=BASE_URL;
     if(!empty($group)) $url.=$group."/";
@@ -208,7 +210,7 @@ function html_header($pagename=""){
         echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js"></script>'."\n";
     }
 
-    echo "\n<link rel='stylesheet' id='style-css' href='/geogram.css?3' type='text/css' media='screen' />\n";
+    echo "\n<link rel='stylesheet' id='style-css' href='/geogram.css?$version' type='text/css' media='screen' />\n";
 
     echo '</head>';
     echo '<body>';
@@ -218,15 +220,12 @@ function html_header($pagename=""){
 function menu(){
     global $group,$group_id;
 
-    echo '<div id="menuback"></div>';
-
-    echo menu_button();
-
     if(!empty($group_id)){
-        echo '<div id="menu" class="page"><a href="/'.$group.'" class="first">'.format_chatname($group).'</a><a href="/'.$group.'/story" class="last">Story</a><a href="/'.$group.'/info" class="last">Info'.SPACE1.'</a>';
+        echo '<div id="menu"><div id="menu_left"><a href="/'.$group.'" class="first">'.format_chatname($group).'</a><a href="/'.$group.'/story" class="last">Story</a><a href="/'.$group.'/info" class="last">Info'.SPACE1.'</a></div>';
     }else{
-        echo '<div id="menu" class="home"><a href="/help#add" class="center">Add your own adventure!!!</a>';
+        echo '<div id="menu"><div id="menu_center"><a href="/help#add" class="center">Add your own adventure!!!</a></div>';
     }
+    echo menu_button();
     echo '</div>';
 }
 
