@@ -106,7 +106,7 @@ if(isset($message["location"])){
 
     //lecho("Location find ",$userid);
 
-    $username = get_username($message["from"]);    
+    $username = get_username($message["from"]); 
     if(empty($username)){
         $telegram->deleteMessage(array('chat_id' => $chatid,'message_id' => $message_id));
         lexit("no username");

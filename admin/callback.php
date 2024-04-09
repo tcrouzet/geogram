@@ -8,14 +8,22 @@ define("REPLY_SHARE","Respond to this message with the invitation link of your g
 function callback_manager($callbackQuery){
     global $telegram;
     $brut_userid=get_userid($callbackQuery["from"]);
+    $userid=round($brut_userid);
+    $username = get_username($callbackQuery["from"]);
     $chatId = $callbackQuery['message']['chat']['id'];
     $chat_title = get_chatitle($callbackQuery['message']);
     $chat = get_chat($chatId);
     //lecho("callBack",$chatId);
-    $callbackData = $callbackQuery['data'];
     $messageId = $callbackQuery['message']['message_id'];
     $userAction = $callbackQuery['data'];
-    //lecho("callBack",$messageId);
+
+    $parts = explode("_", $userAction);
+    $mainAction = $parts[0];
+    $userid_cmd = isset($parts[1]) ? $parts[1] : '';
+    if($userid_cmd==$userid)
+        $user_flag=true;
+    else
+        $user_flag=false;
 
     $admin_flag = is_admin($chat, $brut_userid);
 
@@ -137,7 +145,7 @@ function callback_manager($callbackQuery){
         update_photoprofil($chatId);
 
     //AVATAR
-    }elseif($userAction=="avatar"){
+    }elseif($mainAction=="avatar" && $user_flag){
         if(newavatar($chatId, $brut_userid)){
             ShortLivedMessage($chatId,"Your avatar is updated!");
         }else{
@@ -145,23 +153,23 @@ function callback_manager($callbackQuery){
         }
     
     //DISAPPEAR
-    }elseif($userAction=="disappear"){
-        $msg = "Do you really want to quit $chat_title?";
-        sendMenuConfirm($chatId,$messageId,$msg,"disappearconfirm");
-    }elseif($userAction=="disappearconfirm"){
-        $msg = "Are you really sure? This action is irreversible!!!";
-        sendMenuConfirm($chatId,$messageId,$msg,"disappearreconfirm");
-    }elseif($userAction=="disappearreconfirm"){
+    }elseif($mainAction=="disappear" && $user_flag){
+        $msg = "$username, do you really want to quit $chat_title?";
+        sendMenuConfirm($chatId,$messageId,$msg,"disappearconfirm_$userid");
+    }elseif($mainAction=="disappearconfirm" && $user_flag){
+        $msg = "$username, are you really sure? This action is irreversible!!!";
+        sendMenuConfirm($chatId,$messageId,$msg,"disappearreconfirm_$userid");
+    }elseif($mainAction=="disappearreconfirm" && $user_flag){
         if(delete_one_user($chatId,$brut_userid)){
-            $msg = "You are not anymore on $chat_title, but you are still on the group. Il you geolocalise again you will reappear.";
+            $msg = "$username, you are not anymore on $chat_title, but you are still on the group. Il you geolocalise again you will reappear.";
         }else{
             $msg = "Something wrong happens!";
         }
-        sendMenuUser($chatId,$brut_userid,$messageId,$msg);
+        sendMenuUser($chatId,$brut_userid,$messageId,$msg,$username);
 
     //USER
     }elseif($userAction=="user"){
-        sendMenuUser($chatId,$brut_userid,$messageId);
+        sendMenuUser($chatId,$brut_userid,$messageId,"",$username);
 
     //DEFAULT
     }else{
@@ -417,7 +425,6 @@ function set_photo($chatid){
     return $stmt_photo->execute();
 }
 
-
 function set_start($chatid, $timestamp){
     global $mysqli;
 
@@ -492,38 +499,12 @@ function ShortLivedMessage($id,$msg,$timeout=2){
 
 }
 
-// Pas utile
-function sendStaticMenu() {
-    global $telegram, $brut_userid, $chat_title;
-
-    $keyboard = [
-        ['Start', 'Stop'],
-        ['Admin', 'Help']
-    ];
-
-    $replyMarkup = [
-        'keyboard' => $keyboard,
-        'resize_keyboard' => true,
-        'one_time_keyboard' => false,
-        'selective' => true
-    ];
-
-    $params = [
-        'chat_id' => $brut_userid,
-        'text' => $chat_title.' menu',
-        'reply_markup' => json_encode($replyMarkup)
-    ];
-
-    $response = $telegram->sendMessage($params);
-    lecho("keyboard", $response);
-}
-
 function sendMenu($chat, $messageId="") {
     global $telegram,$fileManager;
 
     $inlineKeyboard = [
         [
-            ['text' => $chat["chatname"], 'url' => $fileManager->chatWeb($chat,true)],
+            ['text' => format_chatname($chat["chatname"]), 'url' => $fileManager->chatWeb($chat,true)],
         ],[
             ['text' => 'User', 'callback_data' => 'user'],
             ['text' => 'Admin', 'callback_data' => 'admin']
@@ -534,7 +515,7 @@ function sendMenu($chat, $messageId="") {
         'inline_keyboard' => $inlineKeyboard
     ];
 
-    $msg = $chat["chatname"]. " dashboard.";
+    $msg = format_chatname($chat["chatname"]). " dashboard.";
 
     $params = [
         'chat_id' => $chat["chatid"],
@@ -618,7 +599,7 @@ function sendMenuAdmin($brut_chatid, $messageId, $message="") {
     ];
 
     if(empty($message)){
-        $message = $chat['chatname'].' admin dashboard…'; 
+        $message = format_chatname($chat['chatname']).' admin dashboard…'; 
     }
 
     $params = [
@@ -634,9 +615,10 @@ function sendMenuAdmin($brut_chatid, $messageId, $message="") {
     //lecho("keyboard:", $response);
 }
 
-function sendMenuUser($brut_chatid,$brut_userid,$messageId,$message="") {
+function sendMenuUser($brut_chatid,$brut_userid,$messageId,$message="",$username="") {
     global $telegram, $fileManager;
 
+    $userid=round($brut_userid);
     $chat = get_chat($brut_chatid);
     if($path_avatar = $fileManager->avatarExists($brut_chatid,$brut_userid)){
         $up_avatar_text = 'Reupload avatar';
@@ -650,7 +632,7 @@ function sendMenuUser($brut_chatid,$brut_userid,$messageId,$message="") {
         $avatar_text = "Avatar";
         $avatar_cmd = "url";
     } else {
-        $avatar_url = "avatar"; 
+        $avatar_url = "avatar_$userid"; 
         $avatar_text = "No avatar";
         $avatar_cmd = "callback_data";
     }
@@ -666,8 +648,8 @@ function sendMenuUser($brut_chatid,$brut_userid,$messageId,$message="") {
             ['text' => 'History', 'url' => $history_url],
             ['text' => 'Help', 'url' => $fileManager->help_user()],
         ],[
-            ['text' => $up_avatar_text, 'callback_data' => 'avatar'],
-            ['text' => 'Disappear', 'callback_data' => 'disappear'],
+            ['text' => $up_avatar_text, 'callback_data' => "avatar_$userid"],
+            ['text' => 'Disappear', 'callback_data' => "disappear_$userid"],
         ]
     ];
 
@@ -676,7 +658,7 @@ function sendMenuUser($brut_chatid,$brut_userid,$messageId,$message="") {
     ];
 
     if(empty($message)){
-        $message = "First, you have to geolocate to start your history on ".$chat['chatname'].".\n";
+        $message = $username."\nFirst, you have to geolocate to start your history on ".format_chatname($chat['chatname']).".\n";
         $message .= "If you have a profile picture (or have updated it), use \"Avatar\" to upload or reupload it on Geogram.\n";
         $message .= 'Selecting "Disappear" will delete all your history from Geogram. You will reappear if you geolocate again.';
     }

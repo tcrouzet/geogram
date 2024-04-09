@@ -17,13 +17,6 @@ function init(){
 
 function prepare_queries(){
     global $mysqli,$stmt_distance,$stmt_lastpoint,$stmt_firstpoint,$stmt_lastpointbefore,$stmt_getchatid,$stmt_insertlog;
-
-    //Distances par rapport à un point à partir d'un point
-    // $query = "SELECT *,
-    //     ST_Distance_Sphere(POINT(latitude, longitude), POINT(?, ?)) AS distance,
-    //     CASE WHEN point > ? THEN point ELSE point+1000000 END AS calcul
-    //     FROM gpx WHERE chatid=? HAVING distance < 1000 ORDER BY calcul";
-    // $stmt_distance = $mysqli->prepare($query);
     
     $query = "SELECT point, km, dev, ST_Distance_Sphere(POINT(latitude, longitude), POINT(?, ?)) AS distance,
     CASE
