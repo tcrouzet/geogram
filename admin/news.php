@@ -48,8 +48,11 @@ En revanche, après une semaine d’inactivité, les aventuriers disparaissent (
 <p>Cette nouvelle version de Geogram sera mise à l’épreuve lors du i727 qui part le 8 mai 2024.</p>
 <p><em>PS&nbsp;: En tant que projet Open Source, Geogram est actuellement hébergé sur mon serveur personnel, un vieux NAS Synology, qui risque de crouler sous les requêtes si des centaines d’aventuriers se mettent à échanger des messages. Si un sponsor veut financer l’hébergement, j’en serai ravi, tout comme développer des versions de Geogram à son image.</em></p>
 
+<h2>Avril 2023</h3>
+
+<p><a href="https://tcrouzet.com/2023/04/13/suivi-gratuit-daventures-bikepacking/">Test de la première version lors du 727.</a></p>
+
 <h2>Mars 2023</h3>
 
-<p>Lancement de la version prototype.</p>
-
+<p><a href="https://tcrouzet.com/2023/03/07/le-bikepacking-pour-les-pauvres/">À l'origine de l'idée…</a></p>
 </div>
