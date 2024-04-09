@@ -155,6 +155,7 @@ function callback_manager($callbackQuery){
     //DISAPPEAR
     }elseif($mainAction=="disappear" && $user_flag){
         $msg = "$username, do you really want to quit $chat_title?";
+        $msg .= ' Your history will be deleted. You will reappear if you geolocate again.';
         sendMenuConfirm($chatId,$messageId,$msg,"disappearconfirm_$userid");
     }elseif($mainAction=="disappearconfirm" && $user_flag){
         $msg = "$username, are you really sure? This action is irreversible!!!";
@@ -165,11 +166,11 @@ function callback_manager($callbackQuery){
         }else{
             $msg = "Something wrong happens!";
         }
-        sendMenuUser($chatId,$brut_userid,$messageId,$msg,$username);
+        sendMenuUser($chat,$brut_userid,$messageId,$msg,$username);
 
     //USER
     }elseif($userAction=="user"){
-        sendMenuUser($chatId,$brut_userid,$messageId,"",$username);
+        sendMenuUser($chat,$brut_userid,$messageId,"",$username);
 
     //DEFAULT
     }else{
@@ -214,6 +215,7 @@ function get_chat($chatid){
     $stmt_getchatid->bind_param("i", round($chatid));
     $stmt_getchatid->execute();
     $chat = $stmt_getchatid->get_result()->fetch_assoc() ?? false;
+
     if($chat){
         return($chat);
     }else{
@@ -233,6 +235,19 @@ function purge($chatid,$all=true){
     lmicrotime();
     lecho("Purge done");
     return $mysqli->affected_rows;
+}
+
+function is_active_user($chatid,$userid){
+    global $mysqli;
+
+    $query = "SELECT count(1) FROM `logs` WHERE userid=? AND chatid=?;";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("ii", round($userid), round($chatid));
+    $stmt->execute();
+    $value = $stmt->get_result()->fetch_row()[0];
+    lecho("is_active",$chatid,$userid,$value);
+    $stmt->close();
+    return $value;
 }
 
 function delete_one_user($chatid,$userid){
@@ -615,56 +630,71 @@ function sendMenuAdmin($brut_chatid, $messageId, $message="") {
     //lecho("keyboard:", $response);
 }
 
-function sendMenuUser($brut_chatid,$brut_userid,$messageId,$message="",$username="") {
+function sendMenuUser($chat,$brut_userid,$messageId,$message="",$username="") {
     global $telegram, $fileManager;
 
     $userid=round($brut_userid);
-    $chat = get_chat($brut_chatid);
-    if($path_avatar = $fileManager->avatarExists($brut_chatid,$brut_userid)){
-        $up_avatar_text = 'Reupload avatar';
+    $user_logs = is_active_user($chat['chatid'],$userid);
+
+    if($user_logs == 0){
+
+        //New user
+        $message = $username."\n";
+        $message .= "First, you have to geolocate to start your history on ".format_chatname($chat['chatname']).".\n";
+        $message .= "Click on the Paperclip on the left side of the input field, then click on the Location icon and choose Send my current location.";
+
+        $inlineKeyboard = [
+            [
+                ['text' => ' < ', 'callback_data' => 'goback'],
+            ]
+        ];
+
     }else{
-        $up_avatar_text = 'Upload avatar';
+
+        if($path_avatar = $fileManager->avatarExists($chat['chatid'],$userid)){
+            $up_avatar_text = 'Reupload avatar';
+            $avatar_url = $fileManager->avatarWeb($chat,$brut_userid,true,true); 
+            $avatar_text = "Avatar";
+            $avatar_cmd = "url";
+        }else{
+            $up_avatar_text = 'Upload avatar';
+            $avatar_url = "avatar_$userid"; 
+            $avatar_text = "No avatar";
+            $avatar_cmd = "callback_data";
+        }
+
+        $history_url = $fileManager->userWeb($chat,$brut_userid,true);
+
+        $inlineKeyboard = [
+            [
+                ['text' => ' < ', 'callback_data' => 'goback'],
+            ],[
+                ['text' => $avatar_text, $avatar_cmd => $avatar_url],
+                ['text' => 'History', 'url' => $history_url],
+                ['text' => 'Help', 'url' => $fileManager->help_user()],
+            ],[
+                ['text' => $up_avatar_text, 'callback_data' => "avatar_$userid"],
+                ['text' => 'Disappear', 'callback_data' => "disappear_$userid"],
+            ]
+        ];
+
+        if(empty($message)){
+            $log_msg="log";
+            if($user_logs>1)
+               $log_msg.="s";
+            $message = "$username ($user_logs $log_msg)";
+            if($avatar_text == "No avatar"){
+                $message .= "\nIf you have a profile picture, use \"Upload avatar\" to upload it on Geogram.\n";
+            }
+        }
     }
-
-    $avatar = $fileManager->avatarWeb($chat,$brut_userid,true,true);
-    if($avatar){
-        $avatar_url = $avatar; 
-        $avatar_text = "Avatar";
-        $avatar_cmd = "url";
-    } else {
-        $avatar_url = "avatar_$userid"; 
-        $avatar_text = "No avatar";
-        $avatar_cmd = "callback_data";
-    }
-
-
-    $history_url = $fileManager->userWeb($chat,$brut_userid,true);
-
-    $inlineKeyboard = [
-        [
-            ['text' => ' < ', 'callback_data' => 'goback'],
-        ],[
-            ['text' => $avatar_text, $avatar_cmd => $avatar_url],
-            ['text' => 'History', 'url' => $history_url],
-            ['text' => 'Help', 'url' => $fileManager->help_user()],
-        ],[
-            ['text' => $up_avatar_text, 'callback_data' => "avatar_$userid"],
-            ['text' => 'Disappear', 'callback_data' => "disappear_$userid"],
-        ]
-    ];
 
     $replyMarkup = [
         'inline_keyboard' => $inlineKeyboard
     ];
 
-    if(empty($message)){
-        $message = $username."\nFirst, you have to geolocate to start your history on ".format_chatname($chat['chatname']).".\n";
-        $message .= "If you have a profile picture (or have updated it), use \"Avatar\" to upload or reupload it on Geogram.\n";
-        $message .= 'Selecting "Disappear" will delete all your history from Geogram. You will reappear if you geolocate again.';
-    }
-
     $params = [
-        'chat_id' => $brut_chatid,
+        'chat_id' => $chat['chatid'],
         'message_id' => $messageId,
         'text' => $message,
         'reply_markup' => json_encode($replyMarkup),
