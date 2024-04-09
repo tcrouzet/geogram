@@ -5,6 +5,7 @@
 
 $startTime = microtime(true);
 $logBuffer = [];
+define("DEBUG",false);
 
 ini_set('log_errors', 'On');
 ini_set('error_log', __DIR__ . '/logs/error_php.log');
@@ -171,6 +172,7 @@ if( isset($message["reply_to_message"])){
         ReplyManager($chatid, $message_id, $message, REPLY_TIMEDIFF);
         ReplyManager($chatid, $message_id, $message, REPLY_DESCRIPTION);
         ReplyManager($chatid, $message_id, $message, REPLY_SHARE);
+        ReplyManager($chatid, $message_id, $message, REPLY_FUTURE);
         lexit("Admin Reply unknown");
     }
     

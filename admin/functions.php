@@ -354,7 +354,7 @@ function MyDate($date){
     if(false){
         return frenchDate('l j F', $date);
     }else{
-        return date("l F j, Y", $date);
+        return date("l F j, Y h:i", $date);
     }
 }
 

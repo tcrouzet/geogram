@@ -4,6 +4,7 @@ define("REPLY_TIMEDIFF","Respond to this message with your time difference in ho
 define("REPLY_DESCRIPTION","Respond to this message with a description of your Geogram; otherwise, delete the message.");
 define("REPLY_RENAME","Respond to this message with the new name of your Geogram; otherwise, delete the message.");
 define("REPLY_SHARE","Respond to this message with the invitation link of your group; otherwise, delete the message. Your adventure will be open to everyone. Respond with \"none\" to delete the link.");
+define("REPLY_FUTURE","Respond to this message with the YYYY-MM-DD H:M, date when your adventure will start; otherwise, delete the message.");
 
 function callback_manager($callbackQuery){
     global $telegram;
@@ -88,7 +89,7 @@ function callback_manager($callbackQuery){
     }elseif($userAction=="units" && $admin_flag){
         sendMenuUnits($chatId,$messageId,$chat);
     }elseif($userAction=="unit_timediff" && $admin_flag){
-        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_TIMEDIFF]);
+        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_TIMEDIFF,'disable_notification' => true]);
     }elseif(strpos($userAction, "unit_") !== false && $admin_flag){
         update_unit($chatId,$userAction);
         sendMenuUnits($chatId,$messageId,$chat);
@@ -103,15 +104,15 @@ function callback_manager($callbackQuery){
 
     //DESCRIPTION
     }elseif($userAction=="description" && $admin_flag){
-        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_DESCRIPTION]);
+        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_DESCRIPTION,'disable_notification' => true]);
 
     //SHARE
     }elseif($userAction=="share" && $admin_flag){
-        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_SHARE]);
+        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_SHARE,'disable_notification' => true]);
 
     //RENAME
     }elseif($userAction=="rename" && $admin_flag){
-        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_RENAME]);
+        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_RENAME,'disable_notification' => true]);
 
     //START/STOP
     }elseif($userAction=="start" && $admin_flag){
@@ -123,6 +124,8 @@ function callback_manager($callbackQuery){
         set_start($chatId,0);
         set_stop($chatId, 0);
         sendMenuAdmin($chatId,$messageId,"Adventure started time reset to zero!");
+    }elseif($userAction=="future" && $admin_flag){
+        $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_FUTURE,'disable_notification' => true]);
     }elseif($userAction=="stop" && $admin_flag){
         $msg = "Do you really want to stop and archive ".(string)$chat['chatname']."?";
         $msg .= " Adventures are automatically archived after one week of inactivity.";
@@ -501,7 +504,7 @@ function timestampsToDuration($startTimestamp, $endTimestamp) {
 function ShortLivedMessage($id,$msg,$timeout=2){
     global $telegram;
 
-    $response = $telegram->sendMessage(['chat_id' => $id,'text' => $msg]);
+    $response = $telegram->sendMessage(['chat_id' => $id,'text' => $msg,'disable_notification' => true]);
     virtual_finish();
     //lecho($response);
 
@@ -827,7 +830,8 @@ function sendMenuStarted($brut_chatid,$messageId,$chat) {
         [
             ['text' => ' < ', 'callback_data' => 'goback'],
         ],[
-            ['text' => 'Restart', 'callback_data' => 'start'],
+            ['text' => 'Now', 'callback_data' => 'start'],
+            ['text' => 'Future', 'callback_data' => 'future'],
             ['text' => 'Reset', 'callback_data' => 'start0'],
         ]
     ];
@@ -839,7 +843,7 @@ function sendMenuStarted($brut_chatid,$messageId,$chat) {
     $params = [
         'chat_id' => $brut_chatid,
         'message_id' => $messageId,
-        'text' => $chat['chatname']." starting date: $date. You can restart now or reset to zero (for open adventures with no timing).",
+        'text' => $chat['chatname']." starting date: $date. You can restart now, program a future start or reset to zero (for open adventures with no timing).",
         'reply_markup' => json_encode($replyMarkup),
         'disable_notification' => true
     ];    
@@ -872,6 +876,9 @@ function sendMenuInfo($brut_chatid,$messageId,$brut_userid) {
         $dateTime = new DateTime(@$chat['last_update']);
         $updated = $dateTime->format('Y-m-d H:m');
         $message .= "Updated: " .$updated."\n";
+        if(@$chat['start']>0){
+            $message .= "Start: " .date('Y-m-d H:i', @$chat['start'])."\n";
+        }
 
         $geogram_url = $fileManager->chatWeb($chat);
 
@@ -888,9 +895,15 @@ function sendMenuInfo($brut_chatid,$messageId,$brut_userid) {
         }
 
         if($chat['link']){
-            $message .= "Public invitation link: ".$chat['link'];
+            $message .= "Public invitation link: ".$chat['link']."\n";
         }else{
-            $message .= "Private group";
+            $message .= "Private group\n";
+        }
+
+        if($chat['menuid']){
+            $message .= "Menuid: ".$chat['menuid']."\n";
+        }else{
+            $message .= "/menu to display the menu\n";
         }
 
         $chatphoto = $fileManager->chatphoto($brut_chatid);
@@ -983,7 +996,7 @@ function ChatMemberUpdate($update){
         $chatid = $update['chat']['id'];
         $chat_name = get_chatitle($update);
         $msg = "Hello, I'm the GeoBikepacking_bot. You need to give me admistrator right to manage $chat_name for you.";
-        $telegram->sendMessage(['chat_id' => $chatid,'text' => $msg]);
+        $telegram->sendMessage(['chat_id' => $chatid,'text' => $msg,'disable_notification' => true]);
         lexit("MemberOK");
 
     }elseif ($bot_status == 'administrator' && $bot_name=="GeoBikepacking_bot") {
@@ -1040,7 +1053,13 @@ function ReplyManager($chatid, $message_id, $reply, $case_descripion){
                 update_link($chatid,$reply["text"]);
                 $echo = "Link updated!";
                 break;
-        }
+            case REPLY_FUTURE:
+                $timestamp = strtotime($reply["text"]);
+                lecho("timestamp",$timestamp);
+                set_start($chatid, $timestamp);
+                $echo = "Start date updated!";
+                break;
+            }
 
         $response = $telegram->deleteMessage(['chat_id' => $chatid, 'message_id' => $reply["reply_to_message"]["message_id"]]);
         $response = $telegram->deleteMessage(['chat_id' => $chatid, 'message_id' => $message_id]);

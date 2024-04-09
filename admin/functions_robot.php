@@ -500,7 +500,7 @@ function lecho(){
 
 function flushLogBuffer() {
     global $logBuffer;
-    if (!empty($logBuffer)) {
+    if (!empty($logBuffer) && DEBUG) {
         $logContent = trim(implode('', $logBuffer))."\n";
         file_put_contents('logs/robot.log', $logContent, FILE_APPEND);
     }
