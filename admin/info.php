@@ -6,7 +6,7 @@ echo '<div id="containerText" style="margin-top:1rem;text-align:center">';
 
 echo '<a href="/'.$chatObj["chatname"].'">';
 if(file_exists($fileManager->chatphoto($chatObj['chatid']))){
-    echo '<div class="round roundmax" style="background-image: url(\'' .$fileManager->chatphotoWeb($chatObj,true). '\')"></div>';
+    echo '<div class="round roundmax" style="background-image: url(\'' .$fileManager->chatphotoWeb($chatObj,true,false). '\')"></div>';
 }else{
     echo '<div class="round roundmax" style="background-color:'.getDarkColorCode($chatObj["chatid"]).'"><div class="text">'.format_chatname($chatObj["chatname"]).'</div></div>';
 }
