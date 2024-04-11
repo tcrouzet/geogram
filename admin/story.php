@@ -36,7 +36,10 @@ if($result){
         }
 
         $head="<p>".MyDateFormat( $row["timestamp"], true ). ' <b><a href="/'.$group.'/user/'.$row["userid"].'">'.fName($row["username"])."</a></b>";
-        if($row["gpx_point"]>-1) $head.=" ".meters_to_distance($row["km"], $row );
+        if($row["gpx_point"]>-1)
+            $head.=" ".meters_to_distance($row["km"], $row )."/".meters_to_dev($row["dev"], $row );
+        else
+        $head.=" Off route";
         $head.="</p>";
 
         if(empty($oldhead)){
@@ -67,7 +70,7 @@ if($result){
                 //Text
                 $com.=" ".$values[$index];
             }elseif (substr($key, 0, 1)=="P"){
-                $pictures.='<img class="photo" src="/userimg/'.$values[$index].'"></br>';
+                $pictures.='<img class="photo" src="'.$fileManager->relative($values[$index]).'"/></br>';
             }elseif ($key=="weather"){
                 $city .= " ".weather_string(json_decode($values[$index]));
             }

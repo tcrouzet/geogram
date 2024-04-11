@@ -34,34 +34,27 @@ if($group=="help"){
 }elseif($group=="archives"){
     $archives="archives";
     require("admin/une.php");
+
 }elseif(!empty($group)){
-    $query="SELECT * FROM `chats` WHERE chatname = ?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("s", $group);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if($result){
-        $chatObj = $result->fetch_assoc();
+    $chatObj = get_chat_by_name($group);
+    if($chatObj){
+        $group_id = $chatObj["chatid"];
+        $start = $chatObj["start"];
 
-        if ($result && !empty($chatObj["chatid"])) {
-            $group_id = $chatObj["chatid"];
-            $start = $chatObj["start"];
-
-            if($page=="story") {
-                require("admin/story.php");
-            }elseif($page=="info") {
-                require("admin/info.php");
-            }else{
-                if(empty($start) || $start>time()){
-                    $start = 0;
-                }
-                require("admin/map.php");
-            }        
-
+        if($page=="story") {
+            require("admin/story.php");
+        }elseif($page=="info") {
+            require("admin/info.php");
         }else{
-            $group="404";
-            require("admin/404_page.php");
-        }
+            if(empty($start) || $start>time()){
+                $start = 0;
+            }
+            require("admin/map.php");
+        }        
+
+    }else{
+        $group="404";
+        require("admin/404_page.php");
     }
 
 }else{

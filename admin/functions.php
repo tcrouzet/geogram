@@ -527,5 +527,19 @@ function start_date_text(){
     
 }
 
+function get_chat_by_name($group){
+    global $mysqli;
+
+    $query="SELECT * FROM `chats` WHERE chatname = ?";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("s", $group);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result){
+        return $result->fetch_assoc();
+    }else{
+        return false;
+    }
+}
 
 ?>

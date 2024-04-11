@@ -213,19 +213,6 @@ function insert_chat($chatid,$chat_name){
         return false;
 }
 
-function get_chat($chatid){
-    global $stmt_getchatid;
-    $stmt_getchatid->bind_param("i", round($chatid));
-    $stmt_getchatid->execute();
-    $chat = $stmt_getchatid->get_result()->fetch_assoc() ?? false;
-
-    if($chat){
-        return($chat);
-    }else{
-        return false;
-    }
-}
-
 function purge($chatid,$all=true){
     global $mysqli;
     if($all){
@@ -1011,6 +998,19 @@ function ChatMemberUpdate($update){
     }
 
     lexit("ChatMember Unknown");
+}
+
+function get_chat($chatid){
+    global $stmt_getchatid;    
+    $stmt_getchatid->bind_param("i", round($chatid));
+    $stmt_getchatid->execute();
+    $chat = $stmt_getchatid->get_result()->fetch_assoc() ?? false;
+
+    if($chat){
+        return($chat);
+    }else{
+        return false;
+    }
 }
 
 function NewChatID($update){
