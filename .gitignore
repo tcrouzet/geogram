@@ -7,3 +7,5 @@ logs/*
 userimg/*
 !userimg/.gitkeep
 bikepacking.sql
+perso
+_*

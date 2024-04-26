@@ -205,9 +205,9 @@ function html_header($pagename=""){
 
     if( (strpos( $pagename , " Map") !== false ) ){
         echo '<meta http-equiv="refresh" content="600">';
-        echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" />."\n"';
-        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js"></script>'."\n";
-        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js"></script>'."\n";
+        //https://cdnjs.com/libraries/leaflet
+        echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
     }
 
     echo "\n<link rel='stylesheet' id='style-css' href='/geogram.css?$version' type='text/css' media='screen' />\n";

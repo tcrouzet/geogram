@@ -97,10 +97,12 @@ if( isset($message["text"]) && $message["text"] == "/menu"){
     lexit("Menu");
 }
 
+
 //STOPED
 if($chat_obj['stop']>0 && $chat_obj['stop']<time()){
     lexit("stoped");
 }
+
 
 //LOCATION
 if(isset($message["location"])){
@@ -175,7 +177,6 @@ if( isset($message["reply_to_message"])){
         ReplyManager($chatid, $message_id, $message, REPLY_FUTURE);
         lexit("Admin Reply unknown");
     }
-    
 }
 
 
@@ -190,7 +191,6 @@ if( isset($message["text"])){
     }
     todelete($chat_obj,$message_id);
     lexit("text");
-
 }
 
 
@@ -227,7 +227,7 @@ if( isset($message["photo"])){
 
 
 //CHAT PROFILE
-if(isset($message["new_chat_photo"])){
+if(isset($message["new_chat_photo"]) && is_admin($chat_obj, $userid)){
 
     lecho("NewChatPhoto");
     $max_index = max(array_keys($message["new_chat_photo"]));
@@ -252,7 +252,7 @@ if(isset($message["new_chat_photo"])){
 
 
 //FILE
-if(isset($message["document"])){
+if(isset($message["document"]) && is_admin($chat_obj, $userid)){
 
     if (substr($message["document"]["file_name"], -4) === ".gpx") {
         //GPX OK
