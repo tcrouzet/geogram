@@ -117,13 +117,14 @@ function callback_manager($callbackQuery){
     //START/STOP
     }elseif($userAction=="start" && $admin_flag){
         set_start($chatId,time());
+        set_stop($chatId, 0);
         sendMenuAdmin($chatId,$messageId,"Adventure started! Time is counting…");
     }elseif($userAction=="started" && $admin_flag){
         sendMenuStarted($chatId,$messageId,$chat);
-    }elseif($userAction=="start0" && $admin_flag){
+    }elseif($userAction=="reset" && $admin_flag){
         set_start($chatId,0);
         set_stop($chatId, 0);
-        sendMenuAdmin($chatId,$messageId,"Adventure started time reset to zero!");
+        sendMenuAdmin($chatId,$messageId,"Adventure started/ended time reset to zero!");
     }elseif($userAction=="future" && $admin_flag){
         $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_FUTURE,'disable_notification' => true]);
     }elseif($userAction=="stop" && $admin_flag){
@@ -202,14 +203,15 @@ function is_admin($chat, $userid){
 }
 
 function insert_chat($chatid,$chat_name){
-    global $mysqli;
+    global $mysqli,$fileManager;
 
     $query = "INSERT INTO `chats` (chatid, chatname) VALUES (?, ?) ON DUPLICATE KEY UPDATE chatname=?";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('iss', $chatid, $chat_name, $chat_name);
-    if($stmt->execute())
+    if($stmt->execute()){
+        $fileManager->make_chat_dir($chatid);
         return true;
-    else
+    }else
         return false;
 }
 
@@ -819,7 +821,7 @@ function sendMenuStarted($brut_chatid,$messageId,$chat) {
         ],[
             ['text' => 'Now', 'callback_data' => 'start'],
             ['text' => 'Future', 'callback_data' => 'future'],
-            ['text' => 'Reset', 'callback_data' => 'start0'],
+            ['text' => 'Reset', 'callback_data' => 'reset'],
         ]
     ];
 

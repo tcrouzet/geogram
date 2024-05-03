@@ -46,6 +46,7 @@ if( isset($update["my_chat_member"])){
     ChatMemberUpdate($update["my_chat_member"]);
 }
 
+
 if( isset($update["message"])){
     $message = $update["message"];
 }elseif( isset($update["edited_message"])) {
@@ -61,9 +62,11 @@ if( isset($message["edit_date"]) ){
     $timestamp = $message["date"];
 }
 
+
 //chatid
 $brut_chatid = $message["chat"]["id"];
 $chatid = round($brut_chatid);
+//lecho("chatid",$chatid);
 $chat_title = get_chatitle($message);
 if ( empty($chat_title) ){
     lexit("empty chat_title");
@@ -79,6 +82,16 @@ if( isset($message["migrate_to_chat_id"])){
 }
 
 $chat_obj = get_chat($chatid);
+if(empty($chat_obj)){
+    ShortLivedMessage($brut_chatid,"Geogram don't know this group: $chatid. I'm creating a new one.");
+    if (insert_chat($chatid, $chat_title)){
+        $chat_obj = get_chat($chatid);
+    }else{
+        ShortLivedMessage($brut_chatid,"Can't create a new one, contact Geogram admin.");
+        lexit("No $chatid");
+    }
+}
+//lecho($chat_obj);
 
 //userid
 $brut_userid=get_userid($message["from"]);
@@ -100,6 +113,7 @@ if( isset($message["text"]) && $message["text"] == "/menu"){
 
 //STOPED
 if($chat_obj['stop']>0 && $chat_obj['stop']<time()){
+    ShortLivedMessage($brut_chatid,"This group was stopped for Geogram. Your message will not be processed. Ask admin to restart group.");
     lexit("stoped");
 }
 
@@ -107,7 +121,7 @@ if($chat_obj['stop']>0 && $chat_obj['stop']<time()){
 //LOCATION
 if(isset($message["location"])){
 
-    //lecho("Location find ",$userid);
+    lecho("Location find ",$userid);
 
     $username = get_username($message["from"]); 
     if(empty($username)){
@@ -243,6 +257,8 @@ if(isset($message["new_chat_photo"]) && is_admin($chat_obj, $userid)){
             lecho("Chat Photo OK ".$photo);
             set_photo($chatid);
         }
+    }else{
+        ShortLivedMessage($brut_chatid,"Can't download chat profile - error:201");
     }
 
     todelete($chat_obj,$message_id);

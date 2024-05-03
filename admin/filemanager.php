@@ -42,6 +42,7 @@ class FileManager {
                 lexit("make_userimg_dir BUG");
             }
         }
+        return true;
     }
 
     public function rename_chat_dir($oldid,$newid){
