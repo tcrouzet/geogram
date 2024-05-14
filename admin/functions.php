@@ -515,13 +515,13 @@ function start_date_text(){
     global $start;
     
     if($start==0){
-        echo "<p>Individual Time Trial mode (go when you want).</p>";
+        echo '<p style="text-align:center;">Individual Time Trial mode (go when you want).</p>';
     }elseif($start>time()){
-        echo "<p>The adventure will start the ".MyDate( $start ).".</p>";
+        echo '<p style="text-align:center;">The adventure will start the '.MyDate( $start ).".</p>";
         //echo "<p>La randonnée commencera le ".frenchDate('l j F Y à H\hi', $start).". En attendant, messages d'entraînement.</p>";
         $start=0;
     }else{
-        echo "<p>The adventure has started the ".MyDate( $start )."</p>";
+        echo '<p style="text-align:center;">The adventure has started the '.MyDate( $start )."</p>";
         //echo "<p>La randonné a commencé le ".MyDate('l j F Y à H\hi', $start)."</p>";
     }
     

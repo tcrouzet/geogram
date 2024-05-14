@@ -185,7 +185,7 @@ class FileManager {
         $i = 0;
         $indice = ".png";
         while(file_exists($imgpath_root . $indice)){
-            echo("Exist<br/>");
+            lecho("Exist $i");
             $i++;
             $indice = "_$i.png";
         }
@@ -197,7 +197,7 @@ class FileManager {
 
         return [
             'full_path' => $imgpath_root . $indice,
-            'panme' => $timestamp.$pname,
+            'pname' => $timestamp.$pname,
             'relative' => $this->relative($imgpath_root . $indice)
         ];
     }

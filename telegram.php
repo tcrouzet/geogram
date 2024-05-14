@@ -218,12 +218,14 @@ if( isset($message["photo"])){
     if($file["ok"]){
 
         $photo = $fileManager->chatimg($chatid,$userid,$timestamp);
+        lecho($photo);
         $telegram->downloadFile($file['result']['file_path'], $photo['full_path']);
 
         if(file_exists($photo['full_path'])){
             lecho("Photo OK ".$photo['full_path']);
 
             $query = "UPDATE logs SET comment = JSON_SET(comment, '$.P".$photo['pname']."', '".$photo['relative']."') WHERE chatid = $chatid AND userid = $userid AND timestamp = (SELECT MAX(timestamp) FROM logs WHERE chatid = $chatid AND userid = $userid)";
+
             //dump($query);
             $result = $mysqli->query($query);
             if(!$result){

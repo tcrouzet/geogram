@@ -10,6 +10,10 @@ echo '<h1>'.format_chatname($group).'</h1>';
 
 start_date_text();
 
+echo('<p style="text-align:center;"><a href="?photos=1">Photos only</a></p>');
+
+$photos = $_GET['photos'] ?? '0';
+
 $query="SELECT * FROM logs WHERE chatid='$group_id' AND timestamp>$start ORDER BY timestamp ASC;";
 $result = $mysqli->query($query);
 if($result){
@@ -26,7 +30,7 @@ if($result){
             //New day
             if(!empty($com)) $oldhead=str_replace("</p>"," ".cleanCom($com)."</p>",$oldhead);
             if(!empty($city)) $oldhead=str_replace("</p>","$city</p>",$oldhead);
-            echo $oldhead;
+            if(!$photos) echo $oldhead;
             echo $pictures;
             $oldhead="";
             $pictures="";
@@ -51,7 +55,7 @@ if($result){
             //if(!empty($com)) $oldhead=str_replace("</p>"," «".$space1.$com.$space1."»</p>",$oldhead);
             if(!empty($com)) $oldhead=str_replace("</p>"," </br>".cleanCom($com)."</p>",$oldhead);
             if(!empty($city)) $oldhead=str_replace("</p>","</br>$city</p>",$oldhead);
-            echo $oldhead;
+            if(!$photos) echo $oldhead;
             echo $pictures;
             $oldhead=$head;
             $pictures="";
@@ -80,7 +84,7 @@ if($result){
     }
     if(!empty($com)) $oldhead=str_replace("</p>"," </br>".cleanCom($com)."</p>",$oldhead);
     if(!empty($city)) $oldhead=str_replace("</p>","</br>$city</p>",$oldhead);
-    echo $oldhead;
+    if(!$photos) echo $oldhead;
     echo $pictures;
 }
 ?>

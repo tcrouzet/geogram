@@ -95,8 +95,16 @@ if($page=="user" && isset($id)){
                             $stmt_total = $mysqli->prepare($query);
                             $stmt_total->bind_param("i", $group_id);
                             $stmt_total->execute();
-                            $total = $stmt_total->get_result()->fetch_assoc()['km'];
-                            $total_dev = $stmt_total->get_result()->fetch_assoc()['dev'];
+                            $iresult = $stmt_total->get_result();
+
+                            if ($iresult->num_rows > 0) {
+                                $irow = $iresult->fetch_assoc();
+                                $total = $irow['km'];
+                                $total_dev = $irow['dev'];
+                            } else {
+                                $total = 0;
+                                $total_dev = 0;
+                            }
                         }
                         $etape+=$total;
                         $etape_dev+=$total_dev;

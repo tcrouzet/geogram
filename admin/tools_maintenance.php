@@ -23,20 +23,24 @@ extract($_GET);
 // echo("$chatid<br/>");
 // exit($chatid);
 
-//GEOJSON
-$query = "SELECT * FROM `chats`";
-$stmt_query = $mysqli->prepare($query);
-$stmt_query->execute();
-$result = $stmt_query->get_result();
-if($result){
 
-  while($chat = $result->fetch_assoc()) {
-    echo($chat["chatid"]."<br/>");
-    gpx_geojson($chat["chatid"]);
-    
+
+//GEOJSON
+if(false){
+  $query = "SELECT * FROM `chats`";
+  $stmt_query = $mysqli->prepare($query);
+  $stmt_query->execute();
+  $result = $stmt_query->get_result();
+  if($result){
+
+    while($chat = $result->fetch_assoc()) {
+      echo($chat["chatid"]."<br/>");
+      gpx_geojson($chat["chatid"]);
+      
+    }
   }
+  exit("done");
 }
-exit("done");
 
 //CORRECT NEW
 if(true){
