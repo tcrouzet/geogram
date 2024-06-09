@@ -5,7 +5,7 @@
 
 $startTime = microtime(true);
 $logBuffer = [];
-define("DEBUG",false);
+define("DEBUG",true);
 
 ini_set('log_errors', 'On');
 ini_set('error_log', __DIR__ . '/logs/error_php.log');
@@ -201,7 +201,7 @@ if( isset($message["text"])){
     $query = "UPDATE logs SET comment = JSON_SET(comment, '$.T".$timestamp."', '".$message["text"]."') WHERE chatid = $chatid AND userid = $userid AND timestamp = (SELECT MAX(timestamp) FROM logs WHERE chatid = $chatid AND userid = $userid)";
     $result = $mysqli->query($query);
     if(!$result){
-        lecho("Error sql 2 - no log for the user\n");
+        lecho("Error sql 2 - no log for the user");
     }
     todelete($chat_obj,$message_id);
     lexit("text");
@@ -210,12 +210,14 @@ if( isset($message["text"])){
 
 //PHOTO
 if( isset($message["photo"])){
+    lecho("photo");
 
     $max_index = max(array_keys($message["photo"]));
     $file_id = $message["photo"][$max_index]["file_id"];
     $file = $telegram->getFile($file_id);
 
     if($file["ok"]){
+        lecho("photo OK");
 
         $photo = $fileManager->chatimg($chatid,$userid,$timestamp);
         lecho($photo);

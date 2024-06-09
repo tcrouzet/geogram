@@ -196,7 +196,7 @@ class FileManager {
             $pname = "";
 
         return [
-            'full_path' => $imgpath_root . $indice,
+            'full_path' => "/" . ltrim($imgpath_root,"/") . $indice,
             'pname' => $timestamp.$pname,
             'relative' => $this->relative($imgpath_root . $indice)
         ];
