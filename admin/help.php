@@ -13,7 +13,7 @@ It enables friends and fans to experience the adventure through map tracking, ph
 
 <h2>Follow an adventure</h2>
 <ol>
-    <li><a href="/">Geogram's homepage</a> lists ongoing adventures (<a href="/archives">Archives</a> past adventures).</li>
+    <li><a href="/">Geogram's homepage</a> lists ongoing adventures (<a href="archives">Archives</a> past adventures).</li>
     <li>Once an adventure is selected, <a href="727bikepacking">for example 727</a>, a map indicates the adventurers' last known position, identified by their username if defined, otherwise by their name/first name.</li>
     <li>Before the adventure starts, the adventurers may be scattered across the country. Zoom out to find them.</li>
     <li>When clicking on a tag, the adventurer's name is highlighted in the list (and vice versa).</li>
@@ -22,7 +22,7 @@ It enables friends and fans to experience the adventure through map tracking, ph
     <li>If an adventurer has posted a photo or a message following their last geolocation, icons indicate this in the list.</li>
     <li>In the list, clicking on the + to the left of the adventurer's name takes you to their history (<a href="/727bikepacking/user/6254152278">example</a>).
         You can discover their geolocations, messages, and photos in reverse chronological order. Clicking on an icon has the same effect.</li>
-    <li>An adventure story is generated from the published information (<a href="/727bikepacking/story">example</a>),
+    <li>An adventure story is generated from the published information (<a href="727bikepacking/story">example</a>),
         supplemented with automatically downloaded data (name of paths, streets, cities, weather, etc.).</li>
     <li>On iPhone, <a href="https://www.icloud.com/shortcuts/783e3c4306e04626976b5c59da2e9987">this link creates a quick access shortcut</a> to Geogram.
     Once the shortcut is created, it can be edited by clicking on [...]. Clicking on Geogram adds the shortcut to the home screen.
@@ -66,7 +66,7 @@ It enables friends and fans to experience the adventure through map tracking, ph
     <li>Associate an image with the group. It will identify the group on the <a href="/">homepage</a>.</li>
     <li>Optional, but far better. Post the GPX track of the adventure in the group. It will be displayed on the map.
         Repost the GPX to update the route. No more than 30,000 points in the track after optimisation (more than 3 000km).</li>
-    <li>To create en open and persistent adventure, like <a href="https://geogram.tcrouzet.com/727itt">727itt</a>, share publicly the Telegram group invite link.
+    <li>To create en open and persistent adventure, like <a href="727itt">727itt</a>, share publicly the Telegram group invite link.
         The adventurers will disappear after one week of inactivity.
         This adventure will never be archived.
     </li>
