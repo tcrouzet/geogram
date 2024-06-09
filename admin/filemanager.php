@@ -7,7 +7,7 @@ class FileManager {
 
     public function __construct() {
         $this->absolute_path = realpath(__DIR__ . '/..')."/";
-        $this->userimg_dir = "/userimg/";
+        $this->userimg_dir = "userimg/";
         $this->userimg =  $this->absolute_path . ltrim($this->userimg_dir,"/");
     }
 
@@ -204,9 +204,9 @@ class FileManager {
 
     public function relative($path){
         $path = str_replace($this->absolute_path,"",$path);
-        $path = "/" . ltrim($path,"/");
-        if (substr($path, 0, 9) !== $this->userimg_dir) {
-            $path = "/userimg" . $path;
+        $path = ltrim($path,"/");
+        if (substr($path, 0, 8) !== $this->userimg_dir) {
+            $path = "userimg" . "/" . $path;
         }
         return $path;
     }

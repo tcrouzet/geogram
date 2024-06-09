@@ -14,13 +14,25 @@ define('SPACE3', '&nbsp;&nbsp;&nbsp;');
 init();
 
 //Analyse URL
-$parsed = parse_url($_SERVER["REQUEST_URI"]);
-//dump($parsed);
-$just_url=$parsed['host'].$parsed['path'];
-list($group,$page,$id)=explode("/",trim($just_url,"/"));
+$host = $_SERVER['HTTP_HOST'];
+$uri = $_SERVER['REQUEST_URI'];
+$scheme = 'http';
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    $scheme = 'https';
+}
+$url = $scheme . "://" . $host . $uri;
+
+$url = str_replace(BASE_URL,"",$url);
+$parsed = parse_url($url);
+$path = trim($parsed['path'], "/");
+$parts = explode("/", $path);
+$parts = array_pad($parts, 3, '');
+//dump($parts);exit();
+list($group,$page,$id)=$parts;
 $group_id = "";
 $start = 0;
 $chatObj = null;
+
 $fileManager = new FileManager();
 
 //dump($group);

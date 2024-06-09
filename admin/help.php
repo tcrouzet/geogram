@@ -11,12 +11,10 @@ baseline("help");
 It helps adventurers to locate themselves in relation to each other.
 It enables friends and fans to experience the adventure through map tracking, photos, and comments posted by adventurers.</p>
 
-<a href="/727bikepacking/user/6254152278"><img src="https://tcrouzet.com/images_tc/2023/04/geogram03.jpg" /></a>
-
 <h2>Follow an adventure</h2>
 <ol>
     <li><a href="/">Geogram's homepage</a> lists ongoing adventures (<a href="/archives">Archives</a> past adventures).</li>
-    <li>Once an adventure is selected, <a href="/727bikepacking">for example 727</a>, a map indicates the adventurers' last known position, identified by their username if defined, otherwise by their name/first name.</li>
+    <li>Once an adventure is selected, <a href="727bikepacking">for example 727</a>, a map indicates the adventurers' last known position, identified by their username if defined, otherwise by their name/first name.</li>
     <li>Before the adventure starts, the adventurers may be scattered across the country. Zoom out to find them.</li>
     <li>When clicking on a tag, the adventurer's name is highlighted in the list (and vice versa).</li>
     <li>For each adventurer, the distance traveled since the start and the elevation climbed are displayed
@@ -77,7 +75,7 @@ It enables friends and fans to experience the adventure through map tracking, ph
     <li>Start: will start the timer of the adventure.
         Without this step, it is impossible to calculate the time spent on the route.</li>
     <li>Archive: stops the adventure. No more messages will be considered. The GPX database for geolocalisation is deleted.</li>
-    <li>Description: describes the adventure on the <a href="/">homepage</a>.</li>
+    <li>Description: describes the adventure on the <a href="">homepage</a>.</li>
     <li>Mode: define when the messages are deleted or not.</li>
     <li>Purge: delete all messages (usefull before the start of the adventure, and after a testing period).</li>
     <li>Delete: delete every thing. The same result occur when you unsubscribe GeoBikepacking_bot.</li>

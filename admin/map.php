@@ -19,7 +19,7 @@ menu();
 		}).addTo(mymap);
 
         var startIcon = L.icon({
-            iconUrl: '/images/start.png',
+            iconUrl: 'images/start.png',
             iconSize: [30, 30],
             iconAnchor: [15, 15],
         });
@@ -229,15 +229,15 @@ if($page=="user" && isset($id)){
             if($i %2 == 1) $color=' line'; else $color=' lineW';
             $sidebar.='<tr class="lh '.$color.'" id="tr'.$i.'">';
             $sidebar.='<td></td>';
-            $url='<a href="/'.$group.'/user/'.$row["userid"].'">';
+            $url='<a href="'.$group.'/user/'.$row["userid"].'">';
             $sidebar.='<td class="plus">'.$url.'+</a></td>';
 
             $symbols="";
             if(strpos($row["comment"], "P167") !== false){
-                $symbols.='<img class="symb" data-symb="'.$row["userid"].'" src="/images/photo.svg">';
+                $symbols.='<img class="symb" data-symb="'.$row["userid"].'" src="images/photo.svg">';
             }
             if(strpos($row["comment"], "T167") !== false){
-                $symbols.='<img class="symb" data-symb="'.$row["userid"].'" src="/images/text.svg">';
+                $symbols.='<img class="symb" data-symb="'.$row["userid"].'" src="images/text.svg">';
             }
 
 

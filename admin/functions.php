@@ -164,6 +164,7 @@ function html_header($pagename=""){
     echo '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">';
     echo '<head profile="http://gmpg.org/xfn/11">';
     echo '<title>Geogram - '.$pagename.'</title>';
+    echo '<base href="' . BASE_URL. '">';
     echo '<link rel="shortcut icon" href="/favicon.ico" >';
     echo '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">';
     echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
@@ -210,7 +211,7 @@ function html_header($pagename=""){
         echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
     }
 
-    echo "\n<link rel='stylesheet' id='style-css' href='/geogram.css?$version' type='text/css' media='screen' />\n";
+    echo "\n<link rel='stylesheet' id='style-css' href='geogram.css?$version' type='text/css' media='screen' />\n";
 
     echo '</head>';
     echo '<body>';
@@ -221,9 +222,9 @@ function menu(){
     global $group,$group_id;
 
     if(!empty($group_id)){
-        echo '<div id="menu"><div id="menu_left"><a href="/'.$group.'" class="first">'.format_chatname($group).'</a><a href="/'.$group.'/story" class="last">Story</a><a href="/'.$group.'/info" class="last">Info'.SPACE1.'</a></div>';
+        echo '<div id="menu"><div id="menu_left"><a href="'.$group.'" class="first">'.format_chatname($group).'</a><a href="'.$group.'/story" class="last">Story</a><a href="'.$group.'/info" class="last">Info'.SPACE1.'</a></div>';
     }else{
-        echo '<div id="menu"><div id="menu_center"><a href="/help#add" class="center">Add your own adventure!!!</a></div>';
+        echo '<div id="menu"><div id="menu_center"><a href="help#add" class="center">Add your own adventure!!!</a></div>';
     }
     echo menu_button();
     echo '</div>';
@@ -245,13 +246,13 @@ function menu_button(){
 
     $msg='
     <div id="m">
-    <button class="button" onclick="window.location.href=\'/\'">&#9776;</button>
+    <button class="button" onclick="window.location.href=\'\'">&#9776;</button>
     <ul>
-      <li'.$home.'><a href="/">Adventures</a></li>
-      <li'.$archives.'><a href="/archives">Archives</a></li>
-      <li'.$help.'><a href="/help">Features</a></li>
-      <li'.$news.'><a href="/news_fr">News</a></li>
-      <li'.$contact.'><a href="/contact">About/Contact</a></li>
+      <li'.$home.'><a href="">Adventures</a></li>
+      <li'.$archives.'><a href="archives">Archives</a></li>
+      <li'.$help.'><a href="help">Features</a></li>
+      <li'.$news.'><a href="news_fr">News</a></li>
+      <li'.$contact.'><a href="contact">About/Contact</a></li>
       <li class="donate"><a href="https://www.paypal.com/donate/?business=MCZTJGYPGXXCW&no_recurring=0&currency_code=EUR">DONATE</a></li>
     </ul>
   </div>';

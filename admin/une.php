@@ -46,7 +46,7 @@ if($result){
 
         echo '<div class="une_chat">';
 
-        echo '<a href="/'.$row["chatname"].'">';
+        echo '<a href="'.$row["chatname"].'">';
         if(file_exists($fileManager->chatphoto($chatObj['chatid']))){
             echo '<div class="round" style="background-image: url(\'' .$fileManager->chatphotoWeb($chatObj,true, false). '\')"></div>';
         }else{
@@ -56,7 +56,7 @@ if($result){
 
 
         echo '<div class="text">';
-        echo '<h3><a href="/'.$row["chatname"].'">'.format_chatname($row["chatname"]).'</a></h3>';
+        echo '<h3><a href="'.$row["chatname"].'">'.format_chatname($row["chatname"]).'</a></h3>';
         $desc="";
         if(!empty($row["description"])) $desc.=$row["description"]."<br/>";
         if($row["total_km"]>0) $desc.=meters_to_distance( $row["total_km"], $chatObj );
@@ -71,7 +71,7 @@ if($result){
             echo '<p>Ended</p>';
         }
 
-        echo '<p><a href="/'.$row["chatname"].'/user/'.$row["userid"].'">Last update: '.MyDateFormat( $row["timestamp"] ).'</a></p>';
+        echo '<p><a href="'.$row["chatname"].'/user/'.$row["userid"].'">Last update: '.MyDateFormat( $row["timestamp"] ).'</a></p>';
 
 
         if(!empty($row["link"]))

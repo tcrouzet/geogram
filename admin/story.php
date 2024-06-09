@@ -10,7 +10,7 @@ echo '<h1>'.format_chatname($group).'</h1>';
 
 start_date_text();
 
-echo('<p style="text-align:center;"><a href="?photos=1">Photos only</a></p>');
+echo('<p style="text-align:center;"><a href="'.$group.'/story?photos=1">Photos only</a></p>');
 
 $photos = $_GET['photos'] ?? '0';
 
@@ -19,7 +19,7 @@ $result = $mysqli->query($query);
 if($result){
 
     $day="";
-    $oldthead="";
+    $oldhead="";
     $pictures="";
     $com="";
     $city="";

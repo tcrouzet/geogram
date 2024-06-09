@@ -4,7 +4,7 @@ menu();
 
 echo '<div id="containerText" style="margin-top:1rem;text-align:center">';
 
-echo '<a href="/'.$chatObj["chatname"].'">';
+echo '<a href="'.$chatObj["chatname"].'">';
 if(file_exists($fileManager->chatphoto($chatObj['chatid']))){
     echo '<div class="round roundmax" style="background-image: url(\'' .$fileManager->chatphotoWeb($chatObj,true,false). '\')"></div>';
 }else{
@@ -12,7 +12,7 @@ if(file_exists($fileManager->chatphoto($chatObj['chatid']))){
 }
 echo '</a>';
 
-echo '<h1><a href="/'.$group.'/">'. format_chatname($group).'</a></h1>';
+echo '<h1><a href="'.$group.'/">'. format_chatname($group).'</a></h1>';
 
 $desc="";
 if(!empty($chatObj["description"])) $desc.=$chatObj["description"]."<br/>";
@@ -35,10 +35,10 @@ if ($nb==1){
 
 if( $chatObj["stop"]>0 ){
 
-    echo '<p><a href="/'.$group.'/">This adventure has ended.</a></p>';
+    echo '<p><a href="'.$group.'/">This adventure has ended.</a></p>';
 
 }else{
-    echo '<p><a href="/'.$group.'/">Follow the adventure >>></a></p>';
+    echo '<p><a href="'.$group.'/">Follow the adventure >>></a></p>';
 
     if( !empty($chatObj["link"]) ) {
         echo '<p><a href="'.$chatObj["link"].'/">Join the Telegram group and geolocate for the first time >>></a></p>';

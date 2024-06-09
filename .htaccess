@@ -1,15 +1,21 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
+
+	# Forbidden directories
 	RewriteRule ^admin/ - [F]
 	RewriteRule ^vendor/ - [F]
 	RewriteRule ^logs/ - [F]
 	RewriteRule ^composer\..* - [F]
 	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-	RewriteBase /
 
+	# Do not rewrite URL if index.php
 	RewriteRule ^index\.php$ - [L]
+
+	# If dir or file do not exist
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
 	
-	RewriteRule . /index.php [L]
+	# Redirect
+	RewriteRule . index.php [L]
+
 </IfModule>
