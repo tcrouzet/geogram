@@ -153,7 +153,7 @@ function html_header($pagename=""){
 
     //dump($chatObj);
     //$version=time();
-    $version="A1";
+    $version="A3";
 
     $url=BASE_URL;
     if(!empty($group)) $url.=$group."/";
@@ -264,7 +264,8 @@ function baseline(){
 
     if (empty($group)) {
         echo '<h1>Geogram tracks adventures with Telegram Messenger</h1>';
-        echo '<p class="underh1">No Spot or Garmin tracker, just your phone, your photos, your comments…</p>';
+        echo '<p class="underh1">No tracker, just your phone, your photos, your comments…</p>';
+        if (!empty(BASELINE)) echo '<p class="baseline">'.BASELINE.'</p>';
     }elseif( $group=="help"){
         echo '<h1>Geogram features</h1>';
     }elseif( $group=="news_fr"){

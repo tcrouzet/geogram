@@ -11,9 +11,13 @@ define('MYSQL_HOST', "?");
 define('MYSQL_USER', "?");
 define('MYSQL_PSW', "?");
 define('MYSQL_BASE', "bikepacking");
-define('BASE_URL', "http://geogram.tcrouzet.com/");
+define('BASE_URL', "http://gep.zefal.com/");
 
 //To block webhook.php access
 define('ADMIN_IP', '141.101.68.22');
+
+//On home screen
+define("BASELINE", '')
+
 
 ?>

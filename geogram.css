@@ -47,7 +47,8 @@ img.photo{/*width: fit-content;*//*max-width:27vw;*/ height: auto;}
 img.symb{width: 1rem;height: 1rem;margin-left: 0.3rem;vertical-align: text-top;}
 h1{padding:2rem 0.5rem 0rem 0.5rem;text-align: center;}
 h2{text-align: center;margin-top: 3rem;}
-p.underh1{margin: 0 0 2rem 0;text-align: center;font-style: italic;}
+p.underh1{margin: 0;text-align: center;font-style: italic;}
+p.baseline{margin: 0.5rem 0 2rem 0;text-align: center;}
 li{margin: 1rem 0;padding-right: 1rem;}
 ol img{margin-left: -1rem;}
 
