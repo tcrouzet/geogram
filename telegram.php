@@ -5,7 +5,7 @@
 
 $startTime = microtime(true);
 $logBuffer = [];
-define("DEBUG",false);
+define("DEBUG",true);
 
 ini_set('log_errors', 'On');
 ini_set('error_log', __DIR__ . '/logs/error_php.log');
@@ -83,8 +83,12 @@ if( isset($message["migrate_to_chat_id"])){
 
 $chat_obj = get_chat($chatid);
 if(empty($chat_obj)){
-    ShortLivedMessage($brut_chatid,"Geogram don't know this group: $chatid. I'm creating a new one.");
-    if (insert_chat($chatid, $chat_title)){
+    ShortLivedMessage($brut_chatid,"Geogram don't know this group: $chatid.");
+    if (lostchat($chatid,$chat_title)){
+        ShortLivedMessage($brut_chatid,"Geogram found this group: $chatid.");
+        $chat_obj = get_chat($chatid);
+    }elseif (insert_chat($chatid, $chat_title)){
+        ShortLivedMessage($brut_chatid,"New group created in Geogram: $chatid.");
         $chat_obj = get_chat($chatid);
     }else{
         ShortLivedMessage($brut_chatid,"Can't create a new one, contact Geogram admin.");

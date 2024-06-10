@@ -398,6 +398,34 @@ function citiesUpdate(){
 //     return $chat["ok"];
 // }
 
+
+function lostchat($newchatid,$chat_title){
+    global $mysqli;
+    $basetitle = format_chatitle($chat_title);
+    $query="SELECT chatid FROM `chats` WHERE `chatname` LIKE ? ORDER BY `last_update` DESC LIMIT 1";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("s", $basetitle);
+    $stmt->execute();
+
+    $result = $stmt->get_result();    
+    if ($result) {
+
+        //Found
+        $row = $result->fetch_row();
+        lecho("No lost anymore", $newchatid, $row[0], $basetitle);
+        $query = "UPDATE `chats` SET chatid=? WHERE chatid=?;";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("ii", $newchatid, $row[0]);
+        $stmt->execute();
+        return true;
+
+    }else{
+        lecho("Lost",$basetitle, $newchatid);
+        return false;
+    }
+}
+
+
 function archive_chats(){
     global $mysqli;
 
