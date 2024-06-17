@@ -6,6 +6,6 @@ logs/*
 !logs/.gitkeep
 userimg/*
 !userimg/.gitkeep
-bikepacking.sql
+bikepacking*.sql
 perso
 _*

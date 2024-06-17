@@ -5,7 +5,7 @@
 
 $startTime = microtime(true);
 $logBuffer = [];
-define("DEBUG",true);
+define("DEBUG",false);
 
 ini_set('log_errors', 'On');
 ini_set('error_log', __DIR__ . '/logs/error_php.log');

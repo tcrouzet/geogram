@@ -11,5 +11,6 @@ if ($_SERVER['REMOTE_ADDR'] !== ADMIN_IP) {
 $webhookUrl = BASE_URL.'telegram.php';
 $response = file_get_contents('https://api.telegram.org/bot'.TELEGRAM_BOT_TOKEN.'/setWebhook?url='.$webhookUrl);
 echo $response;
+echo "Done";
 
 ?>
