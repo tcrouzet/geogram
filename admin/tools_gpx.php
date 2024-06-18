@@ -1,6 +1,6 @@
 <?php
-// cd /volume1/web/geogram
-// php74 admin/tools_gpx.php
+// cd /var/www/html/geogram/
+// /usr/bin/php admin/tools_gpx.php
 
 set_time_limit(60);
 ini_set('display_errors', 1);
@@ -135,7 +135,7 @@ function gpx_geojson($gpxFile){
     
 }
 
-$gpx_file = "/volume1/web/geogram/perso/g727.gpx";
+$gpx_file = "/var/www/html/geogram/_assets/g727.gpx";
 $gpx_mini_file = gpx_minimise($gpx_file);
 gpx_geojson($gpx_mini_file);
 
