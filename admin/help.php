@@ -38,9 +38,9 @@ It enables friends and fans to experience the adventure through map tracking, ph
 
 <h2 id="join">Join an adventure</h2>
 <ol>
-<li>Install <a href="https://telegram.org/apps">Telegram</a> on your mobile phone (a messaging app similar to WhatsApp, but open-source, and free to integrate with other services).</li>
+<li>Install <a href="https://telegram.org/apps">Telegram Messenger</a> on your mobile phone.</li>
 <li>Create a Telegram account and associate it with a mobile number. To remain anonymous, use a pseudonym as your username.</li>
-<li>On Telegram, joint he adventure group (if it's private, the organizer provides a link that should not be shared).</li>
+<li>On Telegram, joint the adventure group (if it's private, the organizer provides a link that should not be shared).</li>
 <li>Mute the group to avoid being alerted for every message posted (open the group and click on its name at the top to access the option).</li>
 <li>If you set a profile picture on Telegram, you can transfert it to Geogram with "Avatar" in the menu (/menu to display it). The avatar serves as a cursor on the map, otherwise a simple colored dot is used</li>
 <li>Pin the group to keep it at the top of your contact list.</li>
@@ -72,11 +72,11 @@ It enables friends and fans to experience the adventure through map tracking, ph
     <li>Associate an image with the group. It will identify the group on the <a href="/">homepage</a>.</li>
     <li>Optional, but far better. Post the GPX track of the adventure in the group. It will be displayed on the map.
         Repost the GPX to update the route. No more than 30,000 points in the track after optimisation (more than 3 000km).</li>
+    <li>The command "/menu" displays the admin and user dashbords.</li>
     <li>To create en open and persistent adventure, like <a href="727itt">727itt</a>, share publicly the Telegram group invite link.
         The adventurers will disappear after one week of inactivity.
         This adventure will never be archived.
     </li>
-    <li>The command "/menu" displays the admin and user dashbords.</li>
     <li>Unit: choose the units (metric or imperial) and adjust timezone if needded.</li>
     <li>Start: will start the timer of the adventure.
         Without this step, it is impossible to calculate the time spent on the route.</li>
