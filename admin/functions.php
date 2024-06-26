@@ -153,7 +153,7 @@ function html_header($pagename=""){
 
     //dump($chatObj);
     //$version=time();
-    $version="A3";
+    $version="A4";
 
     $url=BASE_URL;
     if(!empty($group)) $url.=$group."/";
@@ -263,7 +263,7 @@ function baseline(){
     global $group;
 
     if (empty($group)) {
-        echo '<h1>Geogram tracks adventures with Telegram Messenger</h1>';
+        echo '<h1>Geogram tracks adventures with Telegram <span class="why">(<a href="/help#why">why Telegram</a>)</span></h1>';
         echo '<p class="underh1">No tracker, just your phone, your photos, your comments…</p>';
         if (!empty(BASELINE)) echo '<p class="baseline">'.BASELINE.'</p>';
     }elseif( $group=="help"){
@@ -421,18 +421,25 @@ function roundNumber($num){
     return round($num, $cut);
 }
 
+function TimeDiff($chatObj){
+    //Heure d'été, décallage heure d'été et heure Paris
+    return $chatObj["timediff"]-2;
+}
+
 function MyDateFormat($timestamp,$justhour=false){
     global $chatObj;
 
     if($chatObj["unit"]==1){
+        //Emperial
         $format="g:ia";
     }else{
         $format="G:i";
     }
 
+
     if(!$justhour) $format.=" Y/n/j";
     
-    return date( $format, timezone($timestamp,$chatObj["timediff"]) );
+    return date( $format, timezone($timestamp,TimeDiff($chatObj)) );
 }
 
 function MyDateFormatLong($timestamp,$hour=true){
@@ -448,7 +455,7 @@ function MyDateFormatLong($timestamp,$hour=true){
         }
     }
     
-    return date( $format, timezone($timestamp,$chatObj["timediff"]) );
+    return date( $format, timezone($timestamp,TimeDiff($chatObj)) );
 }
 
 function timezone($timestamp,$zone=0){

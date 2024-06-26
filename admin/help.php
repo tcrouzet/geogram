@@ -11,6 +11,12 @@ baseline("help");
 It helps adventurers to locate themselves in relation to each other.
 It enables friends and fans to experience the adventure through map tracking, photos, and comments posted by adventurers.</p>
 
+<h2 id="why">Why choose Telegram over WhatsApp</h2>
+<p><b>Open Source</b>: <a href="https://github.com/telegramdesktop/tdesktop">Telegram's client code</a> is open source, allowing for transparency and community scrutiny. This ensures that potential vulnerabilities are identified and addressed promptly.</p>
+<p><b>Open API</b>: <a href="https://telegram.org/apps">Telegram</a> provides an open API, enabling developers to create custom apps and integrations like Geogram (impossible with WhatsApp). This fosters innovation and expands Telegram’s functionality beyond its core features.</p>
+<p><b>Better Security</b>: Telegram offers robust security with end-to-end encryption for secret chats and a decentralized infrastructure, making it more resistant to data breaches and censorship.</p>
+<p>In summary, Telegram's open-source nature, open API, and enhanced security features make it a preferable choice for users seeking a reliable and secure messaging platform.</p>
+
 <h2>Follow an adventure</h2>
 <ol>
     <li><a href="/">Geogram's homepage</a> lists ongoing adventures (<a href="archives">Archives</a> past adventures).</li>
@@ -84,3 +90,7 @@ It enables friends and fans to experience the adventure through map tracking, ph
 </ol>
 
 </div>
+
+<?php
+//echo date('H:i:s');
+?>

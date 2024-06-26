@@ -176,9 +176,11 @@ div.roundmax {width: 15rem;height: 15rem;margin: 3rem auto -2rem auto;}
 div.une_chat h3{margin: 0; font-size: 1.5rem;}
 div.une_chat p{margin:0 0 0.5rem 0;}
 
+span.why{font-size: x-small;vertical-align: middle;}
 
 p a:link,p a:visited,p a:hover,p a:active {color: inherit;text-decoration: none;border-bottom: 2px #007fff dotted;}
 ol a:link,ol a:visited,ol a:hover,ol a:active {color: inherit;text-decoration: none;border-bottom: 2px #007fff dotted;}
+span.why a:link,span.why a:visited,span.why a:hover,span.why a:active {color: inherit;text-decoration: none;border-bottom: 2px #007fff dotted;}
 
 .marker {
     width: 30px;
@@ -193,6 +195,13 @@ ol a:link,ol a:visited,ol a:hover,ol a:active {color: inherit;text-decoration: n
     font-weight: bold;
     font-size: 1.2rem;
 }
+
+:target::before {
+    content: "";
+    display: block;
+    height: 5rem;
+    margin-top: -5rem;
+  }
 
 @media screen and (orientation: portrait) {
     #container{display: block}
