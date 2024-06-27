@@ -8,6 +8,9 @@
 	RewriteRule ^composer\..* - [F]
 	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+	# Block files in root starting with _
+	RewriteRule ^_([^/]+)$ - [F]
+
 	# Do not rewrite URL if index.php
 	RewriteRule ^index\.php$ - [L]
 
