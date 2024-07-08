@@ -46,7 +46,6 @@ if( isset($update["my_chat_member"])){
     ChatMemberUpdate($update["my_chat_member"]);
 }
 
-
 if( isset($update["message"])){
     $message = $update["message"];
 }elseif( isset($update["edited_message"])) {

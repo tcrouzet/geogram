@@ -2,6 +2,7 @@
 @eaDir/
 admin/secret.php
 admin/telegram.md
+static/*
 logs/*
 !logs/.gitkeep
 userimg/*

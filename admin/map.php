@@ -113,7 +113,7 @@ if($page=="user" && isset($id)){
                     //$km=intval($etape/1000);
                     $duree = $row["timestamp"] - $oldrow["timestamp"];
                     $temps=heureminutes($duree);
-                    $sidebar.="Segment: ".meters_to_distance( $etape, $chatObj)."/".meters_to_dev($etape_dev,$chatObj).SPACE2.speed_unit($etape,$duree).SPACE2.$temps."</br>";
+                    $sidebar.="Segment: ".meters_to_distance( $etape, $chatObj)."/".meters_to_dev($etape_dev, $chatObj).SPACE2.speed_unit($etape,$duree).SPACE2.$temps."</br>";
 
                     //$dt=$row["timestamp"]-$oldrow["timestamp"];
                     //$sidebar.=$row["timestamp"]." ".$oldrow["timestamp"]." DT:$dt"." S:".$start." D:$duree<br>";

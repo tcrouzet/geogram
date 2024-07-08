@@ -408,16 +408,11 @@ function lostchat($newchatid,$chat_title){
     $stmt->execute();
 
     $result = $stmt->get_result();    
-    if ($result) {
+    if ($result && $row = $result->fetch_row()) {
 
         //Found
-        $row = $result->fetch_row();
         lecho("No lost anymore", $newchatid, $row[0], $basetitle);
-        $query = "UPDATE `chats` SET chatid=? WHERE chatid=?;";
-        $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("ii", $newchatid, $row[0]);
-        $stmt->execute();
-        return true;
+        return update_chatid($row[0], $newchatid);
 
     }else{
         lecho("Lost",$basetitle, $newchatid);

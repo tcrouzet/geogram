@@ -266,16 +266,29 @@ function delete_one_chat($chatid){
 }
 
 function update_chatid($old_chatid,$new_chatid){
-    global $mysqli;
+    global $mysqli, $fileManager;
 
     lecho("update_chaid",$old_chatid,$new_chatid);
 
     $query = "UPDATE `chats` SET chatid = ? WHERE chatid=?;";
-    $stmt_photo = $mysqli->prepare($query);
-    $stmt_photo->bind_param("ii", round($new_chatid), round($old_chatid));
-    $stmt_photo->execute();
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("ii", round($new_chatid), round($old_chatid));
+    $stmt->execute();
+
+    $query = "UPDATE `logs` SET chatid = ? WHERE chatid=?;";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("ii", round($new_chatid), round($old_chatid));
+    $stmt->execute();
+
+    $query = "UPDATE `gpx` SET chatid = ? WHERE chatid=?;";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("ii", round($new_chatid), round($old_chatid));
+    $stmt->execute();
 
     //Rename dir
+    $fileManager->rename_chat_dir(round($old_chatid), round($new_chatid));
+
+    return true;
 }
 
 function update_mode($chatid,$mode_text){
@@ -872,7 +885,7 @@ function sendMenuInfo($brut_chatid,$messageId,$brut_userid) {
         $geogram_url = $fileManager->chatWeb($chat);
 
         if($chat['gpx']){
-            $message .= "GPX: ". meters_to_distance($chat['total_km'],$chat)."/".meters_to_dev($chat['total_dev'],$chat)."\n";
+            $message .= "GPX: ". meters_to_distance($chat['total_km'],$chat) ."/". meters_to_dev($chat['total_dev'],$chat)."\n";
         }else{
             $message .= "You need to publish your GPX on the chat, then geolocalise at least once.\n";
         }

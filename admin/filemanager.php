@@ -47,11 +47,15 @@ class FileManager {
 
     public function rename_chat_dir($oldid,$newid){
         $old_path = $this->chat_imgdir($oldid);
-        $new_path = $this->chat_imgdir($newid);
-        if(rename($old_path, $new_path))
-            return true;
-        else
-            return false;
+        if (!is_dir($old_path)) {
+            return $this->make_chat_dir($newid);
+        }else{
+            $new_path = $this->chat_imgdir($newid);
+            if(rename($old_path, $new_path))
+                return true;
+            else
+                return false;
+        }
     }
 
     public function delete_chat_dir($chatid){
