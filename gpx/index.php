@@ -20,7 +20,8 @@ Autre lib : https://github.com/cwarwicker/Waddle
 
 require_once('gpx.class.php');
 
-require __DIR__.'/vendor/autoload.php';
+include (__DIR__ . '/../vendor/autoload.php');
+
 use phpGPX\phpGPX;
 use phpGPX\Models\GpxFile;
 use phpGPX\Models\Link;
@@ -141,6 +142,7 @@ if($save){
 gpx::htmlHead();
 ?>
     <p><a href="compare.php">Compare 2 GPX files >>></a></p>
+    <p><a href="count_pois.php">Sort POIs in a KML file >>></a></p>
     <h3>Select at least one KML/GPX file</h3>
     <form action="" enctype="multipart/form-data" method="post">
     KML POI file 1<br/>

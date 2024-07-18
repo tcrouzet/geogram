@@ -1,6 +1,7 @@
 <?php
 
-require __DIR__.'/vendor/autoload.php';
+include (__DIR__ . '/../vendor/autoload.php');
+
 use phpGPX\phpGPX;
 use phpGPX\Models\GpxFile;
 use phpGPX\Models\Link;
