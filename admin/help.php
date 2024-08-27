@@ -14,7 +14,7 @@ It enables friends and fans to experience the adventure through map tracking, ph
 <h2 id="why">Why choose Telegram over WhatsApp</h2>
 <p><b>Open Source</b>: <a href="https://github.com/telegramdesktop/tdesktop">Telegram's client code</a> is open source, allowing for transparency and community scrutiny. This ensures that potential vulnerabilities are identified and addressed promptly.</p>
 <p><b>Open API</b>: <a href="https://telegram.org/apps">Telegram</a> provides an open API, enabling developers to create custom apps and integrations like Geogram. This fosters innovation and expands Telegram’s functionality beyond its core features.</p>
-<p><b>No Better Security</b>: <a href="https://tsf.telegram.org/manuals/e2ee-simple">Telegram does not offer robust security with end-to-end encryption for secret chats in groups</a>, but it's not better with WhatsApp and many orters group messenger apps.</p>
+<p><b>No Better Security</b>: <a href="https://tsf.telegram.org/manuals/e2ee-simple">Telegram does not offer robust security with end-to-end encryption in groups</a>.</p>
 <p>In summary, Telegram's open-source nature and open API features make it a preferable choice for users seeking a messaging platform for sharing geolocation (no secrets).</p>
 
 <h2>Follow an adventure</h2>
@@ -45,12 +45,14 @@ It enables friends and fans to experience the adventure through map tracking, ph
 <li>If you set a profile picture on Telegram, you can transfert it to Geogram with "Avatar" in the menu (/menu to display it). The avatar serves as a cursor on the map, otherwise a simple colored dot is used</li>
 <li>Pin the group to keep it at the top of your contact list.</li>
 <li>In the group, occasionally post your geolocation.
-    Click on the Paperclip on the left side of the input field, then click on the Location icon and choose Send my current location.
-    Note: it takes a few seconds for Telegram to locate the phone. Do not publish the geolocation too quickly, otherwise it will be inaccurate.
-</li>
+    Click on the Paperclip on the side of the input field.</li>
+    <img src="/images/help-paperclip.png" />
+<li>Then click on the Location icon and choose Send my current location.
+    Note: it takes a few seconds for Telegram to locate the phone. Do not publish the geolocation too quickly, otherwise it will be inaccurate.</li>
+    <img src="/images/help-location.png" />
 <li>You can post even if your phone is not connected. Telegram will send messages when the phone will find a network.</li>
 <li>You can geolocate once every 10 minutes (if you geolocate more often, posts will be deleted).
-    Warning: il the admin autorize that, you can geolocate in real time for up to 8 hours, but it will drain your phone battery.</li>
+    Warning: if the admin autorize that, you can geolocate in real time for up to 8 hours, but it will drain your phone battery.</li>
 <li>The photos and texts posted are associated with the last geolocation.
     You can post multiple photos at once, preferably in landscape format.
     Videos are not supported.</li>
