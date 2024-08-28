@@ -42,7 +42,6 @@ It enables friends and fans to experience the adventure through map tracking, ph
 <li>Create a Telegram account and associate it with a mobile number. To remain anonymous, use a pseudonym as your username.</li>
 <li>On Telegram, joint the adventure group (if it's private, the organizer provides a link that should not be shared).</li>
 <li>Mute the group to avoid being alerted for every message posted (open the group and click on its name at the top to access the option).</li>
-<li>If you set a profile picture on Telegram, you can transfert it to Geogram with "Avatar" in the menu (/menu to display it). The avatar serves as a cursor on the map, otherwise a simple colored dot is used</li>
 <li>Pin the group to keep it at the top of your contact list.</li>
 <li>In the group, occasionally post your geolocation.
     Click on the Paperclip on the side of the input field.</li>
@@ -58,10 +57,11 @@ It enables friends and fans to experience the adventure through map tracking, ph
     Videos are not supported.</li>
 <li>Depending of admin paramaremers, Geolocation messages can be automatically deleted to avoid cluttering the group.
     Other messages can remain visible and allow adventurers to exchange messages.</li>
-<a name="add"></a>
+<li>Manage your options with /menu command. If you set a profile picture on Telegram, you can transfert it to Geogram with "Avatar".
+    The avatar serves as a cursor on the map, otherwise a simple colored dot is used</li>
 </ol>
 
-<h2 id="help_admin">Add your own adventure</h2>
+<h2 id="help_admin" id="add">Add your own adventure</h2>
 <ol>
     <li>First you must create a <a href="https://telegram.org/apps">Telegram account</a>.</li>
     <li>On <a href="https://telegram.org/apps">Telegram</a>, create a group for the adventure, adding <a href="https://t.me/GeoBikepacking" target="_blank">GeoBikepacking</a> bot as the first member (sometime you have to search @GeoBikepacking_bot). Name the group explicitly.</li>
