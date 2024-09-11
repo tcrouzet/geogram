@@ -8,6 +8,7 @@ include (__DIR__ . '/../vendor/autoload.php');
 
 if(!empty($_POST)) extract($_POST);
 
+
 function copyXML($Styles, &$document){
     foreach ($Styles as $style) {
         $styleDom = dom_import_simplexml($style);
@@ -46,10 +47,15 @@ function totalPOIs($layers){
     return $totalPlacemarks;
 }
 
-function deduplicate(&$layers, $threshold=0.0001) {
+function deduplicate($layers, $threshold=0.0001) {
     global $debug;
 
-    foreach ($layers as &$placemarks) {
+    if($debug) echo("Enter deduplicate<br/>");
+
+    // Créer un tableau temporaire pour stocker les calques modifiés
+    $newLayers = [];
+
+    foreach ($layers as $icon => $placemarks) {
         $uniquePlacemarks = [];
         $seen = [];
 
@@ -65,35 +71,45 @@ function deduplicate(&$layers, $threshold=0.0001) {
             // Extraire les coordonnées
             list($longitude, $latitude) = explode(',', trim($coordinates));
 
-            // Vérifier les coordonnées avec une marge de 1 mètre
-            $uniqueKey = "$name|$styleUrl|$latitude|$longitude";
-            if($debug) {
-                echo("$uniqueKey</br>");
-            }
+            // Vérifier si les coordonnées sont proches d'un élément déjà vu
+            $uniqueKey = json_encode([$name, $styleUrl, $latitude, $longitude]);
+            if($debug) echo("$uniqueKey<br/>");
 
-            // Comparer avec les placemarks déjà vus
+            // Vérifier les doublons avec une marge d'erreur
             $isDuplicate = false;
             foreach ($seen as $existingKey) {
-                list($existingName, $existingStyle, $existingLatitude, $existingLongitude) = explode('|', $existingKey);
+                list($existingName, $existingStyle, $existingLatitude, $existingLongitude) = json_decode($existingKey);
+                if($debug) echo("LIST $uniqueKey<br/>");
 
                 // Calculer la distance entre les coordonnées
                 if (abs($latitude - $existingLatitude) < $threshold && abs($longitude - $existingLongitude) < $threshold) {
                     $isDuplicate = true;
+                    if($debug) echo("Duplicate<br/>");
                     break;
                 }
+                if($debug) echo("NEXT $uniqueKey<br/>");
             }
+            if($debug) echo("EXIT FOR $uniqueKey<br/>");
 
-            // Si ce n'est pas un doublon, on l'ajoute
+            // Si pas doublon, on l'ajoute dans le tableau temporaire
             if (!$isDuplicate) {
                 $seen[] = $uniqueKey;
                 $uniquePlacemarks[] = $placemark;
             }
+            if($debug) echo("EXIT $uniqueKey<br/>");
         }
 
-        // Remplacer les placemarks par ceux uniques
-        $placemarks = $uniquePlacemarks;
+        // Ajouter les placemarks uniques dans le tableau temporaire des layers
+        $newLayers[$icon] = $uniquePlacemarks;
+        if($debug) echo("Exit layer $icon<br/>");
     }
+
+    // Remplacer les layers par les layers dédupliqués
+    if($debug) echo("Exit deduplicate<br/>");
+    return $newLayers;
+
 }
+
 
 if(!empty($_FILES['kmlfile']['tmp_name'])){
     //var_dump($_FILES);exit;
@@ -111,16 +127,21 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
     extractPlacemarks($kml->Document, $layers);
 
     $poi_count = totalPOIs($layers);
+    if($debug) echo("POIs $poi_count<br/>");
 
     // Supprime les doublons
-    deduplicate($layers);
+    $layers = deduplicate($layers);
+    if($debug) echo("OUT deduplicate");
     $clayers = count($layers);
     $new_poi_count = count($layers);
+    if($debug) echo("New POIs $new_poi_count in $clayers layer(s)<br/>");
 
     // Trier les calques par ordre décroissant de leur nombre de POIs
     uasort($layers, function($a, $b) {
         return count($b) - count($a);
     });
+
+    if($debug) echo("Ready to generate<br/>");
 
     $newKml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"></kml>');
     $document = $newKml->addChild('Document');
@@ -134,15 +155,8 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
         $folder = $document->addChild('Folder');
         $folder->addChild('name', 'All POIs');
 
-        //if($waterLayer) exit("WaterLayer");
-
-        // foreach ($layers as $placemarks) {
-        //     copyXML($placemarks, $folder);
-        // }
-
         foreach ($layers as $icon => $placemarks) {
             if ($waterLayer && $icon == 'drink') {
-                // Si l'icône est celle des "Water POIs", ajouter dans un sous-calque spécifique
                 $waterPOIs = array_merge($waterPOIs, $placemarks);
             } else {
                 copyXML($placemarks, $folder);
@@ -154,7 +168,6 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
             $waterFolder->addChild('name', 'Water POIs');
             copyXML($waterPOIs, $waterFolder);
         }
-
 
     } else {
         // Ajouter les Placemarks regroupés par calque
@@ -180,6 +193,7 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
         echo "<p>Layers: $totalLayers</p>";
         echo "<p>Initial POIs count: $poi_count</p>";
         echo "<p>New POIs count: $totalPlacemarks</p>";
+        exit();
     }else{
 
         // Sauvegarde du nouveau fichier KML
@@ -205,6 +219,7 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
     <label for="water_layer">Place water POIs in a separate layer</label><br/><br/>
     <input type="submit" value="RUN">
     </form>
+    <p>Open a new map, import all KML POIs layers, export KML of the map and then use this app.</p>
 
 <?php
 
