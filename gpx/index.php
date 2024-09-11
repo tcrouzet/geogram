@@ -141,8 +141,8 @@ if($save){
 
 gpx::htmlHead();
 ?>
-    <p><a href="compare.php">Compare 2 GPX files >>></a></p>
-    <p><a href="count_pois.php">Sort POIs in a KML file >>></a></p>
+    <p><a href="compare.php">Compare GPX files >>></a></p>
+    <p><a href="count_pois.php">POIs manager >>></a></p>
     <h3>Select at least one KML/GPX file</h3>
     <form action="" enctype="multipart/form-data" method="post">
     KML POI file 1<br/>

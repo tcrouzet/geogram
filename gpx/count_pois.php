@@ -103,17 +103,19 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
     //dump($kml);exit;
 
     $singleLayer = isset($_POST['single_layer']) && $_POST['single_layer'] == '1';
+    $waterLayer = isset($_POST['water_layer']) && $_POST['water_layer'] == '1';
 
     // Tableau pour regrouper les POIs par icône
     $layers = [];
+    $waterPOIs = [];
     extractPlacemarks($kml->Document, $layers);
 
     $poi_count = totalPOIs($layers);
 
     // Supprime les doublons
     deduplicate($layers);
-
     $clayers = count($layers);
+    $new_poi_count = count($layers);
 
     // Trier les calques par ordre décroissant de leur nombre de POIs
     uasort($layers, function($a, $b) {
@@ -131,16 +133,34 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
         // Ajouter tous les placemarks dans un seul calque
         $folder = $document->addChild('Folder');
         $folder->addChild('name', 'All POIs');
-        foreach ($layers as $placemarks) {
-            copyXML($placemarks, $folder);
+
+        //if($waterLayer) exit("WaterLayer");
+
+        // foreach ($layers as $placemarks) {
+        //     copyXML($placemarks, $folder);
+        // }
+
+        foreach ($layers as $icon => $placemarks) {
+            if ($waterLayer && $icon == 'drink') {
+                // Si l'icône est celle des "Water POIs", ajouter dans un sous-calque spécifique
+                $waterPOIs = array_merge($waterPOIs, $placemarks);
+            } else {
+                copyXML($placemarks, $folder);
+            }
         }
-        $new_poi_count = count($layers);
+
+        if ($waterLayer && !empty($waterPOIs)) {
+            $waterFolder = $folder->addChild('Folder');
+            $waterFolder->addChild('name', 'Water POIs');
+            copyXML($waterPOIs, $waterFolder);
+        }
+
+
     } else {
         // Ajouter les Placemarks regroupés par calque
         foreach ($layers as $icon => $placemarks) {
             $folder = $document->addChild('Folder');
             $icons = count($placemarks);
-            $new_poi_count += $icons;
             if($icons >1) $s="s"; else $s="";
             $folder->addChild('name', $icons." ".$icon.$s);
 
@@ -180,9 +200,9 @@ if(!empty($_FILES['kmlfile']['tmp_name'])){
     <p>Select a KML file<p>
     <input type="file" name="kmlfile" size="80" style="width:80%"><br/>
     <input type="checkbox" name="single_layer" value="1">
-    <label for="single_layer">Generate a single layer</label><br/><br/>
-
-
+    <label for="single_layer">Generate a single layer</label><br/>
+    <input type="checkbox" name="water_layer" value="1"><img src="images/wateri.png" style="width:15px;height:15px"/>
+    <label for="water_layer">Place water POIs in a separate layer</label><br/><br/>
     <input type="submit" value="RUN">
     </form>
 
