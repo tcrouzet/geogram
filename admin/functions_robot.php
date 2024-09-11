@@ -525,7 +525,11 @@ function flushLogBuffer() {
     global $logBuffer;
     if (!empty($logBuffer) && DEBUG) {
         $logContent = trim(implode('', $logBuffer))."\n";
-        file_put_contents('logs/robot.log', $logContent, FILE_APPEND);
+        if(!file_put_contents('logs/robot.log', $logContent, FILE_APPEND)) {
+            $error = error_get_last();
+            exit("LogError: " . $error['message']);        
+        }
+        echo($logContent);
     }
 }
 

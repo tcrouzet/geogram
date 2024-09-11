@@ -11,3 +11,14 @@ for file in $backup_files; do
         sudo rm -f "$file"
     fi
 done
+
+#Reset rights
+
+sudo chmod 775 logs
+sudo chown apache:apache logs
+
+sudo chmod 775 userimg
+sudo chown -R apache:apache userimg
+
+sudo chmod 775 cron.txt
+sudo chown apache:apache cron.txt

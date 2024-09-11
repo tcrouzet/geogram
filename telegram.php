@@ -1,6 +1,6 @@
 <?php
 
-//https://geogram.tcrouzet.com/telegram.php
+//https://geo.zefal.com/telegram.php
 //exit("not running");
 
 $startTime = microtime(true);
@@ -35,6 +35,7 @@ init();
 $fileManager = new FileManager();
 prepare_queries();
 lmicrotime();
+
 
 //CALLBACK
 if( isset($update["callback_query"])){

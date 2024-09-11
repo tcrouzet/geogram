@@ -2,7 +2,7 @@
 
 Geogram tracks adventures with Telegram Messenger.
 
-Look an implementation at [geogram.tcrouzet.com](https://geogram.tcrouzet.com/).
+Look an implementation at [geo.zefal.com](https://geo.zefal.com/).
 
 You have to import geogram.sql in a MySQL database, create a Telegram Bot with a Token, a Weather API Token, then set admin/secret-model.php and rename as admin/secret.php.
 

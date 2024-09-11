@@ -117,13 +117,11 @@ function callback_manager($callbackQuery){
     //START/STOP
     }elseif($userAction=="start" && $admin_flag){
         set_start($chatId,time());
-        set_stop($chatId, 0);
         sendMenuAdmin($chatId,$messageId,"Adventure started! Time is counting…");
     }elseif($userAction=="started" && $admin_flag){
         sendMenuStarted($chatId,$messageId,$chat);
     }elseif($userAction=="reset" && $admin_flag){
         set_start($chatId,0);
-        set_stop($chatId, 0);
         sendMenuAdmin($chatId,$messageId,"Adventure started/ended time reset to zero!");
     }elseif($userAction=="future" && $admin_flag){
         $telegram->sendMessage(['chat_id' => $chatId,'text' => REPLY_FUTURE,'disable_notification' => true]);
@@ -448,11 +446,16 @@ function set_photo($chatid){
 function set_start($chatid, $timestamp){
     global $mysqli;
 
-    $query = "UPDATE `chats` SET start=? WHERE chatid=?;";
+    $query = "UPDATE `chats` SET start=?, stop=0 WHERE chatid=?;";
     $stmt_query = $mysqli->prepare($query);
     $stmt_query->bind_param("ii", $timestamp, $chatid);
     $stmt_query->execute();
-    //lecho("start ".$chatid." ".date("j F Y H:i",$timestamp));
+
+    if($timestamp>0)
+        lecho("start ".$chatid." ".date("j F Y H:i",$timestamp));
+    else
+        lecho("start ".$chatid." 0");
+
 }
 
 function set_stop($chatid, $timestamp){
@@ -468,7 +471,10 @@ function set_stop($chatid, $timestamp){
         $query = "DELETE FROM gpx WHERE chatid=$chatid";
         $mysqli->query($query);    
     }
-    lecho("stop ".$chatid." ".date("j F Y H:i",$timestamp));
+    if($timestamp>0)
+        lecho("stop ".$chatid." ".date("j F Y H:i",$timestamp));
+    else
+        lecho("stop ".$chatid." 0");
 }
 
 function newavatar($chatid,$userid){
@@ -880,8 +886,15 @@ function sendMenuInfo($brut_chatid,$messageId,$brut_userid) {
         $message .= "Updated: " .$updated."\n";
         if(@$chat['start']>0){
             $message .= "Start: " .date('Y-m-d H:i', @$chat['start'])."\n";
+        }else{
+            $message .= "Start: 0\n";
         }
-
+        if(@$chat['stop']>0){
+            $message .= "Stop: " .date('Y-m-d H:i', @$chat['stop'])."\n";
+        }else{
+            $message .= "Stop: 0\n";
+        }
+    
         $geogram_url = $fileManager->chatWeb($chat);
 
         if($chat['gpx']){
