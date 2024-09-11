@@ -14,6 +14,9 @@
 	# Do not rewrite URL if index.php
 	RewriteRule ^index\.php$ - [L]
 
+	# Exclude .well-known from rewrite rules
+    RewriteRule ^\.well-known/acme-challenge/ - [L]
+
 	# If dir or file do not exist
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
