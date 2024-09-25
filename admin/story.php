@@ -10,11 +10,43 @@ echo '<h1>'.format_chatname($group).'</h1>';
 
 start_date_text();
 
-echo('<p style="text-align:center;"><a href="'.$group.'/story?photos=1">Photos only</a></p>');
-
 $photos = $_GET['photos'] ?? '0';
+$order = $_GET['order'] ?? 'DESC';
+$filter = $_GET['filter'] ?? 'timestamp';
 
-$query="SELECT * FROM logs WHERE chatid='$group_id' AND timestamp>$start ORDER BY timestamp ASC;";
+// Top menu
+
+// Fonction pour générer un lien avec paramètres modifiés
+function createLink($group, $params) {
+    $queryString = http_build_query($params);
+    return $group . '/story?' . $queryString;
+}
+
+echo '<p style="text-align:center;">';
+
+// Lien pour afficher toutes les photos ou seulement les complètes
+echo '<a href="' . createLink($group, ['order' => $order, 'photos' => $photos ? 0 : 1, 'filter' => $filter]) . '">';
+echo $photos ? 'texts and photos' : 'photos only';
+echo '</a>';
+
+// Lien pour changer le filtre
+echo ' | <a href="' . createLink($group, ['order' => $order, 'photos' => $photos, 'filter' => $filter === 'timestamp' ? 'km' : 'timestamp']) . '">';
+echo $filter === 'timestamp' ? 'km' : 'time';
+echo '</a>';
+
+// Lien pour inverser l'ordre
+echo ' | <a href="' . createLink($group, ['order' => $order === 'ASC' ? 'DESC' : 'ASC', 'photos' => $photos, 'filter' => $filter]) . '">';
+echo $order === 'ASC' ? '&ShortUpArrow;' : '&ShortDownArrow;';
+echo '</a>';
+
+echo '</p>';
+
+$query = "SELECT * FROM logs 
+          WHERE chatid='$group_id' AND timestamp > $start 
+          ORDER BY " . ($filter === 'timestamp' ? 'timestamp' : 'km') . " $order, "
+                    . ($filter === 'timestamp' ? 'km' : 'timestamp') . " $order;";
+
+//$query="SELECT * FROM logs WHERE chatid='$group_id' AND timestamp>$start ORDER BY $filter $order;";
 $result = $mysqli->query($query);
 if($result){
 
