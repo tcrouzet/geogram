@@ -39,13 +39,17 @@ $fileManager = new FileManager();
 
 if($group=="help"){
     require("admin/help.php");
+    require("admin/footer.php");
 }elseif($group=="news_fr"){
     require("admin/news.php");
+    require("admin/footer.php");
 }elseif($group=="contact"){
     require("admin/contact.php");
+    require("admin/footer.php");
 }elseif($group=="archives"){
     $archives="archives";
     require("admin/une.php");
+    require("admin/footer.php");
 
 }elseif(!empty($group)){
     $chatObj = get_chat_by_name($group);
@@ -61,19 +65,23 @@ if($group=="help"){
             if(empty($start) || $start>time()){
                 $start = 0;
             }
-            require("admin/map.php");
+            if($group=="g727_2024")
+                require("admin/map_2.php");
+            else
+                require("admin/map.php");
         }        
 
     }else{
         $group="404";
         require("admin/404_page.php");
     }
+    require("admin/footer.php");
 
 }else{
     $archives="";
     require("admin/une.php");
+    require("admin/footer.php");
 }
 
-require("admin/footer.php");
 
 ?>

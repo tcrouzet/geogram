@@ -3,8 +3,6 @@
 //https://geo.zefal.com/telegram.php
 //exit("not running");
 
-$startTime = microtime(true);
-$logBuffer = [];
 define("DEBUG",false);
 
 ini_set('log_errors', 'On');
@@ -13,6 +11,7 @@ ini_set('error_log', __DIR__ . '/logs/error_php.log');
 require_once(__DIR__ . '/admin/secret.php');
 require_once(__DIR__ . '/admin/filemanager.php');
 require_once(__DIR__ . '/admin/functions.php');
+require_once(__DIR__ . '/admin/mylogs.php');
 require_once(__DIR__ . '/admin/functions_robot.php');
 require_once(__DIR__ . '/admin/callback.php');
 
@@ -24,6 +23,8 @@ lecho($update);
 if (!isset($update["update_id"]) || $update["update_id"] <= 0) {
     lexit("Inavid update_id");
 }
+
+mycron();
 
 set_time_limit(60);
 ini_set('display_errors', 1);

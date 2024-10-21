@@ -212,10 +212,15 @@ function html_header($pagename=""){
     }
 
     echo "\n<link rel='stylesheet' id='style-css' href='geogram.css?$version' type='text/css' media='screen' />\n";
+    echo "\n<script src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\" defer></script>\n";
 
     echo '</head>';
     echo '<body>';
     
+}
+
+function html_footer(){
+ echo ("\n</body>\n</html>\n");
 }
 
 function menu(){
@@ -426,6 +431,7 @@ function TimeDiff($chatObj){
     return $chatObj["timediff"]-2;
 }
 
+//A virer partout
 function MyDateFormat($timestamp,$justhour=false){
     global $chatObj;
 
@@ -442,8 +448,38 @@ function MyDateFormat($timestamp,$justhour=false){
     return date( $format, timezone($timestamp,TimeDiff($chatObj)) );
 }
 
+function MyDateFormatN($chatObj, $timestamp,$justhour=false){
+
+    if($chatObj["unit"]==1){
+        //Emperial
+        $format="g:ia";
+    }else{
+        $format="G:i";
+    }
+
+
+    if(!$justhour) $format.=" Y/n/j";
+    
+    return date( $format, timezone($timestamp,TimeDiff($chatObj)) );
+}
+
 function MyDateFormatLong($timestamp,$hour=true){
     global $chatObj;
+
+    $format="l F jS, Y";
+
+    if($hour){
+        if($chatObj["unit"]==1){
+            $format.=" g:ia";
+        }else{
+            $format.=" G:i";
+        }
+    }
+    
+    return date( $format, timezone($timestamp,TimeDiff($chatObj)) );
+}
+
+function MyDateFormatLongN($chatObj, $timestamp,$hour=true){
 
     $format="l F jS, Y";
 
