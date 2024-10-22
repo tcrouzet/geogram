@@ -1,9 +1,9 @@
 <?php
 html_header( $group." Map" );
-menu();
+//menu();
 ?>
 
-<div x-data="app()">
+<div x-data="app()" id="alpine">
     <!-- Section Top -->
     <header>
         <h1 x-text="title"></h1>
@@ -16,15 +16,16 @@ menu();
 
     <!-- Section Content -->
     <main>
-        <div x-show="view === 'map'" id="map" style="height: 500px;"  x-init="initializeMap"></div>
+        <div x-show="view === 'map'" id="map" x-init="initializeMap"></div>
         <div x-show="view === 'list'" id="list"></div>
     </main>
 
 
     <!-- Section Bottom -->
     <footer>
-        <button @click="action1">Action 1</button>
-        <button @click="action2">Action 2</button>
+        <button @click="action_fitall">FitAll</button>
+        <button @click="action_fitgpx">FitGPX</button>
+        <button @click="action_localise">Localise</button>
     </footer>
 </div>
 
@@ -34,19 +35,19 @@ document.addEventListener('alpine:init', () => {
         chatobj: <?php echo json_encode($chatObj); ?>,
         userid: <?php echo json_encode($id); ?>,
         page: <?php echo json_encode($page); ?>,
-        title: 'Votre Titre',
+        title: <?php echo json_encode($chatObj['chatname']); ?>,
         menuOpen: false,
         view: 'map', // Default view
         data: {},
         map: null,
         cursors: [],
-        gpx: null,
+        geoJsonLayer: null,
 
         initializeMap() {
-            console.log('Initializing Map...');
+            //console.log('Initializing Map...');
             this.map = L.map('map').setView([0, 0], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                attribution: '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
                 maxZoom: 18,
             }).addTo(this.map);
             this.loadData('map');
@@ -75,7 +76,6 @@ document.addEventListener('alpine:init', () => {
                 body: formData.toString()
             })
             .then(response => {
-                console.log("RESPONSE");
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
@@ -87,10 +87,9 @@ document.addEventListener('alpine:init', () => {
             //     return JSON.parse(text); // Parse manuellement pour détecter les erreurs
             // })
             .then(data => {
-                console.log(data);
+                //console.log(data);
                 this.data = data;
                 if (this.view === 'map') {
-                    console.log("data_map");
                     this.updateMap(data);
                 } else if (type === 'list') {
                     this.updateList(data);
@@ -152,37 +151,38 @@ document.addEventListener('alpine:init', () => {
 
         updateGPX(gpxfile) {
             if (gpxfile) {
-                console.log(gpxfile);
+                //console.log(gpxfile);
 
-                var startIcon = L.icon({
+                const startIcon = L.icon({
                     iconUrl: 'images/start.png',
                     iconSize: [30, 30],
                     iconAnchor: [15, 15],
                 });
 
                 let isFirstTrack = true;
+                const map = this.map;
 
                 // Charge la trace GPX et l'ajoute à la carte
                 fetch(gpxfile)
                     .then(response => response.json())
                     .then(data => {
-                        const geoJsonLayer = L.geoJSON(data, {
+                        this.geoJsonLayer = L.geoJSON(data, {
                             style: function(feature) {
-                                return { color: feature.properties.stroke || '#3388ff' }; // Couleur par défaut
+                                return { color: feature.properties.stroke || '#3388ff' };
                             },
                             onEachFeature: function(feature, layer) {
                                 const firstPointLatLng = [feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][0]];
                                 if (isFirstTrack) {
-                                    L.marker(firstPointLatLng, {icon: startIcon}).addTo(this.map);
+                                    L.marker(firstPointLatLng, {icon: startIcon}).addTo(map);
                                     isFirstTrack = false;
                                 }
                             }
                         }).addTo(this.map);
 
-                        this.map.fitBounds(geoJsonLayer.getBounds(), { padding: [20, 20] });
+                        this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
                     })
                     .catch(error => {
-                        console.log('Erreur lors du chargement du GeoJSON:', error);
+                        console.log('Erreur GeoJSON:', error);
                     });
             }
         },
@@ -220,12 +220,39 @@ document.addEventListener('alpine:init', () => {
             cursor.setIcon(customMarker);
         },
 
-        action1() {
-            console.log('Action 1 exécutée');
+        action_localise() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const { latitude, longitude } = position.coords;
+                    console.log(latitude, longitude)
+                    // // Send location to server
+                    // fetch('/api/update-location', {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     },
+                    //     body: JSON.stringify({ latitude, longitude })
+                    // });
+                    // Update map with the new location
+                    L.marker([latitude, longitude]).addTo(this.map).bindTooltip("Vous êtes ici");
+                    this.map.setView([latitude, longitude], 13);
+                });
+            } else {
+                alert('Geolocalisation not supported in this browser.');
+            }
         },
 
-        action2() {
-            console.log('Action 2 exécutée');
+        action_fitall() {
+            if (this.cursors.length > 0) {
+                const bounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
+                this.map.fitBounds(this.markerBounds, { maxZoom: 10 });
+            }
+        },
+
+        action_fitgpx() {
+            if (this.geoJsonLayer) {
+                this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
+            }
         }
     }));
 });

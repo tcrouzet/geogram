@@ -211,8 +211,13 @@ function html_header($pagename=""){
         echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
     }
 
-    echo "\n<link rel='stylesheet' id='style-css' href='geogram.css?$version' type='text/css' media='screen' />\n";
-    echo "\n<script src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\" defer></script>\n";
+    if($group=="g727_2024"){
+        $version=time();
+        echo "\n<link rel='stylesheet' id='style-css' href='geogram_2.css?$version' type='text/css' media='screen' />\n";
+        echo "\n<script src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\" defer></script>\n";
+    }else{
+        echo "\n<link rel='stylesheet' id='style-css' href='geogram.css?$version' type='text/css' media='screen' />\n";
+    }
 
     echo '</head>';
     echo '<body>';
