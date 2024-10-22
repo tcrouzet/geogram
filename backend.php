@@ -173,7 +173,8 @@ function create_user(){
         return [
             'status' => "success",
             'userid' => $mysqli->insert_id,
-            'useremail' => $result['email']
+            'useremail' => $result['email'],
+            'username' => $username
         ];
     } else {
         // Erreur lors de la création de l'utilisateur

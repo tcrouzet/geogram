@@ -153,13 +153,17 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
+                //return response.text(); // testing
                 return response.json();
             })
+        //    .then(text => {
+        //         console.log("Raw Response Text:", text);
+        //         return JSON.parse(text);
+        //     })
             .then(data => {
-                console.log(data);
                 if (data.status === 'success') {
                     // Utilisateur connecté
-                    console.log('Utilisateur connecté:', data.user);
+                    console.log('Utilisateur connecté:', data.username);
                 } else {
                     this.passwordError = data.message;
                 }
