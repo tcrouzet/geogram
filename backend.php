@@ -13,20 +13,25 @@ require_once(__DIR__ . '/admin/filemanager.php');
 require_once(__DIR__ . '/admin/functions.php');
 require_once(__DIR__ . '/admin/mylogs.php');
 
-lecho("Backend start");
-
 init();
 
 $view = $_POST['view'] ?? '';
 $page = $_POST['page'] ?? '';
 $userid = $_POST['userid'] ?? '';
 $chatobj = $_POST['chatobj'] ?? '';
-if($chatobj) $chatobj = json_decode($chatobj, true);
 
-if($page=="userlogs" && isset($userid)){
+lecho("Backend:", $view);
+
+if($view == "login") {
+    $data = get_login();
+}elseif($view == "createuser") {
+    $data = create_user();
+}elseif($page=="userlogs" && isset($userid) && $chatobj){
     $data = get_user_logs($userid, $chatobj);
-} else {
+} elseif($chatobj) {
     $data = get_chat_logs($chatobj);
+} else {
+    $data = [];
 }
 
 
@@ -49,6 +54,8 @@ function get_user_logs($userid, $chatid) {
 
 function get_chat_logs($chatobj){
     global $mysqli;
+
+    $chatobj = json_decode($chatobj, true);
 
     $fileManager = new FileManager();
 
@@ -103,4 +110,78 @@ function get_chat_logs($chatobj){
 
 }
 
+function get_login(){
+    global $mysqli;
+
+    $email = $_POST['email'] ?? '';
+    if(!empty($email)){
+        $isEmailValid = filter_var($email, FILTER_VALIDATE_EMAIL);
+    }else{
+        $isEmailValid = false;
+    }
+
+    $password = $_POST['password'] ?? '';
+    if(!empty($password)){
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $isPasswordValid = password_verify($password, $hashedPassword);
+    }else{
+        $isPasswordValid = false;
+    }
+
+    if ($isEmailValid && $isPasswordValid) {
+        $query = "SELECT * FROM users WHERE useremail=?;";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result && $result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            if (password_verify($user['userpsw'],$hashedPassword)) {
+                return ['status' => 'success', 'userdata' => $user];
+            } else {
+                return ['status' => 'error', 'message' => 'Invalid password'];
+            }
+        } else {
+            return ['status' => 'not_found', 'message' => $email.' not found, do you want to sign in?', 'email' => $email, 'password' => $hashedPassword];
+        }
+    }
+
+}
+
+function create_user(){
+    global $mysqli;
+
+    lecho("CreateUser");
+
+    $result = get_login();
+
+    lecho($result);
+
+    if($result['status'] != 'not_found') return ['status' => "fail", 'message' => "Allready there…"];
+
+    list($username, $domain) = explode('@', $result['email']);
+    $userinitials = initial($username);
+    $usercolor = getDarkColorCode(rand(0,10000));
+
+    $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userpsw) VALUES (?, ?, ?, ?, ?)";
+    $insertStmt = $mysqli->prepare($insertQuery);
+    $insertStmt->bind_param("sssss", $username, $userinitials, $usercolor, $result['email'], $result['password']);
+    
+    if ($insertStmt->execute()) {
+        // Retourne les données du nouvel utilisateur
+        return [
+            'status' => "success",
+            'userid' => $mysqli->insert_id,
+            'useremail' => $result['email']
+        ];
+    } else {
+        // Erreur lors de la création de l'utilisateur
+        return [
+            'status' => "fail",
+            'message' => "Can't add user"
+        ];
+    }
+
+}
 ?>

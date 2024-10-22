@@ -50,6 +50,8 @@ if($group=="help"){
     $archives="archives";
     require("admin/une.php");
     require("admin/footer.php");
+}elseif($group=="login"){
+    require("admin/login.php");
 
 }elseif(!empty($group)){
     $chatObj = get_chat_by_name($group);
@@ -65,7 +67,7 @@ if($group=="help"){
             if(empty($start) || $start>time()){
                 $start = 0;
             }
-            if($group=="g727_2024")
+            if($group=="g727_2024" || $group=="login")
                 require("admin/map_2.php");
             else
                 require("admin/map.php");
