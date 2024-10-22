@@ -163,7 +163,7 @@ document.addEventListener('alpine:init', () => {
             .then(data => {
                 if (data.status === 'success') {
                     // Utilisateur connecté
-                    console.log('Utilisateur connecté:', data.username);
+                    this.connected(data.userdata)
                 } else {
                     this.passwordError = data.message;
                 }
@@ -171,6 +171,11 @@ document.addEventListener('alpine:init', () => {
             .catch(error => console.error('ErrorFetch:', error));
         },
 
+
+        connected(userdata){
+            console.log('Utilisateur connecté:', userdata.username);
+            localStorage.setItem('user', userdata);
+        },
 
         // Fonction pour gérer la connexion via Google
         loginWithGoogle() {

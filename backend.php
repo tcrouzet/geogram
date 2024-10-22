@@ -170,11 +170,17 @@ function create_user(){
     
     if ($insertStmt->execute()) {
         // Retourne les données du nouvel utilisateur
-        return [
-            'status' => "success",
+        $user = [
             'userid' => $mysqli->insert_id,
             'useremail' => $result['email'],
-            'username' => $username
+            'username' => $username,
+            'userinitials' => $userinitials,
+            'usercolor' => $usercolor,
+            'userimg' => ''
+        ];
+        return [
+            'status' => "success",
+            'userdata' => $user
         ];
     } else {
         // Erreur lors de la création de l'utilisateur
