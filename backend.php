@@ -119,32 +119,30 @@ function get_login(){
     }else{
         $isEmailValid = false;
     }
-
-    $password = $_POST['password'] ?? '';
-    if(!empty($password)){
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $isPasswordValid = password_verify($password, $hashedPassword);
-    }else{
-        $isPasswordValid = false;
+    if(!$isEmailValid){
+         return ['status' => 'error', 'message' => 'Invalid email'];
     }
 
-    if ($isEmailValid && $isPasswordValid) {
-        $query = "SELECT * FROM users WHERE useremail=?;";
-        $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    
-        if ($result && $result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            if (password_verify($user['userpsw'],$hashedPassword)) {
-                return ['status' => 'success', 'userdata' => $user];
-            } else {
-                return ['status' => 'error', 'message' => 'Invalid password'];
-            }
+    $password = $_POST['password'] ?? '';
+    if (empty($password)) {
+        return ['status' => 'error', 'message' => 'Invalid password'];
+    }
+
+    $query = "SELECT * FROM users WHERE useremail=?;";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        if (password_verify($password, $user['userpsw'])) {
+            return ['status' => 'success', 'userdata' => $user];
         } else {
-            return ['status' => 'not_found', 'message' => $email.' not found, do you want to sign in?', 'email' => $email, 'password' => $hashedPassword];
+            return ['status' => 'error', 'message' => 'Wrong password'];
         }
+    } else {
+        return ['status' => 'not_found', 'message' => $email.' not found, do you want to sign in?', 'email' => $email, 'password' => $password];
     }
 
 }
@@ -155,18 +153,21 @@ function create_user(){
     lecho("CreateUser");
 
     $result = get_login();
-
-    lecho($result);
-
-    if($result['status'] != 'not_found') return ['status' => "fail", 'message' => "Allready there…"];
+    if($result['status'] != 'not_found') return ['status' => "fail", 'message' => "User allready there…"];
 
     list($username, $domain) = explode('@', $result['email']);
     $userinitials = initial($username);
     $usercolor = getDarkColorCode(rand(0,10000));
 
+    $hashedPassword = password_hash($result['password'], PASSWORD_DEFAULT);
+    $isPasswordValid = password_verify($result['password'], $hashedPassword);
+    if(!$isPasswordValid){
+        return ['status' => "fail", 'message' => "Bad password"];
+    }
+
     $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userpsw) VALUES (?, ?, ?, ?, ?)";
     $insertStmt = $mysqli->prepare($insertQuery);
-    $insertStmt->bind_param("sssss", $username, $userinitials, $usercolor, $result['email'], $result['password']);
+    $insertStmt->bind_param("sssss", $username, $userinitials, $usercolor, $result['email'], $hashedPassword);
     
     if ($insertStmt->execute()) {
         // Retourne les données du nouvel utilisateur

@@ -1,0 +1,5 @@
+{
+    "intelephense.files.exclude": [
+      "**/vendor/**"
+    ]
+}

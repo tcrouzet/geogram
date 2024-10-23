@@ -2,13 +2,12 @@
 html_header( $group." Map" );
 ?>
 
-<div x-data="app()" id="alpine">
-    <!-- Section Top -->
-    <header>
-    </header>
+<div id="page">
+
+    <?php include 'header.php'; ?>
 
     <!-- Section Content -->
-    <main>
+    <main x-data="loginComponent()" >
         <div id="login">
             <h1>Welcome</h1>
             <p>Log in/Sign in to Geogram.</p>
@@ -43,9 +42,8 @@ html_header( $group." Map" );
         </div>
     </main>
 
-    <!-- Section Bottom -->
-    <footer>
-    </footer>
+    <?php include 'footer.php'; ?>
+
 </div>
 
 <?php
@@ -54,7 +52,7 @@ html_footer();
 
 <script>
 document.addEventListener('alpine:init', () => {
-    Alpine.data('app', () => ({
+    Alpine.data('loginComponent', () => ({
 
         // Variables locales pour la gestion de l'authentification
         email: '',
@@ -120,10 +118,10 @@ document.addEventListener('alpine:init', () => {
                 //console.log(data);
                 if (data.status === 'success') {
                     // Utilisateur connecté
-                    console.log('Utilisateur connecté:', data.user);
+                    this.connected(data.userdata)
                 } else if (data.status === 'not_found') {
                     if (confirm(data.message)) {
-                        this.createUser(data);
+                        this.createUser();
                     }
                 } else {
                     this.passwordError = data.message;
@@ -133,13 +131,13 @@ document.addEventListener('alpine:init', () => {
         },
 
     
-        createUser(data){
-            console.log("new user", data);
+        createUser(){
+            console.log("new user");
 
             const formData = new URLSearchParams();
             formData.append('view', 'createuser');
-            formData.append('email', data.email);
-            formData.append('password', data.password);
+            formData.append('email', this.email);
+            formData.append('password', this.password);
 
             fetch('backend.php', {
                 method: 'POST',
@@ -174,7 +172,8 @@ document.addEventListener('alpine:init', () => {
 
         connected(userdata){
             console.log('Utilisateur connecté:', userdata.username);
-            localStorage.setItem('user', userdata);
+            localStorage.setItem('user', JSON.stringify(userdata));
+            window.location.href = `/user/`
         },
 
         // Fonction pour gérer la connexion via Google

@@ -9,6 +9,10 @@
         "maxh/php-nominatim": "^2.3",
         "cmfcmf/openweathermap-php-api": "^3.3",
         "http-interop/http-factory-guzzle": "^1.0",
-        "php-http/guzzle7-adapter": "^1.0"
+        "php-http/guzzle7-adapter": "^1.0",
+        "league/oauth2-google": "^4.0",
+        "league/oauth2-facebook": "^2.2",
+        "google/apiclient": "*",
+        "facebook/graph-sdk": "^5.1"
     }
 }

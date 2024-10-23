@@ -1,37 +1,24 @@
 <?php
 html_header( $group." Map" );
-//menu();
 ?>
 
-<div x-data="app()" id="alpine">
-    <!-- Section Top -->
-    <header>
-        <h1 x-text="title"></h1>
-        <button @click="toggleMenu">Menu</button>
-        <ul x-show="menuOpen">
-            <li><a href="#" @click.prevent="loadData('map')">Carte</a></li>
-            <li><a href="#" @click.prevent="loadData('list')">Liste</a></li>
-        </ul>
-    </header>
+<div id="page">
+
+    <?php include 'header.php'; ?>
 
     <!-- Section Content -->
-    <main>
+    <main x-data="mapComponent()">
         <div x-show="view === 'map'" id="map" x-init="initializeMap"></div>
         <div x-show="view === 'list'" id="list"></div>
     </main>
 
+    <?php include 'footer.php'; ?>
 
-    <!-- Section Bottom -->
-    <footer>
-        <button @click="action_fitall">FitAll</button>
-        <button @click="action_fitgpx">FitGPX</button>
-        <button @click="action_localise">Localise</button>
-    </footer>
 </div>
 
 <script>
 document.addEventListener('alpine:init', () => {
-    Alpine.data('app', () => ({
+    Alpine.data('mapComponent', () => ({
         chatobj: <?php echo json_encode($chatObj); ?>,
         userid: <?php echo json_encode($id); ?>,
         page: <?php echo json_encode($page); ?>,
@@ -44,7 +31,7 @@ document.addEventListener('alpine:init', () => {
         geoJsonLayer: null,
 
         initializeMap() {
-            //console.log('Initializing Map...');
+            console.log('Initializing Map...');
             this.map = L.map('map').setView([0, 0], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
@@ -52,14 +39,17 @@ document.addEventListener('alpine:init', () => {
             }).addTo(this.map);
             this.loadData('map');
 
-        },
+            // Enregistrer les fonctions dans le store
+            Alpine.store('mapActions', {
+                actionFitAll: () => this.action_fitall(),
+                actionFitGPX: () => this.action_fitgpx(),
+                actionLocalise: () => this.action_localise()
+            });
 
-        toggleMenu() {
-            this.menuOpen = !this.menuOpen;
         },
 
         loadData() {
-
+            console.log("loadData");
             const formData = new URLSearchParams();
             formData.append('view', this.view);
             formData.append('page', this.page);
@@ -88,7 +78,7 @@ document.addEventListener('alpine:init', () => {
             // })
             .then(data => {
                 //console.log(data);
-                this.data = data;
+                //this.data = data;
                 if (this.view === 'map') {
                     this.updateMap(data);
                 } else if (type === 'list') {
@@ -100,6 +90,7 @@ document.addEventListener('alpine:init', () => {
 
 
         updateMap(data) {
+            console.log("updateMap");
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
             this.cursors = [];
@@ -225,7 +216,7 @@ document.addEventListener('alpine:init', () => {
                 navigator.geolocation.getCurrentPosition(position => {
                     const { latitude, longitude } = position.coords;
                     console.log(latitude, longitude)
-                    // // Send location to server
+                    // Send location to server
                     // fetch('/api/update-location', {
                     //     method: 'POST',
                     //     headers: {
@@ -254,6 +245,7 @@ document.addEventListener('alpine:init', () => {
                 this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
             }
         }
+
     }));
 });
 </script>

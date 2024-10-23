@@ -39,19 +39,22 @@ $fileManager = new FileManager();
 
 if($group=="help"){
     require("admin/help.php");
-    require("admin/footer.php");
+    html_footer();
 }elseif($group=="news_fr"){
     require("admin/news.php");
-    require("admin/footer.php");
+    html_footer();
 }elseif($group=="contact"){
     require("admin/contact.php");
-    require("admin/footer.php");
+    html_footer();
 }elseif($group=="archives"){
     $archives="archives";
     require("admin/une.php");
-    require("admin/footer.php");
+    html_footer();
 }elseif($group=="login"){
     require("admin/login.php");
+}elseif($group=="user"){
+    $userid = $page;
+    require("admin/user.php");
 
 }elseif(!empty($group)){
     $chatObj = get_chat_by_name($group);
@@ -77,12 +80,12 @@ if($group=="help"){
         $group="404";
         require("admin/404_page.php");
     }
-    require("admin/footer.php");
+    html_footer();
 
 }else{
     $archives="";
     require("admin/une.php");
-    require("admin/footer.php");
+    html_footer();
 }
 
 
