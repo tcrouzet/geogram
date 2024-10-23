@@ -1,5 +1,5 @@
 <?php
-html_header( $group." Map" );
+html_header( "Geogram login" );
 ?>
 
 <div id="page">
@@ -8,38 +8,98 @@ html_header( $group." Map" );
 
     <!-- Section Content -->
     <main x-data="loginComponent()" >
-        <div id="login">
-            <h1>Welcome</h1>
-            <p>Log in/Sign in to Geogram.</p>
 
-            <button class="btn btn-google" @click="loginWithGoogle()" x-bind:disabled="loading">
-                Continue with Google
-            </button>
+        <template x-if="!isLoggedIn">
 
-            <button class="btn btn-facebook" @click="loginWithFacebook()" x-bind:disabled="loading">
-                Continue with Facebook
-            </button>
-    
-            <div class="divider">OR</div>
+            <div id="login" class="loginwidth">
 
-            <input type="email" placeholder="Email" class="input-field" x-model="email" required  @input="validateEmail">
-            <div x-show="emailError" class="error-message" x-text="emailError"></div>
+                <input type="hidden" x-model="formType" value="login"> 
 
-            <input type="password"
-                placeholder="Password"
-                class="input-field"
-                x-model="password"
-                required
-                minlength="8"
-                maxlength="20"
-                @input="checkPasswordLength">
-            <div x-show="passwordError" class="error-message" x-text="passwordError"></div>
+                <h1>Welcome</h1>
+                <p>Log in/Sign in to Geogram.</p>
 
-            <button class="btn btn-submit" type="submit" @click="loginWithForm()" x-bind:disabled="loading">
-                Continue
-            </button>
+                <button class="btn btn-google" @click="loginWithGoogle()" x-bind:disabled="loading">
+                    Continue with Google
+                </button>
 
-        </div>
+                <button class="btn btn-facebook" @click="loginWithFacebook()" x-bind:disabled="loading">
+                    Continue with Facebook
+                </button>
+        
+                <div class="divider">OR</div>
+
+                <input type="email" placeholder="Email" class="input-field" x-model="email" required  @input="validateEmail">
+                <div x-show="emailError" class="error-message" x-text="emailError"></div>
+
+                <input type="password"
+                    placeholder="Password"
+                    class="input-field"
+                    x-model="password"
+                    required
+                    minlength="8"
+                    maxlength="20"
+                    @input="checkPasswordLength">
+                <div x-show="passwordError" class="error-message" x-text="passwordError"></div>
+
+                <button class="btn btn-submit" type="submit" @click="loginWithForm()" x-bind:disabled="loading">
+                    Continue
+                </button>
+
+            </div>
+        </template>
+
+        <template x-if="isLoggedIn">
+            <div id="login" class="userwidth">
+
+                <input type="hidden" x-model="formType" value="update"> 
+
+                <div class="divider">User</div>
+
+                <div class="input-group">
+                    <label>Email:</label>
+                    <input type="email" placeholder="Email" class="input-field" x-model="email" required @input="validateEmail">
+                </div>
+                <div x-show="emailError" class="error-message" x-text="emailError"></div>
+
+                <div class="input-group">
+                    <label>User name:</label>
+                    <input type="text" placeholder="User name" class="input-field" x-model="username" required  @input="checkUsername">
+                </div>
+                <div x-show="usernameError" class="error-message" x-text="usernameError"></div>
+
+                <div class="input-group">
+                    <label>New password:</label>
+                    <input type="password"
+                        placeholder="Password"
+                        class="input-field"
+                        x-model="password"
+                        required
+                        minlength="8"
+                        maxlength="20"
+                        @input="checkPasswordLength">
+                </div>
+                <div x-show="passwordError" class="error-message" x-text="passwordError"></div>
+
+                <!-- Champ pour uploader l'image -->
+                <div class="input-group">
+                    <label>Profile Image (JPEG only):</label>
+                    <input type="file" @change="handleFileUpload" x-ref="fileInput" accept="image/jpeg" class="input-field">
+                    <div x-show="fileError" class="error-message" x-text="fileError"></div>
+                </div>
+
+                <!-- Prévisualisation de l'image (optionnel) -->
+                <div class="input-group" x-show="previewImage">
+                    <label>Image Preview:</label>
+                    <img :src="previewImage" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
+                </div>
+
+                <button class="btn btn-submit" type="submit" @click="loginWithForm()" x-bind:disabled="loading">
+                    Continue
+                </button>
+
+            </div>  
+        </template>
+
     </main>
 
     <?php include 'footer.php'; ?>
@@ -55,11 +115,26 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('loginComponent', () => ({
 
         // Variables locales pour la gestion de l'authentification
+        user: null,
+        isLoggedIn: false,
         email: '',
+        username: '',
         password: '',
         emailError: '',
+        usernameError: '',
+        fileError: '',
+        previewImage: null,
+        selectedFile: null,
         passwordError: '',
+        formType: '',
         loading: false,
+
+        init(){
+            this.user = Alpine.store('headerActions').user;
+            this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
+            this.email = this.user.useremail;
+            this.username = this.user.username;
+        },
 
         validateEmail() {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,6 +142,16 @@ document.addEventListener('alpine:init', () => {
                 this.emailError = 'Please enter a valid email address.';
             } else {
                 this.emailError = '';
+            }
+        },
+
+        checkUsername() {
+            if (this.username.length < 2) {
+                this.usernameError = 'Unsername must be at least 2 characters.';
+            } else if (this.username.length > 30) {
+                this.usernameError = 'Username must not exceed 30 characters.';
+            } else {
+                this.usernameError = '';
             }
         },
 
@@ -100,6 +185,9 @@ document.addEventListener('alpine:init', () => {
             formData.append('view', 'login');
             formData.append('email', this.email);
             formData.append('password', this.password);
+            formData.append('formType', this.formType);
+            selectedFile
+            username
 
             fetch('backend.php', {
                 method: 'POST',
@@ -138,6 +226,7 @@ document.addEventListener('alpine:init', () => {
             formData.append('view', 'createuser');
             formData.append('email', this.email);
             formData.append('password', this.password);
+            formData.append('formType', this.formType);
 
             fetch('backend.php', {
                 method: 'POST',
@@ -171,9 +260,9 @@ document.addEventListener('alpine:init', () => {
 
 
         connected(userdata){
-            console.log('Utilisateur connecté:', userdata.username);
+            console.log('Utilisateur connecté:', userdata);
             localStorage.setItem('user', JSON.stringify(userdata));
-            window.location.href = `/user/`
+            window.location.href = `/login/`
         },
 
         // Fonction pour gérer la connexion via Google
@@ -198,7 +287,27 @@ document.addEventListener('alpine:init', () => {
                 alert('Redirection vers Facebook...');
                 this.loading = false;
             }, 2000);
-        }
+        },
+
+        handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Vérifier si le fichier est bien un JPEG
+            if (file.type !== 'image/jpeg') {
+                this.fileError = "Please upload a JPEG file.";
+                this.selectedFile = null;
+                this.previewImage = null;
+                return;
+            }
+
+            // S'il est valide, stockez-le et préparez la prévisualisation
+            this.fileError = '';
+            this.selectedFile = file;
+
+            // Générer un URL de prévisualisation
+            this.previewImage = URL.createObjectURL(file);
+        },
     }));
 });
 </script>

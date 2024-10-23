@@ -2,7 +2,10 @@
 <!-- Section Top -->
 <header x-data="headerComponent()">
 
+    <div id="geogram"><a href="/">Geogram</a></div>
+
     <div  id="signin">
+
         <template x-if="isLoggedIn">
             <div class="user-menu">
                 <button @click="menuOpen = !menuOpen" class="icon-button">
@@ -13,13 +16,17 @@
                     </div>
                 </button>
                 <div x-show="menuOpen" @click.outside="menuOpen = false" class="dropdown-menu">
-                    <a href="#" @click.prevent="logout">Parameters</a>
+                    <a href="#" @click.prevent="newroute">Routes</a>
+                    <a href="#" @click.prevent="userpage">Parameters</a>
                     <a href="#" @click.prevent="logout">Logout</a>
                 </div>
             </div>
         </template>
+
         <template x-if="!isLoggedIn">
-            <p>Sign in</p>
+            <div class="user-sign">
+                <a href="#" @click.prevent="login">Log in/Sign in</a>
+            </div>
         </template>
     </div>
 </header>
@@ -31,16 +38,25 @@ document.addEventListener('alpine:init', () => {
 
         user: null,
         menuOpen: false,
+        isLoggedIn: false,
 
         init() {
-            console.log("Initializing...");
+            console.log("Initializing header");
             this.user = this.getUserFromLocalStorage();
+            this.isLoggedIn = this.user !== null;
+            console.log(this.user, this.isLoggedIn);
+
+            // Enregistrer les fonctions dans le store
+            Alpine.store('headerActions', {
+                user: this.user,
+                isLoggedIn: this.isLoggedIn,
+                //isLoggedIn: () => this.isLoggedIn(),
+                //getUserFromLocalStorage: () => this.getUserFromLocalStorage(),
+            });
+
+            console.log("Store initialized:", Alpine.store('headerActions'));
         },
         
-        isLoggedIn() {
-            return this.user !== null;
-        },
-
         getUserFromLocalStorage() {
             const user = localStorage.getItem('user');
             const userData = user ? JSON.parse(user) : null;
@@ -55,12 +71,27 @@ document.addEventListener('alpine:init', () => {
             return $style;
         },
 
+        userpage() {
+            window.location.href = `/login`;
+        },
+
         logout() {
             // Logique de déconnexion
-            localStorage.setItem('user', null);
+            localStorage.removeItem('user');
             this.isLoggedIn = false;
             window.location.href = `/`;
-        }
+        },
+
+        login() {
+            // Logique de déconnexion
+            window.location.href = `/login`;
+        },
+
+        newroute() {
+            window.location.href = `/routes`;
+        },
+
+
     }));
 });
 </script>

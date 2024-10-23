@@ -192,4 +192,55 @@ function create_user(){
     }
 
 }
+
+function new_route(){
+    global $mysqli;
+
+    $routename = $_POST['routename'] ?? '';
+    if(!empty($routename)){
+        return ['status' => 'error', 'message' => 'Invalid routename'];
+    }
+    $formType = $_POST['formType'] ?? '';
+    $userid = $_POST['userid'] ?? '';
+
+    $query = "SELECT * FROM routes WHERE routename=?;";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("s", $routename);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        if ($formType=="newroute"){
+            return ['status' => 'error', 'message' => 'Route exists'];
+        }
+        if ($formType=="routeupdate"){
+            $route = $result->fetch_assoc();
+        }
+    } else {
+        $insertQuery = "INSERT INTO routes (routename, routeuserid) VALUES (?, ?)";
+        $insertStmt = $mysqli->prepare($insertQuery);
+        $insertStmt->bind_param("si", $routename, $userid);
+        
+        if ($insertStmt->execute()) {
+            // Retourne les données du nouvel utilisateur
+            $route = [
+                'routeid' => $mysqli->insert_id,
+                'routename' => $routename,
+                'routeuserid' => $userid,
+            ];
+            return [
+                'status' => "success",
+                'routedata' => $route
+            ];
+        } else {
+            return [
+                'status' => "fail",
+                'message' => "Can't add route"
+            ];
+        }
+    
+    }
+
+}
+
 ?>

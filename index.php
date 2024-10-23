@@ -52,10 +52,10 @@ if($group=="help"){
     html_footer();
 }elseif($group=="login"){
     require("admin/login.php");
-}elseif($group=="user"){
-    $userid = $page;
-    require("admin/user.php");
-
+}elseif($group=="test"){
+    require("admin/test.php");
+}elseif($group=="routes"){
+    require("admin/routes.php");
 }elseif(!empty($group)){
     $chatObj = get_chat_by_name($group);
     if($chatObj){
