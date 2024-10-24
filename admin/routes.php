@@ -22,8 +22,6 @@ html_header( "Geogram routes" );
         <template x-if="isLoggedIn">
             <div id="login" class="userwidth">
 
-                <input type="hidden" x-model="formType" value="newroute"> 
-
                 <div class="input-group">
                     <input type="text" placeholder="Route name" class="input-field" x-model="routename" required minlength="3" maxlength="30" @input="checkRoutename">
                 </div>
@@ -49,7 +47,7 @@ html_header( "Geogram routes" );
                 </div> -->
 
 
-                <button class="btn btn-submit" type="submit" @click="newRouteForm()" x-bind:disabled="loading">
+                <button class="btn btn-submit" type="submit" @click="newRouteForm('newroute')" x-bind:disabled="loading">
                     New route
                 </button>
 
@@ -80,7 +78,6 @@ document.addEventListener('alpine:init', () => {
         fileError: '',
         previewImage: null,
         selectedFile: null,
-        formType: '',
         userid: null,
         loading: false,
 
@@ -105,7 +102,7 @@ document.addEventListener('alpine:init', () => {
 
 
         // Fonction pour gérer la connexion via le formulaire
-        newRouteForm() {
+        newRouteForm(formType) {
             console.log("newRouteForm1");
 
             if (this.routenameError) {
@@ -122,17 +119,18 @@ document.addEventListener('alpine:init', () => {
             }
 
             const formData = new URLSearchParams();
-            formData.append('view', 'newroute');
+            formData.append('view', 'route');
             formData.append('routename', this.routename);
             formData.append('userid', this.userid);
-            formData.append('formType', this.formType);
+            formData.append('formType', formType);
 
             console.log(formData);
 
             fetch('backend.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.auth_token}`
                 },
                 body: formData.toString()
             })
@@ -198,7 +196,7 @@ document.addEventListener('alpine:init', () => {
 
         rooted(routedata){
             console.log('Utilisateur connecté:', routedata);
-            localStorage.setItem('route', JSON.stringify(rootedata));
+            localStorage.setItem('route', JSON.stringify(routedata));
             window.location.href = `/routes/`
         },
 

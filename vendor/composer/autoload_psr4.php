@@ -34,6 +34,5 @@ return array(
     'Google\\Auth\\' => array($vendorDir . '/google/auth/src'),
     'Google\\' => array($vendorDir . '/google/apiclient/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
-    'Facebook\\' => array($vendorDir . '/facebook/graph-sdk/src/Facebook'),
     'Cmfcmf\\' => array($vendorDir . '/cmfcmf/openweathermap-php-api/Cmfcmf'),
 );

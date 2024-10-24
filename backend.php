@@ -13,6 +13,9 @@ require_once(__DIR__ . '/admin/filemanager.php');
 require_once(__DIR__ . '/admin/functions.php');
 require_once(__DIR__ . '/admin/mylogs.php');
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
 init();
 
 $view = $_POST['view'] ?? '';
@@ -26,6 +29,8 @@ if($view == "login") {
     $data = get_login();
 }elseif($view == "createuser") {
     $data = create_user();
+}elseif($view == "route") {
+    $data = new_route();
 }elseif($page=="userlogs" && isset($userid) && $chatobj){
     $data = get_user_logs($userid, $chatobj);
 } elseif($chatobj) {
@@ -137,6 +142,10 @@ function get_login(){
     if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
         if (password_verify($password, $user['userpsw'])) {
+
+            $user['auth_token'] = saveToken($user['userid']);
+            unset($user['userpsw']);
+
             return ['status' => 'success', 'userdata' => $user];
         } else {
             return ['status' => 'error', 'message' => 'Wrong password'];
@@ -171,20 +180,31 @@ function create_user(){
     
     if ($insertStmt->execute()) {
         // Retourne les données du nouvel utilisateur
-        $user = [
-            'userid' => $mysqli->insert_id,
-            'useremail' => $result['email'],
-            'username' => $username,
-            'userinitials' => $userinitials,
-            'usercolor' => $usercolor,
-            'userimg' => ''
-        ];
-        return [
-            'status' => "success",
-            'userdata' => $user
-        ];
+        $token = saveToken($mysqli->insert_id);
+        if ($token){
+            $user = [
+                'userid' => $mysqli->insert_id,
+                'useremail' => $result['email'],
+                'username' => $username,
+                'userinitials' => $userinitials,
+                'usercolor' => $usercolor,
+                'userimg' => '',
+                'auth_token' => $token
+            ];
+            return [
+                'status' => "success",
+                'userdata' => $user,
+                'route' => null
+            ];
+        } else {
+            return [
+                'status' => "fail",
+                'message' => "Bad token"
+            ];    
+        }
     } else {
         // Erreur lors de la création de l'utilisateur
+        delete_user($mysqli->insert_id);
         return [
             'status' => "fail",
             'message' => "Can't add user"
@@ -196,12 +216,18 @@ function create_user(){
 function new_route(){
     global $mysqli;
 
+    lecho($_POST);
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
     $routename = $_POST['routename'] ?? '';
-    if(!empty($routename)){
-        return ['status' => 'error', 'message' => 'Invalid routename'];
+    if(empty($routename)){
+        return ['status' => 'error', 'message' => 'Empty routename'];
     }
     $formType = $_POST['formType'] ?? '';
-    $userid = $_POST['userid'] ?? '';
 
     $query = "SELECT * FROM routes WHERE routename=?;";
     $stmt = $mysqli->prepare($query);
@@ -211,7 +237,7 @@ function new_route(){
 
     if ($result && $result->num_rows > 0) {
         if ($formType=="newroute"){
-            return ['status' => 'error', 'message' => 'Route exists'];
+            return ['status' => 'error', 'message' => 'Route already exists'];
         }
         if ($formType=="routeupdate"){
             $route = $result->fetch_assoc();
@@ -223,6 +249,7 @@ function new_route(){
         
         if ($insertStmt->execute()) {
             // Retourne les données du nouvel utilisateur
+            updateRoute($userid,$mysqli->insert_id);
             $route = [
                 'routeid' => $mysqli->insert_id,
                 'routename' => $routename,
@@ -241,6 +268,79 @@ function new_route(){
     
     }
 
+}
+
+function generateToken($userid) {
+    $payload = [
+        'iss' => GEO_DOMAIN,           // Émetteur
+        'aud' => GEO_DOMAIN,           // Audience
+        'iat' => time(),               // Temps d'émission
+        'exp' => time() + 86400*90,    // Expiration (90 jours)
+        'sub' => $userid               // Sujet (ID utilisateur)
+    ];
+
+    $secretKey = JWT_SECRET;
+    return JWT::encode($payload, $secretKey, 'HS256');
+}
+
+function validateToken($jwt) {
+    try {
+        $decoded = JWT::decode($jwt, new Key(JWT_SECRET, 'HS256'));
+        return $decoded;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function saveToken($userid){
+    global $mysqli;
+
+    $token = generateToken($userid);
+
+    $stmt = $mysqli->prepare("UPDATE users SET auth_token = ? WHERE userid = ?");
+    $stmt->bind_param("si", $token, $userid);
+    if ($stmt->execute())
+        return $token;
+    else
+        return false;
+}
+
+function testToken($userid){
+    global $mysqli;
+
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+    list($jwt) = sscanf($authHeader, 'Bearer %s');
+    
+    $stmt = $mysqli->prepare("SELECT auth_token FROM users WHERE id = ?");
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    
+    if ($jwt && $jwt === $row['auth_token'] && validateToken($jwt)) {
+        return true;
+    } else {
+        return false;
+    }
+    
+}
+
+function delete_user($userid){
+    global $mysqli;
+    $query = "DELETE FROM users WHERE userid=$userid;";
+    $mysqli->query($query);
+    return $mysqli->affected_rows;
+}
+
+function updateRoute($userid,$routeid){
+    global $mysqli;
+
+    $stmt = $mysqli->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
+    $stmt->bind_param("si", $routeid, $userid);
+    if ($stmt->execute())
+        return true;
+    else
+        return false;
 }
 
 ?>

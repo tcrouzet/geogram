@@ -60,6 +60,7 @@ document.addEventListener('alpine:init', () => {
         getUserFromLocalStorage() {
             const user = localStorage.getItem('user');
             const userData = user ? JSON.parse(user) : null;
+            console.log("getUserFromLocalStorage OK");
             return userData;
         },
 

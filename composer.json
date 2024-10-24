@@ -13,6 +13,6 @@
         "league/oauth2-google": "^4.0",
         "league/oauth2-facebook": "^2.2",
         "google/apiclient": "*",
-        "facebook/graph-sdk": "^5.1"
+        "firebase/php-jwt": "^6.10"
     }
 }

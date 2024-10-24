@@ -11,13 +11,18 @@ define('MYSQL_HOST', "?");
 define('MYSQL_USER', "?");
 define('MYSQL_PSW', "?");
 define('MYSQL_BASE', "bikepacking");
-define('BASE_URL', "http://gep.zefal.com/");
+
+define('GEO_DOMAIN', 'geo.zefal.com');
+define('BASE_URL', "https://".GEO_DOMAIN);
 
 //To block webhook.php access
 define('ADMIN_IP', '141.101.68.22');
 
 //On home screen
-define("BASELINE", '')
+define("BASELINE", '');
+
+//Secret Key for connexion
+define('JWT_SECRET','What you want,s ee https://randomkeygen.com/');
 
 
 ?>

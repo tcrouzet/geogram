@@ -130,10 +130,12 @@ document.addEventListener('alpine:init', () => {
         loading: false,
 
         init(){
-            this.user = Alpine.store('headerActions').user;
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
-            this.email = this.user.useremail;
-            this.username = this.user.username;
+            if(this.isLoggedIn){
+                this.user = Alpine.store('headerActions').user;
+                this.email = this.user.useremail;
+                this.username = this.user.username;
+            }
         },
 
         validateEmail() {
@@ -186,8 +188,6 @@ document.addEventListener('alpine:init', () => {
             formData.append('email', this.email);
             formData.append('password', this.password);
             formData.append('formType', this.formType);
-            selectedFile
-            username
 
             fetch('backend.php', {
                 method: 'POST',
@@ -200,7 +200,12 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
+                //return response.text(); // testing
                 return response.json();
+            })
+            .then(text => {
+                console.log("Raw Response Text:", text);
+                return JSON.parse(text);
             })
             .then(data => {
                 //console.log(data);
@@ -243,10 +248,10 @@ document.addEventListener('alpine:init', () => {
                 //return response.text(); // testing
                 return response.json();
             })
-        //    .then(text => {
-        //         console.log("Raw Response Text:", text);
-        //         return JSON.parse(text);
-        //     })
+           .then(text => {
+                console.log("Raw Response Text:", text);
+                return JSON.parse(text);
+            })
             .then(data => {
                 if (data.status === 'success') {
                     // Utilisateur connecté
