@@ -16,7 +16,7 @@ define('GEO_DOMAIN', 'geo.zefal.com');
 define('BASE_URL', "https://".GEO_DOMAIN);
 
 //To block webhook.php access
-define('ADMIN_IP', '141.101.68.22');
+define('ADMIN_IPS', ['82.64.103.47']);
 
 //On home screen
 define("BASELINE", '');

@@ -13,6 +13,12 @@ define('SPACE3', '&nbsp;&nbsp;&nbsp;');
 
 init();
 
+if (in_array($_SERVER['REMOTE_ADDR'], ADMIN_IPS)) {
+    $isAdmin=true;
+}else{
+    $isAdmin=false;
+}
+
 //Analyse URL
 $host = $_SERVER['HTTP_HOST'];
 $uri = $_SERVER['REQUEST_URI'];
@@ -70,7 +76,7 @@ if($group=="help"){
             if(empty($start) || $start>time()){
                 $start = 0;
             }
-            if($group=="g727_2024" || $group=="login")
+            if($isAdmin)
                 require("admin/map_2.php");
             else
                 require("admin/map.php");

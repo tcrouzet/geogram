@@ -149,7 +149,7 @@ function cleanText($msg){
 }
 
 function html_header($pagename=""){
-    global $group,$page,$id,$chatObj,$fileManager;
+    global $group,$page,$id,$chatObj,$fileManager,$isAdmin;
 
     //dump($chatObj);
     //$version=time();
@@ -211,7 +211,7 @@ function html_header($pagename=""){
         echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
     }
 
-    if($group=="g727_2024" || $group=="login" || $group=="routes" || $group=="test"){
+    if($isAdmin){
         $version=time();
         echo "\n<link rel='stylesheet' id='style-css' href='/geogram_2.css?$version' type='text/css' media='screen' />\n";
         echo "\n<script src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\" defer></script>\n";

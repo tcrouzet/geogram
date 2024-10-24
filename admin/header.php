@@ -37,21 +37,26 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('headerComponent', () => ({
 
         user: null,
+        route: null,
         menuOpen: false,
         isLoggedIn: false,
+        isOnRoute: false,
 
         init() {
             console.log("Initializing header");
             this.user = this.getUserFromLocalStorage();
             this.isLoggedIn = this.user !== null;
             console.log(this.user, this.isLoggedIn);
+            if(this.isLoggedIn){
+                this.route = this.getRouteFromLocalStorage;
+                isOnRoute = this.route !== null;
+            }
 
             // Enregistrer les fonctions dans le store
             Alpine.store('headerActions', {
                 user: this.user,
                 isLoggedIn: this.isLoggedIn,
-                //isLoggedIn: () => this.isLoggedIn(),
-                //getUserFromLocalStorage: () => this.getUserFromLocalStorage(),
+                route: this.route,
             });
 
             console.log("Store initialized:", Alpine.store('headerActions'));
@@ -62,6 +67,11 @@ document.addEventListener('alpine:init', () => {
             const userData = user ? JSON.parse(user) : null;
             console.log("getUserFromLocalStorage OK");
             return userData;
+        },
+
+        getRouteFromLocalStorage() {
+            const route = localStorage.getItem('route');
+            return route ? JSON.parse(route) : null;
         },
 
         get userIconStyle() {

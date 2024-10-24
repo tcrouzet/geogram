@@ -22,6 +22,17 @@ html_header( "Geogram routes" );
         <template x-if="isLoggedIn">
             <div id="login" class="userwidth">
 
+
+                <div class="divider">ROUTE CONNECTOR</div>
+
+                <div id="routes"></div>
+    
+                <template x-if="isOnRoute">
+                    Your are on route
+                </template>
+
+                <div class="divider">ROUTE PLANNER</div>
+
                 <div class="input-group">
                     <input type="text" placeholder="Route name" class="input-field" x-model="routename" required minlength="3" maxlength="30" @input="checkRoutename">
                 </div>
@@ -71,6 +82,8 @@ document.addEventListener('alpine:init', () => {
         // Variables locales pour la gestion de l'authentification
         user: null,
         isLoggedIn: false,
+        route: null,
+        isOnRoute: false,
         routename: '',
         routenameError: '',
         gpxFile: null,
@@ -83,10 +96,71 @@ document.addEventListener('alpine:init', () => {
 
         init(){
             console.log("Init routes");
-            this.user = Alpine.store('headerActions').user;
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
-            this.username = this.user.username;
-            this.userid = this.user.userid;
+            if(this.isLoggedIn){
+                console.log("Logged routes");
+                this.user = Alpine.store('headerActions').user;
+                this.username = this.user.username;
+                this.userid = this.user.userid;
+                this.route = Alpine.store('headerActions').route;
+                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
+                console.log(this.isOnRoute);
+                this.loadRoutes();
+            }
+        },
+
+        loadRoutes() {
+            console.log("loadRoutes");
+            const formData = new URLSearchParams();
+            formData.append('view', "getroutes");
+            formData.append('userid', this.userid);
+
+            // console.log(formData.toString());
+
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.auth_token}`
+                },
+                body: formData.toString()
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+                //return response.text(); // testing
+            })
+            // .then(text => {
+            //     console.log("Raw Response Text:", text); // Vérifiez ici le texte brut
+            //     return JSON.parse(text); // Parse manuellement pour détecter les erreurs
+            // })
+            .then(data => {
+                console.log(data);
+                this.printRoutes(data);
+            })
+            .catch(error => console.error('Error:', error));
+        },
+
+        printRoutes(data){
+            const routesDiv = document.getElementById('routes');
+            routesDiv.innerHTML = '';
+
+            if (data.length === 0) {
+                routesDiv.innerHTML = '<p>No routes available.</p>';
+                return;
+            }
+
+            const ul = document.createElement('ul');
+                data.forEach(route => {
+                const li = document.createElement('li');
+                //li.textContent = `<a href="">${route.routename}</a>`;
+                li.innerHTML = `<a href="/${route.routeslug}">${route.routename}</a>`;
+                ul.appendChild(li);
+            });
+
+            routesDiv.appendChild(ul);
         },
 
         checkRoutename() {
@@ -138,7 +212,12 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
+                return response.text(); // testing
                 return response.json();
+            })
+            .then(text => {
+                console.log("Raw Response Text:", text);
+                return JSON.parse(text);
             })
             .then(data => {
                 //console.log(data);

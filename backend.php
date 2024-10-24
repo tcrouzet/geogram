@@ -31,6 +31,8 @@ if($view == "login") {
     $data = create_user();
 }elseif($view == "route") {
     $data = new_route();
+}elseif($view == "getroutes") {
+    $data = get_routes();
 }elseif($page=="userlogs" && isset($userid) && $chatobj){
     $data = get_user_logs($userid, $chatobj);
 } elseif($chatobj) {
@@ -216,8 +218,6 @@ function create_user(){
 function new_route(){
     global $mysqli;
 
-    lecho($_POST);
-
     $userid = $_POST['userid'] ?? '';
     if (!testToken($userid)){
         return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
@@ -229,9 +229,11 @@ function new_route(){
     }
     $formType = $_POST['formType'] ?? '';
 
-    $query = "SELECT * FROM routes WHERE routename=?;";
+    $slug = slugify($routename);
+
+    $query = "SELECT * FROM routes WHERE routename=? OR routeslug=?;";
     $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("s", $routename);
+    $stmt->bind_param("ss", $routename, $slug);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -243,16 +245,19 @@ function new_route(){
             $route = $result->fetch_assoc();
         }
     } else {
-        $insertQuery = "INSERT INTO routes (routename, routeuserid) VALUES (?, ?)";
+        $insertQuery = "INSERT INTO routes (routename, routeslug, routeuserid) VALUES (?, ?, ?)";
         $insertStmt = $mysqli->prepare($insertQuery);
-        $insertStmt->bind_param("si", $routename, $userid);
+        $insertStmt->bind_param("ssi", $routename, $slug, $userid);
         
         if ($insertStmt->execute()) {
             // Retourne les données du nouvel utilisateur
-            updateRoute($userid,$mysqli->insert_id);
+            $routeid = $mysqli->insert_id;
+            updateRoute($userid,$routeid);
+            connect($userid,$routeid);
             $route = [
-                'routeid' => $mysqli->insert_id,
+                'routeid' => $routeid,
                 'routename' => $routename,
+                'routeslug' => $slug,
                 'routeuserid' => $userid,
             ];
             return [
@@ -267,6 +272,24 @@ function new_route(){
         }
     
     }
+
+}
+
+function get_routes(){
+    global $mysqli;
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $query = "SELECT r.* FROM connectors c INNER JOIN routes r ON c.conrouteid = r.routeid WHERE c.conuserid = ?;";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $routes = $result->fetch_all(MYSQLI_ASSOC);
+    return $routes;
 
 }
 
@@ -311,7 +334,7 @@ function testToken($userid){
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
     list($jwt) = sscanf($authHeader, 'Bearer %s');
     
-    $stmt = $mysqli->prepare("SELECT auth_token FROM users WHERE id = ?");
+    $stmt = $mysqli->prepare("SELECT auth_token FROM users WHERE userid = ?");
     $stmt->bind_param("i", $userid);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -343,4 +366,25 @@ function updateRoute($userid,$routeid){
         return false;
 }
 
+function slugify($text) {
+    // Translitération des caractères spéciaux en équivalents ASCII
+    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+    // Suppression des caractères non alphanumériques et des espaces
+    $text = preg_replace('/[^a-z0-9]+/i', '-', $text);
+    // Conversion en minuscules
+    $text = strtolower($text);
+    // Suppression des tirets en début et fin de chaîne
+    $text = trim($text, '-');
+
+    return $text;
+}
+
+function connect($userid,$routeid){
+    global $mysqli;
+    lecho("connect",$userid,$routeid);
+    $insertQuery = "INSERT INTO connectors (conrouteid, conuserid) VALUES (?, ?)";
+    $insertStmt = $mysqli->prepare($insertQuery);
+    $insertStmt->bind_param("ii", $routeid, $userid);
+    return $insertStmt->execute();
+}
 ?>
