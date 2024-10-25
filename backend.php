@@ -143,7 +143,7 @@ function get_login(){
         return ['status' => 'error', 'message' => 'Invalid password'];
     }
 
-    $query = "SELECT * FROM users WHERE useremail=?;";
+    $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.useremail = ?;";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -153,7 +153,9 @@ function get_login(){
         $user = $result->fetch_assoc();
         if (password_verify($password, $user['userpsw'])) {
 
-            $user['auth_token'] = saveToken($user['userid']);
+            if (!testToken($user['userid'])){
+                $user['auth_token'] = saveToken($user['userid']);
+            }
             unset($user['userpsw']);
 
             return ['status' => 'success', 'userdata' => $user];
@@ -348,7 +350,11 @@ function testToken($userid){
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
     
-    if ($jwt && $jwt === $row['auth_token'] && validateToken($jwt)) {
+    $decoded = validateToken($jwt);
+    if ($jwt && $jwt === $row['auth_token'] && $decoded) {
+        if($decoded->exp - time() < 300) {
+            return false;
+        }
         return true;
     } else {
         return false;

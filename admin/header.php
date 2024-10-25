@@ -2,7 +2,7 @@
 <!-- Section Top -->
 <header x-data="headerComponent()">
 
-    <div id="geogram"><a href="/">Geogram</a></div>
+    <div id="geogram"><a href="/"><img src="/images/geogram-logo-2.svg" alt="Geogram"></a></div>
 
     <div  id="signin">
 
@@ -37,7 +37,6 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('headerComponent', () => ({
 
         user: null,
-        route: null,
         menuOpen: false,
         isLoggedIn: false,
         isOnRoute: false,
@@ -46,18 +45,15 @@ document.addEventListener('alpine:init', () => {
             console.log("Initializing header");
             this.user = this.getUserFromLocalStorage();
             this.isLoggedIn = this.user !== null;
-            console.log(this.user, this.isLoggedIn);
             if(this.isLoggedIn){
-                this.route = this.getRouteFromLocalStorage;
-                console.log("route:", this.route);
-                isOnRoute = this.route !== null;
+                this.isOnRoute = this.user.routeid > 0 ? true : false;
             }
 
             // Enregistrer les fonctions dans le store
             Alpine.store('headerActions', {
                 user: this.user,
                 isLoggedIn: this.isLoggedIn,
-                route: this.route,
+                isOnRoute: this.isOnRoute,
             });
 
             console.log("Store initialized:", Alpine.store('headerActions'));
@@ -65,18 +61,11 @@ document.addEventListener('alpine:init', () => {
         
         getUserFromLocalStorage() {
             const user = localStorage.getItem('user');
-            const userData = user ? JSON.parse(user) : null;
-            console.log("getUserFromLocalStorage OK");
-            return userData;
-        },
-
-        getRouteFromLocalStorage() {
-            const route = localStorage.getItem('route');
-            return route ? JSON.parse(route) : null;
+            return user ? JSON.parse(user) : null;
         },
 
         get userIconStyle() {
-            //console.log("iconStyle");
+            console.log("iconStyle");
             $style = this.user.img ? `background-image: url('${this.user.img}'); width: 34px; height: 34px; border: 2px solid white; background-size: cover;`
                 : `background-color: ${this.user.usercolor}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;`;
             //console.log($style);

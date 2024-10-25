@@ -6,6 +6,13 @@ html_header( "Geogram login" );
 
     <?php include 'header.php'; ?>
 
+    <main>
+        <div style="background-color: #000;">
+        <img src="/images/geogram-logo.svg" style="margin:0;padding:0;width: 305px;height:60px" alt="Geogram">
+        </div>
+
+    </main>
+
 
 
     <?php include 'footer.php'; ?>

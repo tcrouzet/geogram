@@ -24,27 +24,22 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('mapComponent', () => ({
         user: null,
         isLoggedIn: false,
-        route: null,
         isOnRoute: false,
-
-        menuOpen: false,
         view: 'map', // Default view
         data: {},
         map: null,
         cursors: [],
         geoJsonLayer: null,
+        bestPosition: null,
 
         init(){
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
             if(this.isLoggedIn){
                 console.log("Logged routes");
                 this.user = Alpine.store('headerActions').user;
+                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
                 this.username = this.user.username;
                 this.userid = this.user.userid;
-                this.route = Alpine.store('headerActions').route;
-                console.log(this.route.routeid);
-                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
-                console.log(this.isOnRoute);
             }
         },
 
@@ -71,7 +66,7 @@ document.addEventListener('alpine:init', () => {
             const formData = new URLSearchParams();
             formData.append('view', this.view);
             formData.append('userid', this.user.userid);
-            formData.append('routeid', this.route.routeid);
+            formData.append('routeid', this.user.routeid);
 
             // console.log(formData.toString());
 
@@ -87,17 +82,19 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-                return response.text(); // testing
+                //return response.text(); // testing
                 return response.json();
             })
-            .then(text => {
-                console.log("Raw Response Text:", text); // Vérifiez ici le texte brut
-                return JSON.parse(text); // Parse manuellement pour détecter les erreurs
-            })
+            // .then(text => {
+            //     console.log("Raw Response Text:", text); // Vérifiez ici le texte brut
+            //     return JSON.parse(text); // Parse manuellement pour détecter les erreurs
+            // })
             .then(data => {
                 //console.log(data);
                 //this.data = data;
-                if (this.view === 'map') {
+                if(data.status == 'error'){
+                    alert("Error:" + data.message);
+                }else if (this.view === 'map') {
                     this.updateMap(data);
                 } else if (type === 'list') {
                     this.updateList(data);
@@ -109,6 +106,14 @@ document.addEventListener('alpine:init', () => {
 
         updateMap(data) {
             console.log("updateMap");
+
+            console.log(data);
+            if (!data || data.length === 0) {
+                console.log("No cursors.");
+                this.action_localise();
+                return;
+            }
+
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
             this.cursors = [];
@@ -155,6 +160,7 @@ document.addEventListener('alpine:init', () => {
                 const bounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(this.markerBounds, { maxZoom: 10 });
             } else {
+                //No cursor
                 this.action_localise();
             }
         },
@@ -231,7 +237,7 @@ document.addEventListener('alpine:init', () => {
             cursor.setIcon(customMarker);
         },
 
-        action_localise() {
+        action_localise1() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
                     const { latitude, longitude } = position.coords;
@@ -242,6 +248,105 @@ document.addEventListener('alpine:init', () => {
                 });
             } else {
                 alert('Geolocalisation not supported in this browser.');
+            }
+        },
+
+        action_localise() {
+            if (navigator.geolocation) {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                };
+
+                this.bestPosition = null;
+                let bestAccuracy = Infinity;
+                let firstwatch = true;
+
+                const watchId = navigator.geolocation.watchPosition(
+                    position => {
+                        const { latitude, longitude, accuracy } = position.coords;
+                        console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${accuracy}m`);
+
+                        if (accuracy < bestAccuracy) {
+                            this.bestPosition = [ latitude, longitude ];
+                            bestAccuracy = Math.floor(accuracy);
+                        }
+
+                        if (bestAccuracy < 20) {
+                            this.finalizePosition(watchId);
+                        }else{
+                            if(firstwatch){
+                                this.showPopup("Looking for position...");
+                                firstwatch = false;
+                            }else{
+                                this.updatePopup(`Accuracy: ${bestAccuracy}m`, watchId);
+                            }
+                        }
+                    },
+                    error => {
+                        alert('Geolocalisation Error:' + error);
+                    },
+                    options
+                );
+            } else {
+                alert('Geoilocation not suppored.');
+            }
+        },
+
+        finalizePosition(watchId) {
+            navigator.geolocation.clearWatch(watchId);
+            L.marker(this.bestPosition).addTo(this.map).bindTooltip("Tourposition");
+            this.map.setView(this.bestPosition, 13);
+            this.removePopup();
+        },
+
+        updatePopup(message) {
+            const popup = document.getElementById('geoPopup');
+            if (popup) {
+                popup.querySelector('p').textContent = message;
+            }
+        },
+
+        updatePopup(message, watchId) {
+            const popup = document.getElementById('geoPopup');
+            if (popup) {
+                popup.querySelector('p').textContent = message;
+                if (!document.getElementById('confirmBtn')) {
+                    const button = document.createElement('button');
+                    button.id = 'confirmBtn';
+                    button.textContent = 'Validate';
+                    button.addEventListener('click', () => {
+                        this.finalizePosition(watchId);
+                    });
+                    popup.appendChild(button);
+                }
+            }
+        },
+
+        showPopup(message) {
+            let popup = document.getElementById('geoPopup');
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.id = 'geoPopup';
+                popup.className = 'geo-popup';
+                popup.innerHTML = `<p>${message}</p>`;
+                popup.style.position = 'fixed';
+                popup.style.top = '50%';
+                popup.style.left = '50%';
+                popup.style.transform = 'translate(-50%, -50%)';
+                popup.style.backgroundColor = 'white';
+                popup.style.padding = '20px';
+                popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                popup.style.zIndex = '1000';
+                document.body.appendChild(popup);
+            }
+        },
+
+        removePopup(){
+            const popup = document.getElementById('geoPopup');
+            if (popup) {
+                document.body.removeChild(popup);
             }
         },
 

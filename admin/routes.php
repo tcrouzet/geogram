@@ -25,12 +25,10 @@ html_header( "Geogram routes" );
 
                 <div class="divider">ROUTE CONNECTOR</div>
 
+                <p>You can connect to the routes you created, the routes you were invited to, or public routes. You can only be connected to one route at a time.</p>
+
                 <div id="routes"></div>
     
-                <template x-if="isOnRoute">
-                    Your are on route
-                </template>
-
                 <div class="divider">ROUTE PLANNER</div>
 
                 <div class="input-group">
@@ -82,7 +80,6 @@ document.addEventListener('alpine:init', () => {
         // Variables locales pour la gestion de l'authentification
         user: null,
         isLoggedIn: false,
-        route: null,
         isOnRoute: false,
         routename: '',
         routenameError: '',
@@ -100,11 +97,9 @@ document.addEventListener('alpine:init', () => {
             if(this.isLoggedIn){
                 console.log("Logged routes");
                 this.user = Alpine.store('headerActions').user;
+                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
                 this.username = this.user.username;
                 this.userid = this.user.userid;
-                this.route = Alpine.store('headerActions').route;
-                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
-                console.log(this.isOnRoute);
                 this.loadRoutes();
             }
         },
@@ -156,7 +151,10 @@ document.addEventListener('alpine:init', () => {
                 data.forEach(route => {
                 const li = document.createElement('li');
                 //li.textContent = `<a href="">${route.routename}</a>`;
-                li.innerHTML = `<a href="/${route.routeslug}">${route.routename}</a>`;
+                if(route.routeid==this.user.userroute)
+                    li.innerHTML = `<a href="/${route.routeslug}">${route.routename} (connected)</a>`;
+                else
+                    li.innerHTML = `<a href="/${route.routeslug}">${route.routename}</a>`;
                 ul.appendChild(li);
             });
 
@@ -212,13 +210,13 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-                return response.text(); // testing
+                //return response.text(); // testing
                 return response.json();
             })
-            .then(text => {
-                console.log("Raw Response Text:", text);
-                return JSON.parse(text);
-            })
+            // .then(text => {
+            //     console.log("Raw Response Text:", text);
+            //     return JSON.parse(text);
+            // })
             .then(data => {
                 //console.log(data);
                 if (data.status === 'success') {
@@ -275,7 +273,11 @@ document.addEventListener('alpine:init', () => {
 
         rooted(routedata){
             console.log('Utilisateur connecté:', routedata);
-            localStorage.setItem('route', JSON.stringify(routedata));
+            this.user.userroute = routedata.routeid;
+            for (const key in routedata) {
+                this.user[key] = routedata[key];
+            }
+            localStorage.setItem('user', JSON.stringify(this.user));
             window.location.href = `/routes/`
         },
 
