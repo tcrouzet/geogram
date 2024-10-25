@@ -63,30 +63,43 @@ if($group=="help"){
 }elseif($group=="routes"){
     require("admin/routes.php");
 }elseif(!empty($group)){
-    $chatObj = get_chat_by_name($group);
-    if($chatObj){
-        $group_id = $chatObj["chatid"];
-        $start = $chatObj["start"];
 
+
+    if($isAdmin){
+
+        $route = get_route_by_slug($group);
         if($page=="story") {
             require("admin/story.php");
         }elseif($page=="info") {
             require("admin/info.php");
         }else{
-            if(empty($start) || $start>time()){
-                $start = 0;
-            }
-            if($isAdmin)
-                require("admin/map_2.php");
-            else
-                require("admin/map.php");
+            require("admin/map_2.php");
         }        
-
+        
     }else{
-        $group="404";
-        require("admin/404_page.php");
+
+        $chatObj = get_chat_by_name($group);
+        if($chatObj){
+            $group_id = $chatObj["chatid"];
+            $start = $chatObj["start"];
+
+            if($page=="story") {
+                require("admin/story.php");
+            }elseif($page=="info") {
+                require("admin/info.php");
+            }else{
+                if(empty($start) || $start>time()){
+                    $start = 0;
+                }
+                require("admin/map.php");
+            }        
+
+        }else{
+            $group="404";
+            require("admin/404_page.php");
+        }
+        html_footer();
     }
-    html_footer();
 
 }else{
     $archives="";

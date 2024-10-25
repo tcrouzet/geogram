@@ -149,6 +149,86 @@ function cleanText($msg){
 }
 
 function html_header($pagename=""){
+    global $isAdmin,$route;
+    if($isAdmin){
+        html_header_2($route, $pagename);
+    }else{
+        html_header_1($pagename);
+    }
+}
+
+function html_header_2($route, $pagename=""){
+    global $group,$page,$id,$fileManager,$isAdmin;
+
+    $version="A4";
+    $version=time();
+
+    $url=BASE_URL;
+    if(!empty($group)) $url.=$group."/";
+    if(!empty($page)) $url.=$page."/";
+    if(!empty($id)) $url.=$id;
+
+    echo '<!DOCTYPE html>';
+    echo '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">';
+    echo '<head profile="http://gmpg.org/xfn/11">';
+    echo '<title>Geogram - '.$pagename.'</title>';
+    // echo '<base href="' . BASE_URL. '">';
+    echo '<base href="/">';
+    echo '<link rel="shortcut icon" href="/favicon.ico" >';
+    echo '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">';
+    echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+    echo '<link rel="canonical" href="'.$url.'">'."\n";
+
+    $description="Geogram tracks adventures. No Spot or Garmin tracker, just your phone, your photos, your comments.";
+    echo '<meta name="keywords" content="Tracker, GPS, GPX, Garmin, Spot, Trail, Bikepacking, Bike">';
+    echo '<meta name="description" content="'.$description.'">';
+    echo '<meta name="author" content="Thierry Crouzet">'."\n";
+
+    echo '<meta property="og:description" content="'.$description.'">';
+    echo '<meta property="og:url" content="'.$url.'">';
+    echo '<meta property="og:site_name" content="Geogram">';
+    echo '<meta property="article:publisher" content="https://www.facebook.com/ThierryCrouzetAuteur/">'."\n";
+    echo '<meta property="article:author" content="https://www.facebook.com/ThierryCrouzetAuteur/">'."\n";
+
+    if( isset($route["creationdate"]) ){
+        echo '<meta property="article:published_time" content="'.date('Y-m-d\TH:i:s\+00:00', strtotime($route["creationdate"])).'">';
+    }else{
+        echo '<meta property="article:published_time" content="2023-05-02T15:04:27+00:00">';
+    }
+    echo '<meta property="article:modified_time" content="'.date('Y-m-d\TH:i:s\+00:00', time()).'">';
+
+    if( isset($route["photo"]) && $route["photo"]==1 ){
+        echo '<meta property="og:image" content="'.$fileManager->chatphotoWeb($route,false,true).'">';
+        echo '<meta property="og:image:width" content="640">';
+        echo '<meta property="og:image:height" content="640">';
+    }else{
+        echo '<meta property="og:image" content="'.BASE_URL.'images/cover.jpeg">';
+        echo '<meta property="og:image:width" content="768">';
+        echo '<meta property="og:image:height" content="768">';
+    }
+    echo '<meta property="og:image:type" content="image/jpeg">';
+    echo '<meta name="author" content="Thierry Crouzet">';
+    echo '<meta name="twitter:card" content="summary_large_image">';
+    echo '<meta name="twitter:site" content="@crouzet">'."\n";
+
+    if( (strpos( $pagename , "Map") !== false ) ){
+        echo '<meta http-equiv="refresh" content="600">';
+        //https://cdnjs.com/libraries/leaflet
+        echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
+    }
+
+    echo "\n<link rel='stylesheet' id='style-css' href='/geogram_2.css?$version' type='text/css' media='screen' />\n";
+    echo "\n<script src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\" defer></script>\n";
+
+    echo '</head>';
+    echo '<body>';
+    
+}
+
+
+function html_header_1($pagename=""){
     global $group,$page,$id,$chatObj,$fileManager,$isAdmin;
 
     //dump($chatObj);
@@ -581,6 +661,21 @@ function get_chat_by_name($group){
     global $mysqli;
 
     $query="SELECT * FROM `chats` WHERE chatname = ?";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("s", $group);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result){
+        return $result->fetch_assoc();
+    }else{
+        return false;
+    }
+}
+
+function get_route_by_slug($group){
+    global $mysqli;
+
+    $query="SELECT * FROM `routes` WHERE routename = ?";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param("s", $group);
     $stmt->execute();

@@ -49,6 +49,7 @@ document.addEventListener('alpine:init', () => {
             console.log(this.user, this.isLoggedIn);
             if(this.isLoggedIn){
                 this.route = this.getRouteFromLocalStorage;
+                console.log("route:", this.route);
                 isOnRoute = this.route !== null;
             }
 

@@ -248,10 +248,10 @@ document.addEventListener('alpine:init', () => {
                 //return response.text(); // testing
                 return response.json();
             })
-           .then(text => {
-                console.log("Raw Response Text:", text);
-                return JSON.parse(text);
-            })
+            // .then(text => {
+            //     console.log("Raw Response Text:", text);
+            //     return JSON.parse(text);
+            // })
             .then(data => {
                 if (data.status === 'success') {
                     // Utilisateur connecté
@@ -262,7 +262,6 @@ document.addEventListener('alpine:init', () => {
             })
             .catch(error => console.error('ErrorFetch:', error));
         },
-
 
         connected(userdata){
             console.log('Utilisateur connecté:', userdata);

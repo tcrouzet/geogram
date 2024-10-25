@@ -33,10 +33,10 @@ if($view == "login") {
     $data = new_route();
 }elseif($view == "getroutes") {
     $data = get_routes();
+}elseif($view == "map") {
+    $data = get_chat_logs();
 }elseif($page=="userlogs" && isset($userid) && $chatobj){
     $data = get_user_logs($userid, $chatobj);
-} elseif($chatobj) {
-    $data = get_chat_logs($chatobj);
 } else {
     $data = [];
 }
@@ -59,31 +59,39 @@ function get_user_logs($userid, $chatid) {
 
 }
 
-function get_chat_logs($chatobj){
+function get_chat_logs(){
     global $mysqli;
 
-    $chatobj = json_decode($chatobj, true);
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $routeid = $_POST['routeid'] ?? '';
+    lecho($routeid);
+    $route = get_route_by_id($routeid);
+    lecho($route);
 
     $fileManager = new FileManager();
 
-    if(!empty($chatobj["link"]) && $chatobj["stop"]==0){
+    if(!empty($route["link"]) && $route["stop"]==0){
 
         $start = time()-86400*7;
         $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? AND timestamp> ? GROUP BY userid) ORDER BY km DESC,username ASC;";
         $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("iii", $chatobj['chatid'], $chatobj['chatid'], $start);
+        $stmt->bind_param("iii", $route['chatid'], $route['chatid'], $start);
 
-    }elseif ($chatobj["start"]>0){
+    }elseif ($route["start"]>0){
 
         $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? GROUP BY userid) ORDER BY km DESC,username ASC;";
         $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("ii", $chatobj['chatid'], $chatobj['chatid']);
+        $stmt->bind_param("ii", $route['chatid'], $route['chatid']);
 
     }else{
 
         $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? GROUP BY userid) ORDER BY timestamp DESC,username ASC;";
         $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("ii", $chatobj['chatid'], $chatobj['chatid']);
+        $stmt->bind_param("ii", $routeid, $routeid);
     }
 
     $stmt->execute();
@@ -94,18 +102,18 @@ function get_chat_logs($chatobj){
     $gpxfile = "";
 
     foreach ($logs as &$row) {
-        $row['username_formatted'] = fName($row["username"]) . "<br>" . MyDateFormatN($chatobj, $row["timestamp"]) . "<br>" . meters_to_distance($row["km"], $chatobj);
+        $row['username_formatted'] = fName($row["username"]) . "<br>" . MyDateFormatN($route, $row["timestamp"]) . "<br>" . meters_to_distance($row["km"], $route);
         $row['usercolor'] = getDarkColorCode($row["userid"]);
         $row['userinitials'] = initial($row["username"]);
 
-        if ($fileManager->avatarExists($chatobj["chatid"], $row["userid"])) {
-            $row['userimg'] = $fileManager->avatarWeb($chatobj, $row["userid"], true);
+        if ($fileManager->avatarExists($routeid, $row["userid"])) {
+            $row['userimg'] = $fileManager->avatarWeb($route, $row["userid"], true);
         } else {
             $row['userimg'] = false;
         }
 
         if ($gpxfile_flag){
-            $gpxfile = $fileManager->geojsonWeb($chatobj);
+            $gpxfile = $fileManager->geojsonWeb($route);
             $gpxfile_flag = false;
         }
         $row['gpxfile'] = $gpxfile;
@@ -387,4 +395,20 @@ function connect($userid,$routeid){
     $insertStmt->bind_param("ii", $routeid, $userid);
     return $insertStmt->execute();
 }
+
+function get_route_by_id($routeid){
+    global $mysqli;
+
+    $query="SELECT * FROM `routes` WHERE routeid = ?";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("i", $routeid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result){
+        return $result->fetch_assoc();
+    }else{
+        return false;
+    }
+}
+
 ?>

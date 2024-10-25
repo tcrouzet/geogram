@@ -1,5 +1,5 @@
 <?php
-html_header( $group." Map" );
+html_header( "Map" );
 ?>
 
 <div id="page">
@@ -15,20 +15,38 @@ html_header( $group." Map" );
     <?php include 'footer.php'; ?>
 
 </div>
+<?php
+html_footer();
+?>
 
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mapComponent', () => ({
-        chatobj: <?php echo json_encode($chatObj); ?>,
-        userid: <?php echo json_encode($id); ?>,
-        page: <?php echo json_encode($page); ?>,
-        title: <?php echo json_encode($chatObj['chatname']); ?>,
+        user: null,
+        isLoggedIn: false,
+        route: null,
+        isOnRoute: false,
+
         menuOpen: false,
         view: 'map', // Default view
         data: {},
         map: null,
         cursors: [],
         geoJsonLayer: null,
+
+        init(){
+            this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
+            if(this.isLoggedIn){
+                console.log("Logged routes");
+                this.user = Alpine.store('headerActions').user;
+                this.username = this.user.username;
+                this.userid = this.user.userid;
+                this.route = Alpine.store('headerActions').route;
+                console.log(this.route.routeid);
+                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
+                console.log(this.isOnRoute);
+            }
+        },
 
         initializeMap() {
             console.log('Initializing Map...');
@@ -52,16 +70,16 @@ document.addEventListener('alpine:init', () => {
             console.log("loadData");
             const formData = new URLSearchParams();
             formData.append('view', this.view);
-            formData.append('page', this.page);
-            formData.append('userid', this.userid);
-            formData.append('chatobj', JSON.stringify(this.chatobj));
+            formData.append('userid', this.user.userid);
+            formData.append('routeid', this.route.routeid);
 
             // console.log(formData.toString());
 
             fetch('backend.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.auth_token}`
                 },
                 body: formData.toString()
             })
@@ -69,13 +87,13 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
+                return response.text(); // testing
                 return response.json();
-                //return response.text(); // testing
             })
-            // .then(text => {
-            //     console.log("Raw Response Text:", text); // Vérifiez ici le texte brut
-            //     return JSON.parse(text); // Parse manuellement pour détecter les erreurs
-            // })
+            .then(text => {
+                console.log("Raw Response Text:", text); // Vérifiez ici le texte brut
+                return JSON.parse(text); // Parse manuellement pour détecter les erreurs
+            })
             .then(data => {
                 //console.log(data);
                 //this.data = data;
@@ -136,6 +154,8 @@ document.addEventListener('alpine:init', () => {
             if (this.cursors.length > 0) {
                 const bounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(this.markerBounds, { maxZoom: 10 });
+            } else {
+                this.action_localise();
             }
         },
 
@@ -216,14 +236,6 @@ document.addEventListener('alpine:init', () => {
                 navigator.geolocation.getCurrentPosition(position => {
                     const { latitude, longitude } = position.coords;
                     console.log(latitude, longitude)
-                    // Send location to server
-                    // fetch('/api/update-location', {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json'
-                    //     },
-                    //     body: JSON.stringify({ latitude, longitude })
-                    // });
                     // Update map with the new location
                     L.marker([latitude, longitude]).addTo(this.map).bindTooltip("Vous êtes ici");
                     this.map.setView([latitude, longitude], 13);
@@ -249,7 +261,3 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 </script>
-
-<?php
-html_footer();
-?>
