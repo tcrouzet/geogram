@@ -25,9 +25,44 @@ html_header( "Geogram routes" );
 
                 <div class="divider">ROUTE CONNECTOR</div>
 
-                <p>You can connect to the routes you created, the routes you were invited to, or public routes. You can only be connected to one route at a time.</p>
+                <p>You can connect to a route you created, a route you were invited to or a public route. Only one route at a time.</p>
 
-                <div id="routes"></div>
+                <ul>
+                    <template x-for="route in routes" :key="route.routeid">
+                        <li>
+                            <a :href="`/${route.routeslug}`" x-text="route.routename"></a>
+                            <span x-show="route.routeid === user.userroute">(connected)</span>
+                            <button @click="toggleEdit(route.routeid)">Edit</button>
+                            
+                            <div x-show="route.routeid === editingRouteId">
+                                <!-- Bloc d'édition -->
+                                <label>Name</label><br/>
+                                <input type="text" class="input-field" x-model="route.routename" required minlength="3" maxlength="30" @change="updateRoute(route)">
+                                <label>Description</label><br/>
+                                <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
+                                
+                                <!-- <div class="input-group">
+                                <label>GPX:</label>
+                                <input type="file" @change="handleGPXUpload" x-ref="fileInput" accept="file/gpx" class="input-field">
+                                <div x-show="gpxError" class="error-message" x-text="gpxError"></div>
+                                </div> -->
+
+                                <!-- Champ pour uploader l'image -->
+                                <!-- <div class="input-group">
+                                    <label>Route image (JPEG only):</label>
+                                    <input type="file" @change="handleFileUpload" x-ref="fileInput" accept="image/jpeg" class="input-field">
+                                    <div x-show="fileError" class="error-message" x-text="fileError"></div>
+                                </div> -->
+
+                                <!-- Prévisualisation de l'image (optionnel) -->
+                                <!-- <div class="input-group" x-show="previewImage">
+                                    <label>Image Preview:</label>
+                                    <img :src="previewImage" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
+                                </div> -->
+                            </div>
+                        </li>
+                    </template>
+                </ul>
     
                 <div class="divider">ROUTE PLANNER</div>
 
@@ -36,27 +71,7 @@ html_header( "Geogram routes" );
                 </div>
                 <div x-show="routenameError" class="error-message" x-text="routenameError"></div>
 
-                <!-- <div class="input-group">
-                    <label>GPX:</label>
-                    <input type="file" @change="handleGPXUpload" x-ref="fileInput" accept="file/gpx" class="input-field">
-                    <div x-show="gpxError" class="error-message" x-text="gpxError"></div>
-                </div> -->
-
-                <!-- Champ pour uploader l'image -->
-                <!-- <div class="input-group">
-                    <label>Route image (JPEG only):</label>
-                    <input type="file" @change="handleFileUpload" x-ref="fileInput" accept="image/jpeg" class="input-field">
-                    <div x-show="fileError" class="error-message" x-text="fileError"></div>
-                </div> -->
-
-                <!-- Prévisualisation de l'image (optionnel) -->
-                <!-- <div class="input-group" x-show="previewImage">
-                    <label>Image Preview:</label>
-                    <img :src="previewImage" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
-                </div> -->
-
-
-                <button class="btn btn-submit" type="submit" @click="newRouteForm('newroute')" x-bind:disabled="loading">
+                <button class="btn btn-submit" type="submit" @click="newRouteForm()" x-bind:disabled="loading">
                     New route
                 </button>
 
@@ -81,6 +96,8 @@ document.addEventListener('alpine:init', () => {
         user: null,
         isLoggedIn: false,
         isOnRoute: false,
+        routes: [],
+        editingRouteId: [],
         routename: '',
         routenameError: '',
         gpxFile: null,
@@ -133,32 +150,14 @@ document.addEventListener('alpine:init', () => {
             // })
             .then(data => {
                 console.log(data);
-                this.printRoutes(data);
+                this.routes = data;
+                //this.printRoutes(data);
             })
             .catch(error => console.error('Error:', error));
         },
 
-        printRoutes(data){
-            const routesDiv = document.getElementById('routes');
-            routesDiv.innerHTML = '';
-
-            if (data.length === 0) {
-                routesDiv.innerHTML = '<p>No routes available.</p>';
-                return;
-            }
-
-            const ul = document.createElement('ul');
-                data.forEach(route => {
-                const li = document.createElement('li');
-                //li.textContent = `<a href="">${route.routename}</a>`;
-                if(route.routeid==this.user.userroute)
-                    li.innerHTML = `<a href="/${route.routeslug}">${route.routename} (connected)</a>`;
-                else
-                    li.innerHTML = `<a href="/${route.routeslug}">${route.routename}</a>`;
-                ul.appendChild(li);
-            });
-
-            routesDiv.appendChild(ul);
+        toggleEdit(routeId) {
+            this.editingRouteId = this.editingRouteId === routeId ? null : routeId;
         },
 
         checkRoutename() {
@@ -172,9 +171,8 @@ document.addEventListener('alpine:init', () => {
             console.log("checkRoutename");
         },
 
-
         // Fonction pour gérer la connexion via le formulaire
-        newRouteForm(formType) {
+        newRouteForm() {
             console.log("newRouteForm1");
 
             if (this.routenameError) {
@@ -190,33 +188,19 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            const formData = new URLSearchParams();
-            formData.append('view', 'route');
-            formData.append('routename', this.routename);
-            formData.append('userid', this.userid);
-            formData.append('formType', formType);
-
-            console.log(formData);
-
             fetch('backend.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': `Bearer ${this.user.auth_token}`
                 },
-                body: formData.toString()
+                body: new URLSearchParams({
+                    view: "route",
+                    userid: this.user.userid,
+                    routename: this.routename
+                })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                //return response.text(); // testing
-                return response.json();
-            })
-            // .then(text => {
-            //     console.log("Raw Response Text:", text);
-            //     return JSON.parse(text);
-            // })
+            .then(response => response.json())
             .then(data => {
                 //console.log(data);
                 if (data.status === 'success') {
@@ -224,6 +208,42 @@ document.addEventListener('alpine:init', () => {
                     this.rooted(data.routedata)
                 } else {
                     this.routenameError = data.message;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        },
+
+        toggleEdit(routeId) {
+            this.editingRouteId = this.editingRouteId === routeId ? null : routeId;
+        },
+
+        updateRoute(route) {
+            // Envoyer une requête pour mettre à jour la route
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.auth_token}`
+                },
+                body: new URLSearchParams({
+                    view: "updateroute",
+                    userid: this.user.userid,
+                    routeid: route.routeid,
+                    routename: route.routename,
+                    routerem: route.routerem
+                })
+            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Route updated successfully');
+                } else {
+                    console.error('Error updating route:', data.message);
                 }
             })
             .catch(error => console.error('Error:', error));

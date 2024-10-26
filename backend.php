@@ -1,5 +1,5 @@
 <?php
-https://geo.zefal.com/backend.php?page=userlogs&chatid=-1001831273860&userid=1934640167
+https://geo.zefal.com/backend.php
 
 define("DEBUG",true);
 ini_set('log_errors', 'On');
@@ -33,6 +33,8 @@ if($view == "login") {
     $data = new_route();
 }elseif($view == "getroutes") {
     $data = get_routes();
+}elseif($view == "updateroute"){
+    $data = updateroute();
 }elseif($view == "map") {
     $data = get_chat_logs();
 }elseif($page=="userlogs" && isset($userid) && $chatobj){
@@ -237,9 +239,9 @@ function new_route(){
     if(empty($routename)){
         return ['status' => 'error', 'message' => 'Empty routename'];
     }
-    $formType = $_POST['formType'] ?? '';
 
     $slug = slugify($routename);
+    $initials = initial($routename);
 
     $query = "SELECT * FROM routes WHERE routename=? OR routeslug=?;";
     $stmt = $mysqli->prepare($query);
@@ -248,21 +250,16 @@ function new_route(){
     $result = $stmt->get_result();
 
     if ($result && $result->num_rows > 0) {
-        if ($formType=="newroute"){
-            return ['status' => 'error', 'message' => 'Route already exists'];
-        }
-        if ($formType=="routeupdate"){
-            $route = $result->fetch_assoc();
-        }
+        return ['status' => 'error', 'message' => 'Route already exists'];
     } else {
-        $insertQuery = "INSERT INTO routes (routename, routeslug, routeuserid) VALUES (?, ?, ?)";
+        $insertQuery = "INSERT INTO routes (routename, routeinitials, routeslug, routeuserid) VALUES (?, ?, ?, ?)";
         $insertStmt = $mysqli->prepare($insertQuery);
-        $insertStmt->bind_param("ssi", $routename, $slug, $userid);
+        $insertStmt->bind_param("sssi", $routename, $initials, $slug, $userid);
         
         if ($insertStmt->execute()) {
             // Retourne les données du nouvel utilisateur
             $routeid = $mysqli->insert_id;
-            updateRoute($userid,$routeid);
+            updateUserRoute($userid,$routeid);
             connect($userid,$routeid);
             $route = [
                 'routeid' => $routeid,
@@ -281,6 +278,48 @@ function new_route(){
             ];
         }
     
+    }
+
+}
+
+function updateroute(){
+    global $mysqli;
+
+    $userid = $_POST['userid'] ?? '';
+    lecho("updateRoute", $userid);
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $routeid = $_POST['routeid'] ?? '';
+    if(empty($routeid)){
+        return ['status' => 'error', 'message' => 'Empty routename'];
+    }
+
+    $routename = $_POST['routename'] ?? '';
+    if(empty($routename)){
+        return ['status' => 'error', 'message' => 'Empty routename'];
+    }
+
+    $routerem = $_POST['routerem'] ?? '';
+
+    $query = "SELECT * FROM routes WHERE routeid=?;";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("i", $routeid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+
+        $stmt = $mysqli->prepare("UPDATE routes SET routename = ?, routerem = ? WHERE routeid = ?");
+        $stmt->bind_param("ssi", $routename, $routerem, $routeid);
+        if ($stmt->execute())
+           return ['status' => 'success', 'message' => 'Update fail'];
+        else
+            return ['status' => 'error', 'message' => 'Update fail'];
+
+    } else {
+        return ['status' => 'error', 'message' => 'Unknown route'];    
     }
 
 }
@@ -318,9 +357,11 @@ function generateToken($userid) {
 
 function validateToken($jwt) {
     try {
+        //lecho("validate",$jwt);
         $decoded = JWT::decode($jwt, new Key(JWT_SECRET, 'HS256'));
         return $decoded;
     } catch (Exception $e) {
+        lecho($e);
         return false;
     }
 }
@@ -341,25 +382,28 @@ function saveToken($userid){
 function testToken($userid){
     global $mysqli;
 
+    lecho("testToken", $userid);
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+    if(empty($authHeader)) return false;
     list($jwt) = sscanf($authHeader, 'Bearer %s');
     
     $stmt = $mysqli->prepare("SELECT auth_token FROM users WHERE userid = ?");
     $stmt->bind_param("i", $userid);
     $stmt->execute();
     $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    
-    $decoded = validateToken($jwt);
-    if ($jwt && $jwt === $row['auth_token'] && $decoded) {
-        if($decoded->exp - time() < 300) {
-            return false;
+
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        $decoded = validateToken($jwt);
+        lecho($row['auth_token']);
+        if ($jwt && $jwt === $row['auth_token'] && $decoded) {
+            if($decoded->exp - time() > 300) {
+                return true;
+            }
         }
-        return true;
-    } else {
-        return false;
     }
-    
+    return false;
 }
 
 function delete_user($userid){
@@ -369,7 +413,7 @@ function delete_user($userid){
     return $mysqli->affected_rows;
 }
 
-function updateRoute($userid,$routeid){
+function updateUserRoute($userid,$routeid){
     global $mysqli;
 
     $stmt = $mysqli->prepare("UPDATE users SET userroute = ? WHERE userid = ?");

@@ -68,7 +68,6 @@ document.addEventListener('alpine:init', () => {
             console.log("iconStyle");
             $style = this.user.img ? `background-image: url('${this.user.img}'); width: 34px; height: 34px; border: 2px solid white; background-size: cover;`
                 : `background-color: ${this.user.usercolor}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;`;
-            //console.log($style);
             return $style;
         },
 

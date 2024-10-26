@@ -109,7 +109,7 @@ footer {
 #login .input-field {
     width: 90%;
     padding: 10px;
-    margin-top: 1rem;
+    margin-bottom: 1rem;
     border-radius: 5px;
     border: 1px solid #ccc;
 }
@@ -135,6 +135,12 @@ footer {
 
 .input-field {
     flex: 1; /* Permet à l'input de prendre tout l'espace restant */
+}
+
+#login ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 /* header */
