@@ -4,6 +4,12 @@
 
     <div id="geogram"><a href="/"><img src="/images/geogram-logo-2.svg" alt="Geogram"></a></div>
 
+    <div id="routename">
+        <template x-if="route && route.routename">
+            <span x-text="route.routename"></span>
+        </template>
+    </div>
+
     <div  id="signin">
 
         <template x-if="isLoggedIn">
@@ -37,12 +43,14 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('headerComponent', () => ({
 
         user: null,
+        route: <?= json_encode($route) ?>,
         menuOpen: false,
         isLoggedIn: false,
         isOnRoute: false,
 
         init() {
             console.log("Initializing header");
+
             this.user = this.getUserFromLocalStorage();
             this.isLoggedIn = this.user !== null;
             if(this.isLoggedIn){
@@ -52,6 +60,7 @@ document.addEventListener('alpine:init', () => {
             // Enregistrer les fonctions dans le store
             Alpine.store('headerActions', {
                 user: this.user,
+                route: this.route,
                 isLoggedIn: this.isLoggedIn,
                 isOnRoute: this.isOnRoute,
             });

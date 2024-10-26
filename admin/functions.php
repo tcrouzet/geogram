@@ -172,7 +172,6 @@ function html_header_2($route, $pagename=""){
     echo '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">';
     echo '<head profile="http://gmpg.org/xfn/11">';
     echo '<title>Geogram - '.$pagename.'</title>';
-    // echo '<base href="' . BASE_URL. '">';
     echo '<base href="/">';
     echo '<link rel="shortcut icon" href="/favicon.ico" >';
     echo '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">';
@@ -213,7 +212,6 @@ function html_header_2($route, $pagename=""){
     echo '<meta name="twitter:site" content="@crouzet">'."\n";
 
     if( (strpos( $pagename , "Map") !== false ) ){
-        echo '<meta http-equiv="refresh" content="600">';
         //https://cdnjs.com/libraries/leaflet
         echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
         echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
@@ -221,6 +219,9 @@ function html_header_2($route, $pagename=""){
 
     echo "\n<link rel='stylesheet' id='style-css' href='/geogram_2.css?$version' type='text/css' media='screen' />\n";
     echo "\n<script src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\" defer></script>\n";
+    echo "\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css\"\n>";
+
+
 
     echo '</head>';
     echo '<body>';

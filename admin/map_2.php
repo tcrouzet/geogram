@@ -8,8 +8,15 @@ html_header( "Map" );
 
     <!-- Section Content -->
     <main x-data="mapComponent()">
-        <div x-show="view === 'map'" id="map" x-init="initializeMap"></div>
-        <div x-show="view === 'list'" id="list"></div>
+
+        <template x-if="route.routestatus === 0 && !isLoggedIn">
+            <div id="login" class="loginwidth">
+                <p>This route is for invited, logged-in users only.</p>
+            </div>
+        </template>
+        <template x-if="route.routestatus > 0">
+            <div x-show="view === 'map'" id="map" x-init="initializeMap"></div>
+        </template>
     </main>
 
     <?php include 'footer.php'; ?>
@@ -22,17 +29,23 @@ html_footer();
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mapComponent', () => ({
+        route: null,
         user: null,
         isLoggedIn: false,
         isOnRoute: false,
+        userid: 0,
+        userroute: 0,
+        auth_token: '',
         view: 'map', // Default view
         data: {},
         map: null,
         cursors: [],
         geoJsonLayer: null,
         bestPosition: null,
+        
 
         init(){
+            this.route = Alpine.store('headerActions').route;
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
             if(this.isLoggedIn){
                 console.log("Logged routes");
@@ -40,6 +53,8 @@ document.addEventListener('alpine:init', () => {
                 this.isOnRoute = Alpine.store('headerActions').isOnRoute;
                 this.username = this.user.username;
                 this.userid = this.user.userid;
+                this.auth_token = this.user.auth_token;
+                this.userroute = this.user.userroute;
             }
         },
 
@@ -65,8 +80,10 @@ document.addEventListener('alpine:init', () => {
             console.log("loadData");
             const formData = new URLSearchParams();
             formData.append('view', this.view);
-            formData.append('userid', this.user.userid);
-            formData.append('routeid', this.user.routeid);
+            formData.append('userid', this.userid);
+            formData.append('userroute', this.userroute);
+            formData.append('routeid', this.route.routeid);
+            formData.append('routestatus', this.route.routestatus);
 
             // console.log(formData.toString());
 
@@ -74,7 +91,7 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.auth_token}`
+                    'Authorization': `Bearer ${this.auth_token}`
                 },
                 body: formData.toString()
             })

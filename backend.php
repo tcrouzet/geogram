@@ -38,6 +38,8 @@ if($view == "login") {
     $data = updateroute();
 }elseif($view == "gpxupload"){
     $data = gpxupload();
+}elseif($view == "routephoto"){
+    $data = routephoto();
 }elseif($view == "map") {
     $data = get_chat_logs();
 }elseif($page=="userlogs" && isset($userid) && $chatobj){
@@ -67,15 +69,22 @@ function get_user_logs($userid, $chatid) {
 function get_chat_logs(){
     global $mysqli;
 
-    $userid = $_POST['userid'] ?? '';
-    if (!testToken($userid)){
-        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    $routestatus = $_POST['routestatus'] ?? '';
+    $routeid = $_POST['routeid'] ?? '';
+    $userroute = $_POST['$userroute'] ?? '';
+
+    if($routestatus ==0 ){
+        //Private route
+        $userid = $_POST['userid'] ?? '';
+        if (!testToken($userid)){
+            return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+        }
+        if ($routeid != $userroute){
+            return ['status' => 'error', 'message' => 'User not connected to this route'];
+        }
     }
 
-    $routeid = $_POST['routeid'] ?? '';
-    lecho($routeid);
     $route = get_route_by_id($routeid);
-    lecho($route);
 
     $fileManager = new FileManager();
 
@@ -255,6 +264,10 @@ function new_route(){
             // Retourne les données du nouvel utilisateur
             $routeid = $mysqli->insert_id;
             updateUserRoute($userid,$routeid);
+            $routeviewerlink = generateInvitation($routeid, 1);
+            $routepublisherlink = generateInvitation($routeid, 2);
+            updateRouteInvitation($routeid, $routeviewerlink, $routepublisherlink);
+        
             connect($userid,$routeid);
             $route = [
                 'routeid' => $routeid,
@@ -296,6 +309,7 @@ function updateroute(){
         return ['status' => 'error', 'message' => 'Empty routename'];
     }
 
+    $routestatus = $_POST['routestatus'] ?? '';
     $routerem = $_POST['routerem'] ?? '';
 
     $query = "SELECT * FROM routes WHERE routeid=?;";
@@ -306,8 +320,8 @@ function updateroute(){
 
     if ($result && $result->num_rows > 0) {
 
-        $stmt = $mysqli->prepare("UPDATE routes SET routename = ?, routerem = ? WHERE routeid = ?");
-        $stmt->bind_param("ssi", $routename, $routerem, $routeid);
+        $stmt = $mysqli->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ? WHERE routeid = ?");
+        $stmt->bind_param("sssi", $routename, $routerem, $routestatus, $routeid);
         if ($stmt->execute())
            return ['status' => 'success', 'message' => 'Update fail'];
         else
@@ -353,6 +367,40 @@ function gpxupload(){
                 routeGPX($routeid,0);
             }
             return ['status' => 'success', 'message' => 'File uploaded successfully'];
+        }
+    }
+
+    return ['status' => 'error', 'message' => 'Upload fail'];
+
+}
+
+function routephoto(){
+
+    lecho("Route Photo Upload");
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    if (!isset($_FILES['photofile']) || $_FILES['photofile']['error'] !== UPLOAD_ERR_OK) {
+        return ['status' => 'error', 'message' => 'Bad photo file'];
+    }
+
+    $routeid = $_POST['routeid'] ?? '';
+    if(empty($routeid)){
+        return ['status' => 'error', 'message' => 'Empty route'];
+    }
+
+    $filemanager = new FileManager();
+    $target = $filemanager->route_photo($routeid);
+
+    if($target){
+        if(resizeImage($_FILES['photofile']['tmp_name'], $target, 500)){
+            set_route_photo($routeid,1);
+            return ['status' => 'success', 'message' => 'File uploaded successfully'];
+        }else{
+            set_route_photo($routeid,0);
         }
     }
 
@@ -471,6 +519,16 @@ function routeGPX($routeid,$value){
         return false;
 }
 
+function set_route_photo($routeid,$value){
+    global $mysqli;
+    $stmt = $mysqli->prepare("UPDATE routes SET routephoto = ? WHERE routeid = ?");
+    $stmt->bind_param("ii", $value, $routeid);
+    if ($stmt->execute())
+        return true;
+    else
+        return false;
+}
+
 function slugify($text) {
     // Translitération des caractères spéciaux en équivalents ASCII
     $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
@@ -484,12 +542,12 @@ function slugify($text) {
     return $text;
 }
 
-function connect($userid,$routeid){
+function connect($userid,$routeid,$status=2){
     global $mysqli;
     lecho("connect",$userid,$routeid);
-    $insertQuery = "INSERT INTO connectors (conrouteid, conuserid) VALUES (?, ?)";
+    $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)";
     $insertStmt = $mysqli->prepare($insertQuery);
-    $insertStmt->bind_param("ii", $routeid, $userid);
+    $insertStmt->bind_param("iii", $routeid, $userid, $status);
     return $insertStmt->execute();
 }
 
@@ -508,4 +566,68 @@ function get_route_by_id($routeid){
     }
 }
 
+function updateRouteInvitation($routeid,$viewer,$publisher){
+    global $mysqli;
+
+    $stmt = $mysqli->prepare("UPDATE routes SET routepublisherlink = ?, routeviewerlink = ? WHERE routeid = ?");
+    $stmt->bind_param("ssi", $publisher, $viewer, $routeid);
+    if ($stmt->execute())
+        return true;
+    else
+        return false;
+}
+
+function generateInvitation($routeid, $status) {
+    $randomString = bin2hex(random_bytes(8));
+    $data = $routeid . '|' . $status . '|' . $randomString;
+
+    $iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+    $encryptedData = openssl_encrypt($data, 'aes-256-cbc', JWT_SECRET, 0, $iv);
+    $token = base64_encode($iv . $encryptedData);
+
+    return $token;
+}
+
+function decodeInvitation($token) {
+    $decoded = base64_decode($token);
+    $ivLength = openssl_cipher_iv_length('aes-256-cbc');
+    $iv = substr($decoded, 0, $ivLength);
+    $encryptedData = substr($decoded, $ivLength);
+
+    $data = openssl_decrypt($encryptedData, 'aes-256-cbc', JWT_SECRET, 0, $iv);
+    if ($data === false) {
+        return false;
+    }
+
+    list($routeid, $status, $randomString) = explode('|', $data);
+    return ['routeid' => $routeid, 'status' => $status];
+}
+
+function resizeImage($sourcefile, $targetfile, $maxSize) {
+    list($width, $height) = getimagesize($sourcefile);
+
+    // Calculer le ratio de redimensionnement
+    $ratio = min($maxSize / $width, $maxSize / $height);
+
+    // Calculer la taille de la nouvelle image
+    $newWidth = $width * $ratio;
+    $newHeight = $height * $ratio;
+
+    // Créer une nouvelle image avec la taille calculée
+    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+    // Charger l'image d'origine
+    $sourceImage = imagecreatefromjpeg($sourcefile);
+
+    // Redimensionner l'image
+    imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+    // Sauvegarder l'image redimensionnée
+    imagejpeg($newImage, $targetfile, 60);
+
+    // Libérer la mémoire
+    imagedestroy($newImage);
+
+    return true;
+}
 ?>

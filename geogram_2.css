@@ -11,6 +11,8 @@ body {
     background-color: var(--color-background);
 }
 
+a:link,a:visited,a:hover,a:active {color: inherit;text-decoration: none}
+
 #page {
     margin: 0;
     display: flex;
@@ -18,7 +20,13 @@ body {
     height: 100vh;
 }
 header {
+    display: flex;
+    align-items: center; /* Centrer verticalement si nécessaire */
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
     height: 3rem;
+    padding: 0
 }
 main {
     flex-grow: 1;
@@ -143,12 +151,25 @@ footer {
     padding: 0;
 }
 
+#login a:link,
+#login a:visited {
+    color: var(--color);
+    text-decoration: none;
+}
+
+#login a:hover,
+#login a:active {
+    color: var(--color);
+    text-decoration: underline;
+}
+
 /* header */
 
 #geogram{
     display: block;
     position: relative;
-    padding: 0.5rem;
+    margin-top: 1rem;
+    padding-left: 0.5rem;
     width: fit-content;
     height: 100%;
 }
@@ -158,9 +179,6 @@ footer {
 }
 
 #signin{
-    position: absolute;
-    top: 0;
-    right: 0;
     width: fit-content;
     height: fit-content;
 }
@@ -210,13 +228,31 @@ footer {
 .user-menu{
 }
 
+#routename{
+    flex-grow: 1;
+    text-align: center;
+}
+
 /* MAP */
 #geoPopup {text-align: center;}
 #geoPopup button{margin: 0.5rem;}
 
+/* GEN */
+
+.copy-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color);
+}
+
+.copy-button:focus {
+    outline: none;
+}
+
 /* Suite */
 
-a:link,a:visited,a:hover,a:active {color: inherit;text-decoration: none}
 
 
 #container{

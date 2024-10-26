@@ -41,6 +41,8 @@ $chatObj = null;
 
 $fileManager = new FileManager();
 
+$route = null;
+
 //dump($group);
 
 if($group=="help"){

@@ -38,9 +38,11 @@ html_header( "Geogram routes" );
                                 <!-- Bloc d'édition -->
                                 <br/><label>Name</label><br/>
                                 <input type="text" class="input-field" x-model="route.routename" required minlength="3" maxlength="30" @change="updateRoute(route)">
-                                <label>Description</label><br/>
+
+                                <br/><label>Description</label><br/>
                                 <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
-                                <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label><br/>
+                                
+                                <br/><label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label><br/>
                                 <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
                                 <div x-show="uploading" class="popup">Uploading...</div>
                                 <label>Status</label><br/>
@@ -50,29 +52,25 @@ html_header( "Geogram routes" );
                                     <option value="2">Open for all</option>
                                 </select>
                                 <div x-show="route.routestatus == 0 || route.routestatus == 1">
-                                    <a href="#" x-text="'Invitation link for publishers: ' + route.routepublisherlink"></a><br/>
+                                    <a :href="`/login/${route.routepublisherlink}`" x-text="'Invitation link for publishers'"></a>
+                                    <button class="copy-button" @click="copyToClipboard(`/login/${route.routepublisherlink}`)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
                                 </div>
                                 <div x-show="route.routestatus == 0">
-                                    <a href="#" x-text="'Invitation link for viewers: ' + route.routeviewerlink"></a><br/>
-                                </div>                                
-                                <!-- <div class="input-group">
-                                <label>GPX:</label>
-                                <input type="file" @change="handleGPXUpload" x-ref="fileInput" accept="file/gpx" class="input-field">
-                                <div x-show="gpxError" class="error-message" x-text="gpxError"></div>
-                                </div> -->
-
-                                <!-- Champ pour uploader l'image -->
-                                <!-- <div class="input-group">
-                                    <label>Route image (JPEG only):</label>
-                                    <input type="file" @change="handleFileUpload" x-ref="fileInput" accept="image/jpeg" class="input-field">
-                                    <div x-show="fileError" class="error-message" x-text="fileError"></div>
-                                </div> -->
-
-                                <!-- Prévisualisation de l'image (optionnel) -->
-                                <!-- <div class="input-group" x-show="previewImage">
+                                    <a :href="`/login/${route.routeviewerlink}`" x-text="'Invitation link for viewers'"></a>
+                                    <button class="copy-button" @click="copyToClipboard(`/login/${route.routeviewerlink}`)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+            
+                                <br/><br/><label>Route image (JPEG only):</label><br/>
+                                <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
+                                <div x-show="photoError" class="error-message" x-text="photoError"></div>
+                                <div class="input-group" x-show="photoPreview">
                                     <label>Image Preview:</label>
-                                    <img :src="previewImage" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
-                                </div> -->
+                                    <img :src="photoPreview" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
+                                </div>
                             </div>
                         </li>
                     </template>
@@ -116,9 +114,9 @@ document.addEventListener('alpine:init', () => {
         routenameError: '',
         gpxFile: null,
         gpxError: '',
-        fileError: '',
-        previewImage: null,
-        selectedFile: null,
+        photoError: '',
+        photoPreview: null,
+        selectedPhoto: null,
         userid: null,
         loading: false,
         uploading: false,
@@ -245,7 +243,8 @@ document.addEventListener('alpine:init', () => {
                     userid: this.user.userid,
                     routeid: route.routeid,
                     routename: route.routename,
-                    routerem: route.routerem
+                    routerem: route.routerem,
+                    routestatus: route.routestatus
                 })
             })
             // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -287,18 +286,20 @@ document.addEventListener('alpine:init', () => {
                     },
                     body: formData
                 })
-                .then(response => response.text()) // Récupérer le texte brut pour le débogage
-                .then(text => {
-                    console.log('Response Text:', text); // Affiche la réponse brute
-                    return JSON.parse(text); // Convertir en JSON si nécessaire
-                })
+                // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+                // .then(text => {
+                //     console.log('Response Text:', text); // Affiche la réponse brute
+                //     return JSON.parse(text); // Convertir en JSON si nécessaire
+                // })
                 .then(response => response.json())
                 .then(data => {
                     this.uploading = false;
                     if (data.status === 'success') {
                         alert('Upload successful!');
+                        return true;
                     } else {
                         alert('Upload failed: ' + data.message);
+                        return false;
                     }
                 })
                 .catch(error => {
@@ -309,24 +310,57 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
 
-            // Vérifier si le fichier est bien un JPEG
-            if (file.type !== 'image/jpeg') {
-                this.fileError = "Please upload a JPEG file.";
-                this.selectedFile = null;
-                this.previewImage = null;
-                return;
+        handlePhotoUpload(routeid) {
+            return (event) => {
+                const file = event.target.files[0];
+                if (!file || file.type !== 'image/jpeg') {
+                    this.photoError = "Please upload a JPEG file.";
+                    //this.selectedPhoto = null;
+                    this.photoPreview = null;
+                    return;
+                }
+
+                this.uploading = true;
+
+                this.photoError = '';
+                //this.selectedPhoto = file;
+
+                const formData = new FormData();
+                formData.append('view', 'routephoto');
+                formData.append('userid', this.user.userid);
+                formData.append('routeid', routeid);
+                formData.append('photofile', file);
+
+                fetch('backend.php', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${this.user.auth_token}`
+                    },
+                    body: formData
+                })
+                .then(response => response.text()) // Récupérer le texte brut pour le débogage
+                .then(text => {
+                    console.log('Response Text:', text); // Affiche la réponse brute
+                    return JSON.parse(text); // Convertir en JSON si nécessaire
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.uploading = false;
+                    if (data.status === 'success') {
+                        this.photoPreview = URL.createObjectURL(file);
+                        return true;
+                    } else {
+                        this.photoError = "Please upload a JPEG file.";
+                        return false;
+                    }
+                })
+                .catch(error => {
+                    this.uploading = false;
+                    console.error('Error:', error);
+                    alert('An error occurred during upload.');
+                });
             }
-
-            // S'il est valide, stockez-le et préparez la prévisualisation
-            this.fileError = '';
-            this.selectedFile = file;
-
-            // Générer un URL de prévisualisation
-            this.previewImage = URL.createObjectURL(file);
         },
 
         rooted(routedata){
@@ -337,6 +371,14 @@ document.addEventListener('alpine:init', () => {
             }
             localStorage.setItem('user', JSON.stringify(this.user));
             window.location.href = `/routes/`
+        },
+
+        copyToClipboard(text){
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Could not copy text:', err);
+            });
         },
 
     }));

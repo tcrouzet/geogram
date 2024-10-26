@@ -119,6 +119,17 @@ class FileManager {
             return $prefix . $this->relative($path);
     }
 
+    // NEW
+
+    public function route_photo($routeid) {
+        $dir = $this->route_dir($routeid);
+        if($dir)
+            return  $dir . "photo.jpeg";
+        else
+            return false;
+    }
+    
+
     //GPX
 
     public function chatgpx($chatid) {
