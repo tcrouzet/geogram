@@ -2,13 +2,25 @@
 
 class FileManager {
     public $absolute_path;
+
+    //OLD
     public $userimg;
     public $userimg_dir;
 
+    //NEW
+    public $datadir;
+    public $datadir_abs;
+
     public function __construct() {
         $this->absolute_path = realpath(__DIR__ . '/..')."/";
+
+        //OLD
         $this->userimg_dir = "userimg/";
         $this->userimg =  $this->absolute_path . ltrim($this->userimg_dir,"/");
+
+        //NEW
+        $this->datadir = "userdata/";
+        $this->datadir_abs = $this->absolute_path . $this->datadir;
     }
 
     public function chat_imgdir($chatid) {
@@ -130,6 +142,26 @@ class FileManager {
         
     }
 
+    //NEW
+
+    public function route_dir($routeid){
+        $routedir = $this->datadir_abs . "routes/$routeid/";
+        if (!is_dir($routedir)) {
+            if(!mkdir($routedir, 0777, true))
+                return false;
+        }
+        return $routedir;
+    }
+
+    public function gpx_source($routeid) {
+        $dir = $this->route_dir($routeid);
+        if($dir)
+            return  $dir . "source.gpx";
+        else
+            return false;
+    }
+
+
     //GEOJSON
 
     public function geojson($chatid) {
@@ -139,6 +171,20 @@ class FileManager {
     public function geojsonWeb($chat) {
         $geojson = $this->geojson($chat['chatid']);
         return $this->relative($geojson) . "?" . strtotime($chat['last_update']);
+    }
+
+    //NEW
+    public function route_geojson($routeid) {
+        return $this->route_dir($routeid) . "source.geojson";
+    }
+
+    public function route_geojson_web($route) {
+        if($route['gpx']){
+            $geojson = $this->route_geojson($route['routeid']);
+            return $this->relativize($geojson,$this->datadir) . "?" . strtotime($route['last_update']);
+        }else{
+            return false;
+        }
     }
 
     //AVATAR
@@ -214,6 +260,18 @@ class FileManager {
         }
         return $path;
     }
+
+    //NEW
+    
+    public function relativize($path,$datadir){
+        $path = str_replace($this->absolute_path,"",$path);
+        $path = ltrim($path,"/");
+        if (substr($path, 0, strlen($datadir)) !== $datadir) {
+            $path = $datadir . $path;
+        }
+        return $path;
+    }
+
 
     public function help_user(){
         return BASE_URL."help#join";

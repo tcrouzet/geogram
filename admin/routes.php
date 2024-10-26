@@ -36,11 +36,25 @@ html_header( "Geogram routes" );
                             
                             <div x-show="route.routeid === editingRouteId">
                                 <!-- Bloc d'édition -->
-                                <label>Name</label><br/>
+                                <br/><label>Name</label><br/>
                                 <input type="text" class="input-field" x-model="route.routename" required minlength="3" maxlength="30" @change="updateRoute(route)">
                                 <label>Description</label><br/>
                                 <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
-                                
+                                <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label><br/>
+                                <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
+                                <div x-show="uploading" class="popup">Uploading...</div>
+                                <label>Status</label><br/>
+                                <select x-model="route.routestatus" @change="updateRoute(route)">
+                                    <option value="0">Private</option>
+                                    <option value="1">Open for spectators</option>
+                                    <option value="2">Open for all</option>
+                                </select>
+                                <div x-show="route.routestatus == 0 || route.routestatus == 1">
+                                    <a href="#" x-text="'Invitation link for publishers: ' + route.routepublisherlink"></a><br/>
+                                </div>
+                                <div x-show="route.routestatus == 0">
+                                    <a href="#" x-text="'Invitation link for viewers: ' + route.routeviewerlink"></a><br/>
+                                </div>                                
                                 <!-- <div class="input-group">
                                 <label>GPX:</label>
                                 <input type="file" @change="handleGPXUpload" x-ref="fileInput" accept="file/gpx" class="input-field">
@@ -107,6 +121,7 @@ document.addEventListener('alpine:init', () => {
         selectedFile: null,
         userid: null,
         loading: false,
+        uploading: false,
 
         init(){
             console.log("Init routes");
@@ -249,26 +264,49 @@ document.addEventListener('alpine:init', () => {
             .catch(error => console.error('Error:', error));
         },
 
-        handleGPXUpload(event) {
-            const file = event.target.files[0];
-            if (!file){
-                this.gpxError = 'No GPX File';
-                return;
+        handleGPXUpload(routeid) {
+            return (event) => {
+                const file = event.target.files[0];
+                if (!file || file.type !== 'application/gpx+xml') {
+                    alert('Please upload a valid GPX file.');
+                    return;
+                }
+
+                this.uploading = true;
+
+                const formData = new FormData();
+                formData.append('view', 'gpxupload');
+                formData.append('userid', this.user.userid);
+                formData.append('routeid', routeid);
+                formData.append('gpxfile', file);
+
+                fetch('backend.php', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${this.user.auth_token}`
+                    },
+                    body: formData
+                })
+                .then(response => response.text()) // Récupérer le texte brut pour le débogage
+                .then(text => {
+                    console.log('Response Text:', text); // Affiche la réponse brute
+                    return JSON.parse(text); // Convertir en JSON si nécessaire
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.uploading = false;
+                    if (data.status === 'success') {
+                        alert('Upload successful!');
+                    } else {
+                        alert('Upload failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    this.uploading = false;
+                    console.error('Error:', error);
+                    alert('An error occurred during upload.');
+                });
             }
-
-            // Vérifier si le fichier est bien un JPEG
-            if (file.type === 'application/gpx+xml' || file.type === 'text/xml') {
-                this.gpxError = "Please upload a GPX file.";
-                this.gpxFile = null;
-                return;
-            }
-
-            // S'il est valide, stockez-le et préparez la prévisualisation
-            this.gpxError = '';
-            this.gpxFile = file;
-
-            // Générer un URL de prévisualisation
-            this.previewImage = URL.createObjectURL(file);
         },
 
         handleFileUpload(event) {

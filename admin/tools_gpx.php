@@ -2,12 +2,7 @@
 // cd /var/www/html/geogram/
 // /usr/bin/php admin/tools_gpx.php
 
-set_time_limit(60);
-ini_set('display_errors', 1);
-
 include (__DIR__ . '/../vendor/autoload.php');
-// require_once(__DIR__ . '/admin/filemanager.php');
-// require_once(__DIR__ . '/admin/functions.php');
 
 use phpGPX\phpGPX;
 
@@ -38,8 +33,14 @@ function gpx_minimise($gpxFile,$minDist=200,$multisegments=true){
             continue;
         }
 
-        unset($file->tracks[$tindex]->extensions);
-        unset($file->tracks[$tindex]->description);
+        // unset($file->tracks[$tindex]->extensions);
+        // unset($file->tracks[$tindex]->description);
+        if (property_exists($file->tracks[$tindex], 'extensions')) {
+            unset($file->tracks[$tindex]->extensions);
+        }
+        if (property_exists($file->tracks[$tindex], 'description')) {
+            unset($file->tracks[$tindex]->description);
+        }
 
         foreach ($track->segments as $segment){
     
@@ -66,9 +67,18 @@ function gpx_minimise($gpxFile,$minDist=200,$multisegments=true){
                 }else{
                     //On garde le point
                     $segmentDistance = 0;
-                    unset($segment->points[$index]->time);
-                    unset($segment->points[$index]->extensions);
-                    unset($segment->points[$index]->elevation);
+                    // unset($segment->points[$index]->time);
+                    // unset($segment->points[$index]->extensions);
+                    // unset($segment->points[$index]->elevation);
+                    if (property_exists($segment->points[$index], 'time')) {
+                        unset($segment->points[$index]->time);
+                    }
+                    if (property_exists($segment->points[$index], 'extensions')) {
+                        unset($segment->points[$index]->extensions);
+                    }
+                    if (property_exists($segment->points[$index], 'elevation')) {
+                        unset($segment->points[$index]->elevation);
+                    }
 
                 }
 
@@ -84,7 +94,10 @@ function gpx_minimise($gpxFile,$minDist=200,$multisegments=true){
     $newFilePath = pathinfo($gpxFile, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $newFileName;
     
     // Enregistrer le fichier GPX modifié
+    $previousErrorLevel = error_reporting();
+    error_reporting($previousErrorLevel & ~E_WARNING);
     $file->save($newFilePath, phpGPX::XML_FORMAT);
+    error_reporting($previousErrorLevel);
     return $newFilePath;
 }
 
@@ -132,11 +145,12 @@ function gpx_geojson($gpxFile){
     $newFilePath = pathinfo($gpxFile, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . $newFileName;
 
     file_put_contents($newFilePath, $geojsonString);
+    return $newFilePath;
     
 }
 
-$gpx_file = "/var/www/html/geogram/_assets/g727.gpx";
-$gpx_mini_file = gpx_minimise($gpx_file);
-gpx_geojson($gpx_mini_file);
+// $gpx_file = "/var/www/html/geogram/_assets/g727.gpx";
+// $gpx_mini_file = gpx_minimise($gpx_file);
+// gpx_geojson($gpx_mini_file);
 
 ?>

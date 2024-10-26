@@ -12,6 +12,7 @@ include (__DIR__ . '/vendor/autoload.php');
 require_once(__DIR__ . '/admin/filemanager.php');
 require_once(__DIR__ . '/admin/functions.php');
 require_once(__DIR__ . '/admin/mylogs.php');
+require_once(__DIR__ . '/admin/tools_gpx.php');
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -35,6 +36,8 @@ if($view == "login") {
     $data = get_routes();
 }elseif($view == "updateroute"){
     $data = updateroute();
+}elseif($view == "gpxupload"){
+    $data = gpxupload();
 }elseif($view == "map") {
     $data = get_chat_logs();
 }elseif($page=="userlogs" && isset($userid) && $chatobj){
@@ -100,8 +103,7 @@ function get_chat_logs(){
     $result = $stmt->get_result();
     $logs = $result->fetch_all(MYSQLI_ASSOC);
 
-    $gpxfile_flag = true;
-    $gpxfile = "";
+    $geojson = $fileManager->route_geojson_web($route);
 
     foreach ($logs as &$row) {
         $row['username_formatted'] = fName($row["username"]) . "<br>" . MyDateFormatN($route, $row["timestamp"]) . "<br>" . meters_to_distance($row["km"], $route);
@@ -114,17 +116,10 @@ function get_chat_logs(){
             $row['userimg'] = false;
         }
 
-        if ($gpxfile_flag){
-            $gpxfile = $fileManager->geojsonWeb($route);
-            $gpxfile_flag = false;
-        }
-        $row['gpxfile'] = $gpxfile;
-
     }
 
     //lecho($logs);
-    return $logs;
-
+    return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson];
 }
 
 function get_login(){
@@ -324,6 +319,47 @@ function updateroute(){
 
 }
 
+function gpxupload(){
+    global $mysqli;
+
+    lecho("gpxUpload");
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    if (!isset($_FILES['gpxfile']) || $_FILES['gpxfile']['error'] !== UPLOAD_ERR_OK) {
+        return ['status' => 'error', 'message' => 'Bad gpx file'];
+    }
+
+    $routeid = $_POST['routeid'] ?? '';
+    if(empty($routeid)){
+        return ['status' => 'error', 'message' => 'Empty routename'];
+    }
+
+    $filemanager = new FileManager();
+    $source = $filemanager->gpx_source($routeid);
+
+    if($source){
+        if (move_uploaded_file($_FILES['gpxfile']['tmp_name'], $source)) {
+
+            $nimigpx = gpx_minimise($source);
+            $geojson = gpx_geojson($nimigpx);
+            if($geojson){
+                //$minimise = gpx2base($nimigpx);
+                routeGPX($routeid,1);
+            }else{
+                routeGPX($routeid,0);
+            }
+            return ['status' => 'success', 'message' => 'File uploaded successfully'];
+        }
+    }
+
+    return ['status' => 'error', 'message' => 'Upload fail'];
+
+}
+
 function get_routes(){
     global $mysqli;
 
@@ -382,7 +418,7 @@ function saveToken($userid){
 function testToken($userid){
     global $mysqli;
 
-    lecho("testToken", $userid);
+    //lecho("testToken", $userid);
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
     if(empty($authHeader)) return false;
     list($jwt) = sscanf($authHeader, 'Bearer %s');
@@ -396,7 +432,7 @@ function testToken($userid){
         $row = $result->fetch_assoc();
 
         $decoded = validateToken($jwt);
-        lecho($row['auth_token']);
+        //lecho($row['auth_token']);
         if ($jwt && $jwt === $row['auth_token'] && $decoded) {
             if($decoded->exp - time() > 300) {
                 return true;
@@ -418,6 +454,17 @@ function updateUserRoute($userid,$routeid){
 
     $stmt = $mysqli->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
     $stmt->bind_param("si", $routeid, $userid);
+    if ($stmt->execute())
+        return true;
+    else
+        return false;
+}
+
+function routeGPX($routeid,$value){
+    global $mysqli;
+
+    $stmt = $mysqli->prepare("UPDATE routes SET gpx = ? WHERE routeid = ?");
+    $stmt->bind_param("ii", $value, $routeid);
     if ($stmt->execute())
         return true;
     else

@@ -94,25 +94,25 @@ document.addEventListener('alpine:init', () => {
                 //this.data = data;
                 if(data.status == 'error'){
                     alert("Error:" + data.message);
-                }else if (this.view === 'map') {
-                    this.updateMap(data);
-                } else if (type === 'list') {
-                    this.updateList(data);
+                }else if (this.view === 'map' && data.status == 'success') {
+                    this.updateMap(data.logs,data.geojson);
+                // } else if (type === 'list') {
+                //     this.updateList(data);
                 }
             })
             .catch(error => console.error('Error:', error));
         },
 
 
-        updateMap(data) {
+        updateMap(logs, geojson) {
             console.log("updateMap");
 
-            console.log(data);
-            if (!data || data.length === 0) {
-                console.log("No cursors.");
-                this.action_localise();
-                return;
-            }
+            //console.log(data);
+            // if (!data || data.length === 0) {
+            //     console.log("No cursors.");
+            //     this.action_localise();
+            //     return;
+            // }
 
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
@@ -122,9 +122,7 @@ document.addEventListener('alpine:init', () => {
             this.markerBounds = new L.LatLngBounds();
 
             // Ajout de nouveaux marqueurs à la carte
-            data.forEach((entry, index) => {
-
-                if (index == 0) this.updateGPX(entry.gpxfile);
+            logs.forEach((entry, index) => {
 
                 // Vérification de la présence d'une image pour cet utilisateur
                 const icon = entry.userimg ? L.divIcon({
@@ -155,11 +153,14 @@ document.addEventListener('alpine:init', () => {
                 this.cursors.push(marker);
             });
 
+            console.log(geojson);
+            this.updateGPX(geojson);
+
             // Ajustement des limites de la carte pour inclure tous les marqueurs
             if (this.cursors.length > 0) {
                 const bounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(this.markerBounds, { maxZoom: 10 });
-            } else {
+            } else if (!geojson) {
                 //No cursor
                 this.action_localise();
             }
@@ -266,22 +267,18 @@ document.addEventListener('alpine:init', () => {
                 const watchId = navigator.geolocation.watchPosition(
                     position => {
                         const { latitude, longitude, accuracy } = position.coords;
-                        console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${accuracy}m`);
 
                         if (accuracy < bestAccuracy) {
                             this.bestPosition = [ latitude, longitude ];
                             bestAccuracy = Math.floor(accuracy);
                         }
+                        console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
+                        this.showPopup("Looking for position...");
 
                         if (bestAccuracy < 20) {
                             this.finalizePosition(watchId);
-                        }else{
-                            if(firstwatch){
-                                this.showPopup("Looking for position...");
-                                firstwatch = false;
-                            }else{
-                                this.updatePopup(`Accuracy: ${bestAccuracy}m`, watchId);
-                            }
+                        } else if (bestAccuracy < 10000) {
+                            this.updatePopup(`Accuracy: ${bestAccuracy}m`, watchId);
                         }
                     },
                     error => {
@@ -301,13 +298,6 @@ document.addEventListener('alpine:init', () => {
             this.removePopup();
         },
 
-        updatePopup(message) {
-            const popup = document.getElementById('geoPopup');
-            if (popup) {
-                popup.querySelector('p').textContent = message;
-            }
-        },
-
         updatePopup(message, watchId) {
             const popup = document.getElementById('geoPopup');
             if (popup) {
@@ -321,6 +311,17 @@ document.addEventListener('alpine:init', () => {
                     });
                     popup.appendChild(button);
                 }
+                if (!document.getElementById('cancelBtn')) {
+                    const cancelButton = document.createElement('button');
+                    cancelButton.id = 'cancelBtn';
+                    cancelButton.textContent = 'Cancel';
+                    cancelButton.addEventListener('click', () => {
+                        navigator.geolocation.clearWatch(watchId);
+                        this.removePopup();
+                    });
+                    popup.appendChild(cancelButton);
+                }
+
             }
         },
 

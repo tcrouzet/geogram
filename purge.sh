@@ -22,3 +22,6 @@ sudo chown -R apache:apache userimg
 
 sudo chmod 775 cron.txt
 sudo chown apache:apache cron.txt
+
+sudo chmod 775 userdata
+sudo chown -R apache:apache userdata
