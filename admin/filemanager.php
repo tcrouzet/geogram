@@ -206,6 +206,14 @@ class FileManager {
             return false;
     }
 
+    public function gpx_mini($routeid) {
+        $dir = $this->route_dir($routeid);
+        if($dir)
+            return  $dir . "source-mini.gpx";
+        else
+            return false;
+    }
+
 
     //GEOJSON
 

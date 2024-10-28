@@ -45,7 +45,8 @@ html_header( "Geogram routes" );
                                 
                                 <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label>
                                 <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
-                                <div x-show="uploading" class="popup">Uploading...</div>
+                                <div x-show="gpxError" class="error-message" x-text="gpxError"></div>
+                                
                                 <label>Status</label>
                                 <select x-model="route.routestatus" @change="updateRoute(route)">
                                     <option value="2">Private</option>
@@ -92,8 +93,6 @@ html_header( "Geogram routes" );
 
     </main>
 
-    <?php include 'footer.php'; ?>
-
 </div>
 
 <?php
@@ -119,7 +118,6 @@ document.addEventListener('alpine:init', () => {
         //selectedPhoto: null,
         userid: null,
         loading: false,
-        uploading: false,
 
         init(){
             console.log("Init routes");
@@ -146,7 +144,7 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.auth_token}`
+                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: formData.toString()
             })
@@ -200,7 +198,7 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.auth_token}`
+                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "route",
@@ -231,7 +229,7 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.auth_token}`
+                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "updateroute",
@@ -265,7 +263,7 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.auth_token}`
+                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "routeconnect",
@@ -295,11 +293,10 @@ document.addEventListener('alpine:init', () => {
             return (event) => {
                 const file = event.target.files[0];
                 if (!file || file.type !== 'application/gpx+xml') {
-                    alert('Please upload a valid GPX file.');
+                    this.gpxError = 'Please upload a valid GPX file.';
                     return;
                 }
-
-                this.uploading = true;
+                this.gpxError = 'Uploading…';
 
                 const formData = new FormData();
                 formData.append('view', 'gpxupload');
@@ -310,7 +307,7 @@ document.addEventListener('alpine:init', () => {
                 fetch('backend.php', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${this.user.auth_token}`
+                        'Authorization': `Bearer ${this.user.usertoken}`
                     },
                     body: formData
                 })
@@ -321,12 +318,11 @@ document.addEventListener('alpine:init', () => {
                 // })
                 .then(response => response.json())
                 .then(data => {
-                    this.uploading = false;
                     if (data.status === 'success') {
-                        alert('Upload successful!');
+                        this.gpxError = 'Distance: ' + data.gpx.total_km + "m Up:" + data.gpx.total_dev + "m Points:" + data.gpx.total_points + " Tracks:" + data.gpx.total_tracks;
                         return true;
                     } else {
-                        alert('Upload failed: ' + data.message);
+                        this.gpxError = 'Upload failed: ' + data.message;
                         return false;
                     }
                 })
@@ -363,7 +359,7 @@ document.addEventListener('alpine:init', () => {
                 fetch('backend.php', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${this.user.auth_token}`
+                        'Authorization': `Bearer ${this.user.usertoken}`
                     },
                     body: formData
                 })
@@ -395,6 +391,7 @@ document.addEventListener('alpine:init', () => {
             localStorage.setItem('user', JSON.stringify(user));
             this.user = user;
             Alpine.store('headerActions').user = user;
+            Alpine.store('headerActions').init(true);
         },
 
         rooted(routedata){

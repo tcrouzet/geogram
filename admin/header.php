@@ -48,16 +48,24 @@ document.addEventListener('alpine:init', () => {
         isLoggedIn: false,
         isOnRoute: false,
 
-        init() {
+        init(reset=false) {
             console.log("Initializing header");
 
             this.user = this.getUserFromLocalStorage();
             this.isLoggedIn = this.user !== null;
             if(this.isLoggedIn){
                 this.isOnRoute = this.user.routeid > 0 ? true : false;
+                if ((this.route === null || reset === true) && this.isOnRoute) {
+                    this.route = {};
+                    for (const [key, value] of Object.entries(this.user)) {
+                        if (!key.startsWith('user')) {
+                            this.route[key] = value;
+                        }
+                    }
+                }
             }
-            console.log(this.user);
-            console.log(this.route);
+            //console.log(this.user);
+            //console.log(this.route);
 
             // Enregistrer les fonctions dans le store
             Alpine.store('headerActions', {
@@ -67,7 +75,9 @@ document.addEventListener('alpine:init', () => {
                 isOnRoute: this.isOnRoute,
             });
 
-            console.log("Store initialized:", Alpine.store('headerActions'));
+            // Ajouter init au store après l'initialisation
+            Alpine.store('headerActions').init = this.init.bind(this);
+
         },
         
         getUserFromLocalStorage() {

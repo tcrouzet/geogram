@@ -83,13 +83,7 @@ html_header( "Geogram login" );
 
     </main>
 
-    <?php include 'footer.php'; ?>
-
 </div>
-
-<?php
-html_footer();
-?>
 
 <script>
 document.addEventListener('alpine:init', () => {
@@ -252,7 +246,7 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.auth_token}`
+                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "updateuser",
@@ -306,7 +300,7 @@ document.addEventListener('alpine:init', () => {
                 fetch('backend.php', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${this.user.auth_token}`
+                        'Authorization': `Bearer ${this.user.usertoken}`
                     },
                     body: formData
                 })
@@ -337,11 +331,12 @@ document.addEventListener('alpine:init', () => {
         connected(userdata){
             console.log('Utilisateur connecté:', userdata);
             localStorage.setItem('user', JSON.stringify(userdata));
-            if(userdata.routeid == userdata.userroute){
-                window.location.href = `/` + userdata.routeslug;
-            }else{
-                window.location.href = `/login/`
-            }
+            // if(userdata.routeid == userdata.userroute){
+            //     window.location.href = `/` + userdata.routeslug;
+            // }else{
+            //     window.location.href = `/login/`
+            // }
+            window.location.href = `/`;
         },
 
         // Fonction pour gérer la connexion via Google

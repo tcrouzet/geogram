@@ -13,6 +13,7 @@ require_once(__DIR__ . '/admin/filemanager.php');
 require_once(__DIR__ . '/admin/functions.php');
 require_once(__DIR__ . '/admin/mylogs.php');
 require_once(__DIR__ . '/admin/functions_robot.php');
+require_once(__DIR__ . '/admin/gpxmanager.php');
 require_once(__DIR__ . '/admin/callback.php');
 
 $content = file_get_contents("php://input");

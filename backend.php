@@ -13,6 +13,7 @@ require_once(__DIR__ . '/admin/filemanager.php');
 require_once(__DIR__ . '/admin/functions.php');
 require_once(__DIR__ . '/admin/mylogs.php');
 require_once(__DIR__ . '/admin/tools_gpx.php');
+require_once(__DIR__ . '/admin/gpxmanager.php');
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -161,7 +162,7 @@ function get_login(){
         if (password_verify($password, $user['userpsw'])) {
 
             if (!testToken($user['userid'])){
-                $user['auth_token'] = saveToken($user['userid']);
+                $user['usertoken'] = saveToken($user['userid']);
             }
             unset($user['userpsw']);
 
@@ -215,7 +216,7 @@ function create_user(){
                 'userinitials' => $userinitials,
                 'usercolor' => $usercolor,
                 'userimg' => '',
-                'auth_token' => $token,
+                'usertoken' => $token,
                 'userroute' => $userroute,
                 'routeid' => $userroute
             ];
@@ -425,10 +426,9 @@ function routeconnect(){
         $stmt = $mysqli->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
         $stmt->bind_param("ii", $routeid, $userid);
         if ($stmt->execute()){
-            $user['userroute'] = $routeid;
+            $user = get_user($userid);
             unset($user['userpsw']);
-            //lecho($user);
-           return ['status' => 'success', 'user' => $user ];
+            return ['status' => 'success', 'user' => $user ];
         }else
             return ['status' => 'error', 'message' => 'Update fail'];
 
@@ -465,15 +465,15 @@ function gpxupload(){
             $nimigpx = gpx_minimise($source);
             $geojson = gpx_geojson($nimigpx);
             if($geojson){
-                //$minimise = gpx2base($nimigpx);
-                routeGPX($routeid,1);
-            }else{
-                routeGPX($routeid,0);
+                if ($gpxdata = new_gpx($routeid)){
+                    routeGPX($routeid,1);
+                    return ['status' => 'success', 'gpx' => $gpxdata];
+                }
             }
-            return ['status' => 'success', 'message' => 'File uploaded successfully'];
         }
     }
 
+    routeGPX($routeid,0);
     return ['status' => 'error', 'message' => 'Upload fail'];
 
 }
@@ -572,7 +572,7 @@ function saveToken($userid){
 
     $token = generateToken($userid);
 
-    $stmt = $mysqli->prepare("UPDATE users SET auth_token = ? WHERE userid = ?");
+    $stmt = $mysqli->prepare("UPDATE users SET usertoken = ? WHERE userid = ?");
     $stmt->bind_param("si", $token, $userid);
     if ($stmt->execute())
         return $token;
@@ -588,7 +588,7 @@ function testToken($userid){
     if(empty($authHeader)) return false;
     list($jwt) = sscanf($authHeader, 'Bearer %s');
     
-    $stmt = $mysqli->prepare("SELECT auth_token FROM users WHERE userid = ?");
+    $stmt = $mysqli->prepare("SELECT usertoken FROM users WHERE userid = ?");
     $stmt->bind_param("i", $userid);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -597,8 +597,7 @@ function testToken($userid){
         $row = $result->fetch_assoc();
 
         $decoded = validateToken($jwt);
-        //lecho($row['auth_token']);
-        if ($jwt && $jwt === $row['auth_token'] && $decoded) {
+        if ($jwt && $jwt === $row['usertoken'] && $decoded) {
             if($decoded->exp - time() > 300) {
                 return true;
             }

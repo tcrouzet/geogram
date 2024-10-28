@@ -20,11 +20,16 @@ html_header( "Map" );
             </div>
         </template>
         <template x-if="route && route.routestatus < 2 || (isLoggedIn && routeid == userroute)">
-            <div x-show="view === 'map'" id="map" x-init="initializeMap"></div>
+            <div id="mapcontainer" x-init="initializeMap">
+                <div x-show="view === 'map'" id="map"></div>
+                <div id="mapfooter">
+                    <button @click="action_fitall()">FitAll</button>
+                    <button @click="action_fitgpx()">FitGPX</button>
+                    <button @click="action_localise()">Localise</button>
+                </div>
+            </div>
         </template>
     </main>
-
-    <?php include 'footer.php'; ?>
 
 </div>
 <?php
@@ -41,7 +46,7 @@ document.addEventListener('alpine:init', () => {
         userid: 0,
         userroute: 0,
         routeid: 0,
-        auth_token: '',
+        usertoken: '',
         view: 'map', // Default view
         data: {},
         map: null,
@@ -59,7 +64,7 @@ document.addEventListener('alpine:init', () => {
                 this.isOnRoute = Alpine.store('headerActions').isOnRoute;
                 this.username = this.user.username;
                 this.userid = this.user.userid;
-                this.auth_token = this.user.auth_token;
+                this.usertoken = this.user.usertoken;
                 this.userroute = this.user.userroute;
                 this.routeid = this.route.routeid;
             }
@@ -75,11 +80,11 @@ document.addEventListener('alpine:init', () => {
             this.loadData('map');
 
             // Enregistrer les fonctions dans le store
-            Alpine.store('mapActions', {
-                actionFitAll: () => this.action_fitall(),
-                actionFitGPX: () => this.action_fitgpx(),
-                actionLocalise: () => this.action_localise()
-            });
+            // Alpine.store('mapActions', {
+            //     actionFitAll: () => this.action_fitall(),
+            //     actionFitGPX: () => this.action_fitgpx(),
+            //     actionLocalise: () => this.action_localise()
+            // });
 
             this.showPopup("Loading map…");
 
@@ -100,7 +105,7 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.auth_token}`
+                    'Authorization': `Bearer ${this.usertoken}`
                 },
                 body: formData.toString()
             })
@@ -264,20 +269,6 @@ document.addEventListener('alpine:init', () => {
                 iconSize: [size, size]
             });
             cursor.setIcon(customMarker);
-        },
-
-        action_localise1() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const { latitude, longitude } = position.coords;
-                    console.log(latitude, longitude)
-                    // Update map with the new location
-                    L.marker([latitude, longitude]).addTo(this.map).bindTooltip("Vous êtes ici");
-                    this.map.setView([latitude, longitude], 13);
-                });
-            } else {
-                alert('Geolocalisation not supported in this browser.');
-            }
         },
 
         action_localise() {
