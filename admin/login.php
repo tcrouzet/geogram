@@ -52,13 +52,21 @@ html_header( "Geogram login" );
                 <div class="divider">User</div>
 
                 <label>Email</label>
-                <input type="email" placeholder="Email" class="input-field" x-model="email" required @input="validateEmail">
+                <input type="email" placeholder="Email" class="input-field" x-model="user.useremail" required @input="validateEmail" @change="updateUser">
                 <div x-show="emailError" class="error-message" x-text="emailError"></div>
 
                 <label>User name</label>
                 <input type="text" placeholder="User name" class="input-field" x-model="user.username" required  minlength="2" maxlength="30" @change="updateUser">
                 <div x-show="usernameError" class="error-message" x-text="usernameError"></div>
 
+                <label>Profile Image (JPEG only)</label>
+                <input type="file" @change="userPhotoUpload()" accept="image/jpeg" class="input-field">
+                <div x-show="photoError" class="error-message" x-text="photoError"></div>
+                <div class="input-group" x-show="photoPreview || user.photopath">
+                    <img :src="photoPreview || user.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
+                </div>
+
+                <div class="divider">Password</div>
                 <label>New password</label>
                 <input type="password"
                     placeholder="Password"
@@ -67,15 +75,8 @@ html_header( "Geogram login" );
                     required
                     minlength="8"
                     maxlength="20"
-                    @input="checkPasswordLength">
+                    @input="checkPasswordLength"  @change="updatePSW">
                 <div x-show="passwordError" class="error-message" x-text="passwordError"></div>
-
-                <label>Profile Image (JPEG only)</label>
-                <input type="file" @change="userPhotoUpload()" accept="image/jpeg" class="input-field">
-                <div x-show="photoError" class="error-message" x-text="photoError"></div>
-                <div class="input-group" x-show="photoPreview || user.photopath">
-                    <img :src="photoPreview || user.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
-                </div>
 
             </div>  
         </template>
@@ -256,7 +257,8 @@ document.addEventListener('alpine:init', () => {
                 body: new URLSearchParams({
                     view: "updateuser",
                     userid: this.user.userid,
-                    username: this.user.username
+                    username: this.user.username,
+                    useremail: this.user.useremail
                 })
             })
             // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -276,6 +278,10 @@ document.addEventListener('alpine:init', () => {
                 }
             })
             .catch(error => console.error('Error:', error));
+        },
+
+        updatePSW(){
+            alert("Not yet possible");
         },
 
         userPhotoUpload() {

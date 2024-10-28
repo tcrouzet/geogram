@@ -104,9 +104,14 @@ if($group=="help"){
     }
 
 }else{
-    $archives="";
-    require("admin/une.php");
-    html_footer();
+
+    if($isAdmin){
+        require("admin/map_2.php");
+    }else{
+        $archives="";
+        require("admin/une.php");
+        html_footer();
+    }
 }
 
 

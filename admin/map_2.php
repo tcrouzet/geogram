@@ -9,12 +9,17 @@ html_header( "Map" );
     <!-- Section Content -->
     <main x-data="mapComponent()">
 
-        <template x-if="route.routestatus > 1 && !(isLoggedIn && routeid == userroute)">
+        <template x-if="!route">
+            <div id="login" class="loginwidth">
+                <p>No route selected or available.</p>
+            </div>
+        </template>
+        <template x-if="route && route.routestatus > 1 && !(isLoggedIn && routeid == userroute)">
             <div id="login" class="loginwidth">
                 <p>This route is for invited, logged-in users only.</p>
             </div>
         </template>
-        <template x-if="route.routestatus < 2 || (isLoggedIn && routeid == userroute)">
+        <template x-if="route && route.routestatus < 2 || (isLoggedIn && routeid == userroute)">
             <div x-show="view === 'map'" id="map" x-init="initializeMap"></div>
         </template>
     </main>

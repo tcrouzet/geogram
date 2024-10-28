@@ -47,6 +47,24 @@ CREATE TABLE `chats` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `connectors`
+--
+
+DROP TABLE IF EXISTS `connectors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `connectors` (
+  `conid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `conrouteid` bigint(20) DEFAULT NULL,
+  `conuserid` bigint(20) DEFAULT NULL,
+  `contime` timestamp NOT NULL DEFAULT current_timestamp(),
+  `constatus` int(2) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`conid`),
+  UNIQUE KEY `conrouteid` (`conrouteid`,`conuserid`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `gpx`
 --
 
@@ -101,6 +119,63 @@ CREATE TABLE `options` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `routes`
+--
+
+DROP TABLE IF EXISTS `routes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `routes` (
+  `routeid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `routeuserid` bigint(20) NOT NULL,
+  `routerem` varchar(256) DEFAULT NULL,
+  `routepublisherlink` varchar(100) DEFAULT NULL,
+  `routeviewerlink` varchar(100) DEFAULT NULL,
+  `routename` varchar(100) DEFAULT NULL,
+  `routeinitials` varchar(2) DEFAULT NULL,
+  `routeslug` varchar(100) DEFAULT NULL,
+  `routestatus` tinyint(1) NOT NULL DEFAULT 2,
+  `start` int(11) DEFAULT 0,
+  `stop` int(11) DEFAULT 0,
+  `gpx` tinyint(1) NOT NULL DEFAULT 0,
+  `total_km` int(11) NOT NULL DEFAULT 0,
+  `total_dev` int(11) NOT NULL DEFAULT 0,
+  `unit` tinyint(4) NOT NULL DEFAULT 0,
+  `timediff` tinyint(4) NOT NULL DEFAULT 0,
+  `routephoto` tinyint(1) NOT NULL DEFAULT 0,
+  `creationdate` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `mode` tinyint(4) NOT NULL DEFAULT 0,
+  `real_time` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`routeid`),
+  UNIQUE KEY `routename` (`routename`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `userid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) DEFAULT NULL,
+  `userinitials` varchar(2) DEFAULT NULL,
+  `usercolor` varchar(7) DEFAULT NULL,
+  `userpsw` varchar(255) DEFAULT NULL,
+  `useremail` varchar(255) DEFAULT NULL,
+  `usercreation` timestamp NOT NULL DEFAULT current_timestamp(),
+  `userupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `userroute` bigint(20) DEFAULT NULL,
+  `auth_token` varchar(255) DEFAULT NULL,
+  `userphoto` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -111,4 +186,4 @@ CREATE TABLE `options` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-21  9:51:46
+-- Dump completed on 2024-10-28  6:32:00

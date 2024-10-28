@@ -251,10 +251,14 @@ function updateuser(){
     }
 
     $username = $_POST['username'] ?? '';
+    $useremail = $_POST['useremail'] ?? '';
+
+    lecho($useremail);
 
     if ($user = get_user($userid)) {
 
         $user['username'] = $username;
+        $user['useremail'] = $useremail;
         unset($user['userpsw']);
 
         $stmt = $mysqli->prepare("UPDATE users SET username = ? WHERE userid = ?");
