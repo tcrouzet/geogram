@@ -13,8 +13,6 @@ html_header( "Geogram login" );
 
             <div id="login" class="loginwidth">
 
-                <input type="hidden" x-model="formType" value="login"> 
-
                 <h1>Welcome</h1>
                 <p>Log in/Sign in to Geogram.</p>
 
@@ -51,51 +49,33 @@ html_header( "Geogram login" );
         <template x-if="isLoggedIn">
             <div id="login" class="userwidth">
 
-                <input type="hidden" x-model="formType" value="update"> 
-
                 <div class="divider">User</div>
 
-                <div class="input-group">
-                    <label>Email:</label>
-                    <input type="email" placeholder="Email" class="input-field" x-model="email" required @input="validateEmail">
-                </div>
+                <label>Email</label>
+                <input type="email" placeholder="Email" class="input-field" x-model="email" required @input="validateEmail">
                 <div x-show="emailError" class="error-message" x-text="emailError"></div>
 
-                <div class="input-group">
-                    <label>User name:</label>
-                    <input type="text" placeholder="User name" class="input-field" x-model="username" required  @input="checkUsername">
-                </div>
+                <label>User name</label>
+                <input type="text" placeholder="User name" class="input-field" x-model="user.username" required  minlength="2" maxlength="30" @change="updateUser">
                 <div x-show="usernameError" class="error-message" x-text="usernameError"></div>
 
-                <div class="input-group">
-                    <label>New password:</label>
-                    <input type="password"
-                        placeholder="Password"
-                        class="input-field"
-                        x-model="password"
-                        required
-                        minlength="8"
-                        maxlength="20"
-                        @input="checkPasswordLength">
-                </div>
+                <label>New password</label>
+                <input type="password"
+                    placeholder="Password"
+                    class="input-field"
+                    x-model="password"
+                    required
+                    minlength="8"
+                    maxlength="20"
+                    @input="checkPasswordLength">
                 <div x-show="passwordError" class="error-message" x-text="passwordError"></div>
 
-                <!-- Champ pour uploader l'image -->
-                <div class="input-group">
-                    <label>Profile Image (JPEG only):</label>
-                    <input type="file" @change="handleFileUpload" x-ref="fileInput" accept="image/jpeg" class="input-field">
-                    <div x-show="fileError" class="error-message" x-text="fileError"></div>
+                <label>Profile Image (JPEG only)</label>
+                <input type="file" @change="userPhotoUpload()" accept="image/jpeg" class="input-field">
+                <div x-show="photoError" class="error-message" x-text="photoError"></div>
+                <div class="input-group" x-show="photoPreview || user.photopath">
+                    <img :src="photoPreview || user.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
                 </div>
-
-                <!-- Prévisualisation de l'image (optionnel) -->
-                <div class="input-group" x-show="previewImage">
-                    <label>Image Preview:</label>
-                    <img :src="previewImage" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
-                </div>
-
-                <button class="btn btn-submit" type="submit" @click="loginWithForm()" x-bind:disabled="loading">
-                    Continue
-                </button>
 
             </div>  
         </template>
@@ -126,10 +106,13 @@ document.addEventListener('alpine:init', () => {
         previewImage: null,
         selectedFile: null,
         passwordError: '',
-        formType: '',
         loading: false,
+        photoError: '',
+        photoPreview: null,
+        selectedPhoto: null,
 
         init(){
+            console.log("loginInit");
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
             if(this.isLoggedIn){
                 this.user = Alpine.store('headerActions').user;
@@ -187,7 +170,6 @@ document.addEventListener('alpine:init', () => {
             formData.append('view', 'login');
             formData.append('email', this.email);
             formData.append('password', this.password);
-            formData.append('formType', this.formType);
 
             fetch('backend.php', {
                 method: 'POST',
@@ -200,7 +182,7 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-                // return response.text(); // testing
+                //return response.text(); // testing
                 return response.json();
             })
             // .then(text => {
@@ -231,7 +213,6 @@ document.addEventListener('alpine:init', () => {
             formData.append('view', 'createuser');
             formData.append('email', this.email);
             formData.append('password', this.password);
-            formData.append('formType', this.formType);
 
             fetch('backend.php', {
                 method: 'POST',
@@ -263,10 +244,98 @@ document.addEventListener('alpine:init', () => {
             .catch(error => console.error('ErrorFetch:', error));
         },
 
+
+        updateUser() {
+            // Envoyer une requête pour mettre à jour la route
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.auth_token}`
+                },
+                body: new URLSearchParams({
+                    view: "updateuser",
+                    userid: this.user.userid,
+                    username: this.user.username
+                })
+            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('User updated');
+                    console.log()
+                    this.user.username = data.user.username;
+                    localStorage.setItem('user', JSON.stringify(this.user));
+                } else {
+                    console.error('Error updating user', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        },
+
+        userPhotoUpload() {
+            return (event) => {
+                console.log("photoUpload");
+                const file = event.target.files[0];
+                if (!file || file.type !== 'image/jpeg') {
+                    this.photoError = "Please upload a JPEG file.";
+                    this.photoPreview = null;
+                    return;
+                }
+
+                this.uploading = true;
+
+                this.photoError = '';
+
+                const formData = new FormData();
+                formData.append('view', 'userphoto');
+                formData.append('userid', this.user.userid);
+                formData.append('photofile', file);
+
+                fetch('backend.php', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${this.user.auth_token}`
+                    },
+                    body: formData
+                })
+                // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+                // .then(text => {
+                //     console.log('Response Text:', text); // Affiche la réponse brute
+                //     return JSON.parse(text); // Convertir en JSON si nécessaire
+                // })
+                .then(response => response.json())
+                .then(data => {
+                    this.uploading = false;
+                    if (data.status === 'success') {
+                        this.photoPreview = URL.createObjectURL(file);
+                        return true;
+                    } else {
+                        this.photoError = "Please upload a JPEG file.";
+                        return false;
+                    }
+                })
+                .catch(error => {
+                    this.uploading = false;
+                    console.error('Error:', error);
+                    alert('An error occurred during upload.');
+                });
+            }
+        },
+
         connected(userdata){
             console.log('Utilisateur connecté:', userdata);
             localStorage.setItem('user', JSON.stringify(userdata));
-            window.location.href = `/login/`
+            if(userdata.routeid == userdata.userroute){
+                window.location.href = `/` + userdata.routeslug;
+            }else{
+                window.location.href = `/login/`
+            }
         },
 
         // Fonction pour gérer la connexion via Google
@@ -293,25 +362,6 @@ document.addEventListener('alpine:init', () => {
             }, 2000);
         },
 
-        handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Vérifier si le fichier est bien un JPEG
-            if (file.type !== 'image/jpeg') {
-                this.fileError = "Please upload a JPEG file.";
-                this.selectedFile = null;
-                this.previewImage = null;
-                return;
-            }
-
-            // S'il est valide, stockez-le et préparez la prévisualisation
-            this.fileError = '';
-            this.selectedFile = file;
-
-            // Générer un URL de prévisualisation
-            this.previewImage = URL.createObjectURL(file);
-        },
     }));
 });
 </script>

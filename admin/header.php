@@ -16,14 +16,14 @@
             <div class="user-menu">
                 <button @click="menuOpen = !menuOpen" class="icon-button">
                     <div class="marker" :style="userIconStyle">
-                        <template x-if="!user.img">
+                        <template x-if="!user.userphoto">
                             <span x-text="user.userinitials"></span>
                         </template>
                     </div>
                 </button>
                 <div x-show="menuOpen" @click.outside="menuOpen = false" class="dropdown-menu">
+                    <a href="#" @click.prevent="userpage">Profil</a>
                     <a href="#" @click.prevent="newroute">Routes</a>
-                    <a href="#" @click.prevent="userpage">Parameters</a>
                     <a href="#" @click.prevent="logout">Logout</a>
                 </div>
             </div>
@@ -56,6 +56,8 @@ document.addEventListener('alpine:init', () => {
             if(this.isLoggedIn){
                 this.isOnRoute = this.user.routeid > 0 ? true : false;
             }
+            console.log(this.user);
+            console.log(this.route);
 
             // Enregistrer les fonctions dans le store
             Alpine.store('headerActions', {
@@ -75,7 +77,7 @@ document.addEventListener('alpine:init', () => {
 
         get userIconStyle() {
             console.log("iconStyle");
-            $style = this.user.img ? `background-image: url('${this.user.img}'); width: 34px; height: 34px; border: 2px solid white; background-size: cover;`
+            $style = this.user.userphoto ? `background-image: url('/userdata/users/${this.user.userid}/photo.jpeg'); width: 34px; height: 34px; border: 2px solid white; background-size: cover;`
                 : `background-color: ${this.user.usercolor}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;`;
             return $style;
         },

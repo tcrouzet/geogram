@@ -98,7 +98,7 @@ footer {
     background-repeat: no-repeat;
 }
 #login .divider {
-    margin: 1rem 0 0 0;
+    margin: 1rem 0;
     display: flex;
     align-items: center;
     text-align: center;
@@ -129,6 +129,11 @@ footer {
 }
 #login .error-message{
     margin-top: 0;
+}
+
+#login label{
+    clear:both;
+    display: block;
 }
 
 .input-group {

@@ -32,44 +32,44 @@ html_header( "Geogram routes" );
                         <li>
                             <a :href="`/${route.routeslug}`" x-text="route.routename"></a>
                             <span x-show="route.routeid === user.userroute">(connected)</span>
-                            <button @click="toggleEdit(route.routeid)">Edit</button>
+                            <button x-show="route.routeid != user.userroute" @click="toggleConnect(route.routeid)">Connect</button>
+                            <button x-show="route.constatus === 3" @click="toggleEdit(route.routeid)">Edit</button>
                             
                             <div x-show="route.routeid === editingRouteId">
                                 <!-- Bloc d'édition -->
-                                <br/><label>Name</label><br/>
+                                <label>Name</label>
                                 <input type="text" class="input-field" x-model="route.routename" required minlength="3" maxlength="30" @change="updateRoute(route)">
 
-                                <br/><label>Description</label><br/>
+                                <label>Description</label>
                                 <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
                                 
-                                <br/><label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label><br/>
+                                <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label>
                                 <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
                                 <div x-show="uploading" class="popup">Uploading...</div>
-                                <label>Status</label><br/>
+                                <label>Status</label>
                                 <select x-model="route.routestatus" @change="updateRoute(route)">
-                                    <option value="0">Private</option>
+                                    <option value="2">Private</option>
                                     <option value="1">Open for spectators</option>
-                                    <option value="2">Open for all</option>
+                                    <option value="0">Open for all</option>
                                 </select>
-                                <div x-show="route.routestatus == 0 || route.routestatus == 1">
+                                <div x-show="route.routestatus > 0">
                                     <a :href="`/login/${route.routepublisherlink}`" x-text="'Invitation link for publishers'"></a>
                                     <button class="copy-button" @click="copyToClipboard(`/login/${route.routepublisherlink}`)">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <div x-show="route.routestatus == 0">
+                                <div x-show="route.routestatus > 1">
                                     <a :href="`/login/${route.routeviewerlink}`" x-text="'Invitation link for viewers'"></a>
                                     <button class="copy-button" @click="copyToClipboard(`/login/${route.routeviewerlink}`)">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
             
-                                <br/><br/><label>Route image (JPEG only):</label><br/>
+                                <label>Route image (JPEG only):</label>
                                 <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
                                 <div x-show="photoError" class="error-message" x-text="photoError"></div>
-                                <div class="input-group" x-show="photoPreview">
-                                    <label>Image Preview:</label>
-                                    <img :src="photoPreview" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
+                                <div class="input-group" x-show="photoPreview || route.photopath">
+                                    <img :src="photoPreview || route.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
                                 </div>
                             </div>
                         </li>
@@ -116,7 +116,7 @@ document.addEventListener('alpine:init', () => {
         gpxError: '',
         photoError: '',
         photoPreview: null,
-        selectedPhoto: null,
+        //selectedPhoto: null,
         userid: null,
         loading: false,
         uploading: false,
@@ -150,17 +150,12 @@ document.addEventListener('alpine:init', () => {
                 },
                 body: formData.toString()
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-                //return response.text(); // testing
-            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
             // .then(text => {
-            //     console.log("Raw Response Text:", text); // Vérifiez ici le texte brut
-            //     return JSON.parse(text); // Parse manuellement pour détecter les erreurs
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
             // })
+            .then(response => response.json())
             .then(data => {
                 console.log(data);
                 this.routes = data;
@@ -263,6 +258,39 @@ document.addEventListener('alpine:init', () => {
             .catch(error => console.error('Error:', error));
         },
 
+        toggleConnect(routeid) {
+            // Envoyer une requête pour mettre à jour la route
+            console.log("connect",routeid);
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.auth_token}`
+                },
+                body: new URLSearchParams({
+                    view: "routeconnect",
+                    userid: this.user.userid,
+                    routeid: routeid,
+                })
+            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('New connexion');
+                    this.updateStatus(data.user);
+                    //window.location.href = `/routes/`;
+                } else {
+                    console.error('Error updating route:', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        },
+
         handleGPXUpload(routeid) {
             return (event) => {
                 const file = event.target.files[0];
@@ -339,11 +367,11 @@ document.addEventListener('alpine:init', () => {
                     },
                     body: formData
                 })
-                .then(response => response.text()) // Récupérer le texte brut pour le débogage
-                .then(text => {
-                    console.log('Response Text:', text); // Affiche la réponse brute
-                    return JSON.parse(text); // Convertir en JSON si nécessaire
-                })
+                // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+                // .then(text => {
+                //     console.log('Response Text:', text); // Affiche la réponse brute
+                //     return JSON.parse(text); // Convertir en JSON si nécessaire
+                // })
                 .then(response => response.json())
                 .then(data => {
                     this.uploading = false;
@@ -361,6 +389,12 @@ document.addEventListener('alpine:init', () => {
                     alert('An error occurred during upload.');
                 });
             }
+        },
+
+        updateStatus(user){
+            localStorage.setItem('user', JSON.stringify(user));
+            this.user = user;
+            Alpine.store('headerActions').user = user;
         },
 
         rooted(routedata){

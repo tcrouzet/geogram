@@ -128,7 +128,32 @@ class FileManager {
         else
             return false;
     }
-    
+
+    public function route_photo_web($route) {
+        if($route['routephoto']){
+            $photo = $this->route_photo($route['routeid']);
+            return $this->relativize($photo,$this->datadir) . "?" . strtotime($route['last_update']);
+        }else{
+            return false;
+        }
+    }
+
+    public function user_photo($userid) {
+        $dir = $this->user_dir2($userid);
+        if($dir)
+            return  $dir . "photo.jpeg";
+        else
+            return false;
+    }
+
+    public function user_photo_web($user) {
+        if($user['userphoto']){
+            $photo = $this->user_photo($user['userid']);
+            return $this->relativize($photo,$this->datadir) . "?" . strtotime($user['userupdate']);
+        }else{
+            return false;
+        }
+    }
 
     //GPX
 
@@ -162,6 +187,15 @@ class FileManager {
                 return false;
         }
         return $routedir;
+    }
+
+    public function user_dir2($userid){
+        $userdir = $this->datadir_abs . "users/$userid/";
+        if (!is_dir($userdir)) {
+            if(!mkdir($userdir, 0777, true))
+                return false;
+        }
+        return $userdir;
     }
 
     public function gpx_source($routeid) {

@@ -30,16 +30,22 @@ if($view == "login") {
     $data = get_login();
 }elseif($view == "createuser") {
     $data = create_user();
+}elseif($view == "updateuser") {
+    $data = updateuser();
+}elseif($view == "userphoto") {
+    $data = userphoto();
 }elseif($view == "route") {
     $data = new_route();
 }elseif($view == "getroutes") {
-    $data = get_routes();
+    $data = getroutes();
 }elseif($view == "updateroute"){
     $data = updateroute();
 }elseif($view == "gpxupload"){
     $data = gpxupload();
 }elseif($view == "routephoto"){
     $data = routephoto();
+}elseif($view == "routeconnect"){
+    $data = routeconnect();
 }elseif($view == "map") {
     $data = get_chat_logs();
 }elseif($page=="userlogs" && isset($userid) && $chatobj){
@@ -71,16 +77,16 @@ function get_chat_logs(){
 
     $routestatus = $_POST['routestatus'] ?? '';
     $routeid = $_POST['routeid'] ?? '';
-    $userroute = $_POST['$userroute'] ?? '';
+    $userroute = $_POST['userroute'] ?? '';
 
-    if($routestatus ==0 ){
+    if($routestatus >1 ){
         //Private route
         $userid = $_POST['userid'] ?? '';
         if (!testToken($userid)){
             return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
         }
         if ($routeid != $userroute){
-            return ['status' => 'error', 'message' => 'User not connected to this route'];
+            return ['status' => 'error', 'message' => "User $userid (on route:$userroute) not connected to this route $routeid (status:$routestatus)"];
         }
     }
 
@@ -134,6 +140,8 @@ function get_chat_logs(){
 function get_login(){
     global $mysqli;
 
+    lecho("get_login");
+
     $email = $_POST['email'] ?? '';
     if(!empty($email)){
         $isEmailValid = filter_var($email, FILTER_VALIDATE_EMAIL);
@@ -149,14 +157,7 @@ function get_login(){
         return ['status' => 'error', 'message' => 'Invalid password'];
     }
 
-    $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.useremail = ?;";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result && $result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+    if ($user = get_user($email)) {
         if (password_verify($password, $user['userpsw'])) {
 
             if (!testToken($user['userid'])){
@@ -168,9 +169,9 @@ function get_login(){
         } else {
             return ['status' => 'error', 'message' => 'Wrong password'];
         }
-    } else {
-        return ['status' => 'not_found', 'message' => $email.' not found, do you want to sign in?', 'email' => $email, 'password' => $password];
     }
+
+    return ['status' => 'not_found', 'message' => $email.' is not a user, do you want to sign in?', 'email' => $email, 'password' => $password];
 
 }
 
@@ -192,22 +193,31 @@ function create_user(){
         return ['status' => "fail", 'message' => "Bad password"];
     }
 
-    $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userpsw) VALUES (?, ?, ?, ?, ?)";
+    $userroute = TESTROUTE; // Connected to testroute by default
+
+    $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userpsw, userroute) VALUES (?, ?, ?, ?, ?, ?)";
     $insertStmt = $mysqli->prepare($insertQuery);
-    $insertStmt->bind_param("sssss", $username, $userinitials, $usercolor, $result['email'], $hashedPassword);
+    $insertStmt->bind_param("sssssi", $username, $userinitials, $usercolor, $result['email'], $hashedPassword, $userroute);
     
     if ($insertStmt->execute()) {
+
+        $userid = $mysqli->insert_id;
+
+        connect($userid,$userroute,0);
+
         // Retourne les données du nouvel utilisateur
-        $token = saveToken($mysqli->insert_id);
+        $token = saveToken($userid);
         if ($token){
             $user = [
-                'userid' => $mysqli->insert_id,
+                'userid' => $userid,
                 'useremail' => $result['email'],
                 'username' => $username,
                 'userinitials' => $userinitials,
                 'usercolor' => $usercolor,
                 'userimg' => '',
-                'auth_token' => $token
+                'auth_token' => $token,
+                'userroute' => $userroute,
+                'routeid' => $userroute
             ];
             return [
                 'status' => "success",
@@ -228,6 +238,64 @@ function create_user(){
             'message' => "Can't add user"
         ];
     }
+
+}
+
+function updateuser(){
+    global $mysqli;
+
+    $userid = $_POST['userid'] ?? '';
+    lecho("updateuser", $userid);
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $username = $_POST['username'] ?? '';
+
+    if ($user = get_user($userid)) {
+
+        $user['username'] = $username;
+        unset($user['userpsw']);
+
+        $stmt = $mysqli->prepare("UPDATE users SET username = ? WHERE userid = ?");
+        $stmt->bind_param("si", $username, $userid);
+        if ($stmt->execute())
+           return ['status' => 'success', 'user' => $user];
+        else
+            return ['status' => 'error', 'message' => 'Update fail'];
+
+    }
+
+    return ['status' => 'error', 'message' => 'Unknown user'];
+
+}
+
+function userphoto(){
+
+    lecho("userphoto");
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    if (!isset($_FILES['photofile']) || $_FILES['photofile']['error'] !== UPLOAD_ERR_OK) {
+        return ['status' => 'error', 'message' => 'Bad photo file'];
+    }
+
+    $filemanager = new FileManager();
+    $target = $filemanager->user_photo($userid);
+
+    if($target){
+        if(resizeImage($_FILES['photofile']['tmp_name'], $target, 500)){
+            set_user_photo($userid,1);
+            return ['status' => 'success', 'message' => 'File uploaded successfully'];
+        }else{
+            set_user_photo($userid,0);
+        }
+    }
+
+    return ['status' => 'error', 'message' => 'Upload fail'];
 
 }
 
@@ -333,6 +401,38 @@ function updateroute(){
 
 }
 
+function routeconnect(){
+    global $mysqli;
+
+    lecho("routeconnect");
+
+    $userid = $_POST['userid'] ?? '';
+    lecho("updateuser", $userid);
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $routeid = intval($_POST['routeid'] ?? '');
+
+    //lecho($_POST);
+
+    if ($user = get_user($userid)) {
+
+        $stmt = $mysqli->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
+        $stmt->bind_param("ii", $routeid, $userid);
+        if ($stmt->execute()){
+            $user['userroute'] = $routeid;
+            unset($user['userpsw']);
+            //lecho($user);
+           return ['status' => 'success', 'user' => $user ];
+        }else
+            return ['status' => 'error', 'message' => 'Update fail'];
+
+    }
+
+    return ['status' => 'error', 'message' => 'Unknown user'];
+}
+
 function gpxupload(){
     global $mysqli;
 
@@ -408,20 +508,33 @@ function routephoto(){
 
 }
 
-function get_routes(){
+function getroutes(){
     global $mysqli;
+
+    lecho("getroutes");
 
     $userid = $_POST['userid'] ?? '';
     if (!testToken($userid)){
         return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
     }
 
-    $query = "SELECT r.* FROM connectors c INNER JOIN routes r ON c.conrouteid = r.routeid WHERE c.conuserid = ?;";
+    //lecho("userid",$userid);
+
+    $query = "SELECT * FROM connectors c INNER JOIN routes r ON c.conrouteid = r.routeid WHERE c.conuserid = ?;";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param("i", $userid);
     $stmt->execute();
     $result = $stmt->get_result();
     $routes = $result->fetch_all(MYSQLI_ASSOC);
+
+    //lecho($routes);
+
+    $filemanager = new FileManager();
+
+    foreach ($routes as &$route) {
+        $route['photopath'] = $filemanager->route_photo_web($route);
+    }
+
     return $routes;
 
 }
@@ -502,6 +615,16 @@ function updateUserRoute($userid,$routeid){
 
     $stmt = $mysqli->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
     $stmt->bind_param("si", $routeid, $userid);
+    if ($stmt->execute())
+        return true;
+    else
+        return false;
+}
+
+function set_user_photo($userid,$value){
+    global $mysqli;
+    $stmt = $mysqli->prepare("UPDATE users SET userphoto = ? WHERE userid = ?");
+    $stmt->bind_param("ii", $value, $userid);
     if ($stmt->execute())
         return true;
     else
@@ -630,4 +753,37 @@ function resizeImage($sourcefile, $targetfile, $maxSize) {
 
     return true;
 }
+
+function get_user($param) {
+    global $mysqli;
+
+    $isEmail = strpos($param, '@') !== false;
+
+    if ($isEmail) {
+        $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.useremail = ?";
+    } else {
+        $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.userid = ?";
+    }
+
+    $stmt = $mysqli->prepare($query);
+
+    if ($isEmail) {
+        $stmt->bind_param("s", $param);
+    } else {
+        $stmt->bind_param("i", $param);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $filemanager = New FileManager();
+        $user['photopath'] = $filemanager->user_photo_web($user);
+        return $user;
+    } else {
+        return false;
+    }
+}
+
 ?>

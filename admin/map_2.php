@@ -9,12 +9,12 @@ html_header( "Map" );
     <!-- Section Content -->
     <main x-data="mapComponent()">
 
-        <template x-if="route.routestatus === 0 && !isLoggedIn">
+        <template x-if="route.routestatus > 1 && !(isLoggedIn && routeid == userroute)">
             <div id="login" class="loginwidth">
                 <p>This route is for invited, logged-in users only.</p>
             </div>
         </template>
-        <template x-if="route.routestatus > 0">
+        <template x-if="route.routestatus < 2 || (isLoggedIn && routeid == userroute)">
             <div x-show="view === 'map'" id="map" x-init="initializeMap"></div>
         </template>
     </main>
@@ -35,6 +35,7 @@ document.addEventListener('alpine:init', () => {
         isOnRoute: false,
         userid: 0,
         userroute: 0,
+        routeid: 0,
         auth_token: '',
         view: 'map', // Default view
         data: {},
@@ -55,6 +56,7 @@ document.addEventListener('alpine:init', () => {
                 this.userid = this.user.userid;
                 this.auth_token = this.user.auth_token;
                 this.userroute = this.user.userroute;
+                this.routeid = this.route.routeid;
             }
         },
 
@@ -73,6 +75,8 @@ document.addEventListener('alpine:init', () => {
                 actionFitGPX: () => this.action_fitgpx(),
                 actionLocalise: () => this.action_localise()
             });
+
+            this.showPopup("Loading map…");
 
         },
 
@@ -107,7 +111,7 @@ document.addEventListener('alpine:init', () => {
             //     return JSON.parse(text); // Parse manuellement pour détecter les erreurs
             // })
             .then(data => {
-                //console.log(data);
+                console.log(data);
                 //this.data = data;
                 if(data.status == 'error'){
                     alert("Error:" + data.message);
@@ -170,13 +174,14 @@ document.addEventListener('alpine:init', () => {
                 this.cursors.push(marker);
             });
 
-            console.log(geojson);
+            //console.log(geojson);
             this.updateGPX(geojson);
 
             // Ajustement des limites de la carte pour inclure tous les marqueurs
             if (this.cursors.length > 0) {
                 const bounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(this.markerBounds, { maxZoom: 10 });
+                this.removePopup();
             } else if (!geojson) {
                 //No cursor
                 this.action_localise();
@@ -215,6 +220,7 @@ document.addEventListener('alpine:init', () => {
                         }).addTo(this.map);
 
                         this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
+                        this.removePopup();
                     })
                     .catch(error => {
                         console.log('Erreur GeoJSON:', error);
@@ -270,6 +276,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_localise() {
+            this.showPopup("Looking for position...");
             if (navigator.geolocation) {
                 const options = {
                     enableHighAccuracy: true,
@@ -290,7 +297,6 @@ document.addEventListener('alpine:init', () => {
                             bestAccuracy = Math.floor(accuracy);
                         }
                         console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
-                        this.showPopup("Looking for position...");
 
                         if (bestAccuracy < 20) {
                             this.finalizePosition(watchId);
@@ -299,12 +305,12 @@ document.addEventListener('alpine:init', () => {
                         }
                     },
                     error => {
-                        alert('Geolocalisation Error:' + error);
+                        this.updatePopup('Geolocalisation Error:' + error);
                     },
                     options
                 );
             } else {
-                alert('Geoilocation not suppored.');
+                this.updatePopup('Geoilocation not suppored');
             }
         },
 
