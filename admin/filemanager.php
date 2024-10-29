@@ -132,7 +132,7 @@ class FileManager {
     public function route_photo_web($route) {
         if($route['routephoto']){
             $photo = $this->route_photo($route['routeid']);
-            return $this->relativize($photo,$this->datadir) . "?" . strtotime($route['last_update']);
+            return $this->relativize($photo,$this->datadir) . "?" . strtotime($route['routeupdate']);
         }else{
             return false;
         }
@@ -234,7 +234,7 @@ class FileManager {
     public function route_geojson_web($route) {
         if($route['gpx']){
             $geojson = $this->route_geojson($route['routeid']);
-            return $this->relativize($geojson,$this->datadir) . "?" . strtotime($route['last_update']);
+            return $this->relativize($geojson,$this->datadir) . "?" . strtotime($route['routeupdate']);
         }else{
             return false;
         }

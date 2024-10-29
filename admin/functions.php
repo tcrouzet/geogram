@@ -213,8 +213,8 @@ function html_header_2($route, $pagename=""){
 
     if( (strpos( $pagename , "Map") !== false ) ){
         //https://cdnjs.com/libraries/leaflet
-        echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
-        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
+        echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />';
+        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
     }
 
     echo "\n<link rel='stylesheet' id='style-css' href='/geogram_2.css?$version' type='text/css' media='screen' />\n";
@@ -543,11 +543,11 @@ function MyDateFormatN($chatObj, $timestamp,$justhour=false){
         $format="G:i";
     }
 
-
     if(!$justhour) $format.=" Y/n/j";
     
     return date( $format, timezone($timestamp,TimeDiff($chatObj)) );
 }
+
 
 function MyDateFormatLong($timestamp,$hour=true){
     global $chatObj;
@@ -565,7 +565,7 @@ function MyDateFormatLong($timestamp,$hour=true){
     return date( $format, timezone($timestamp,TimeDiff($chatObj)) );
 }
 
-function MyDateFormatLongN($chatObj, $timestamp,$hour=true){
+function MyDateFormatLongN($chatObj, $timestamp, $hour=true){
 
     $format="l F jS, Y";
 
@@ -686,6 +686,54 @@ function get_route_by_slug($group){
     }else{
         return false;
     }
+}
+
+//NEW
+function MyDateFormat2($timestampInput, $route, $justhour=false){
+
+    lecho($timestampInput);
+
+    if (is_numeric($timestampInput) && (int)$timestampInput == $timestampInput && $timestampInput > 0) {
+        $timestamp = $timestampInput;
+    } else {
+        // Convertir la chaîne de date en timestamp Unix
+        $timestamp = strtotime($timestampInput);
+    }
+
+    if($route["routeunit"]==1){
+        //Emperial
+        $format="g:ia";
+    }else{
+        $format="G:i";
+    }
+
+    if(!$justhour) $format.=" Y/n/j";
+    
+    return date( $format, timezone($timestamp,TimeDiff2($route)) );
+
+}
+
+function TimeDiff2($route){
+    //Heure d'été, décallage heure d'été et heure Paris
+    return $route["routetimediff"]-1;
+}
+
+function meters_to_distance2($meters,$route,$display=1){
+
+    if($route["routeunit"]==1){
+        $r = number_format(intval($meters*0.621371/1000));
+        if($display)
+            return $r."mi";
+        else
+            return $r;
+    }else{
+        $r = intval($meters/1000);
+        if($display)
+            return $r."km";
+        else
+            return $r;
+    }
+
 }
 
 ?>

@@ -16,12 +16,12 @@ html_header( "Map" );
         </template>
         <template x-if="route && route.routestatus > 1 && !(isLoggedIn && routeid == userroute)">
             <div id="login" class="loginwidth">
-                <p>This route is for invited, logged-in users only.</p>
+                <p>This route is for invited and logged-in users only.</p>
             </div>
         </template>
         <template x-if="route && route.routestatus < 2 || (isLoggedIn && routeid == userroute)">
-            <div id="mapcontainer" x-init="initializeMap">
-                <div x-show="view === 'map'" id="map"></div>
+            <div id="mapcontainer">
+                <div id="map" x-init="initializeMap()"></div>
                 <div id="mapfooter">
                     <button @click="action_fitall()">FitAll</button>
                     <button @click="action_fitgpx()">FitGPX</button>
@@ -47,14 +47,15 @@ document.addEventListener('alpine:init', () => {
         userroute: 0,
         routeid: 0,
         usertoken: '',
-        view: 'map', // Default view
-        data: {},
-        map: null,
-        cursors: [],
+        logs: [],
+        map: [],
+        //cursors: [],
+        cursors: Alpine.raw([]),
+        geoJSON: null,
         geoJsonLayer: null,
         bestPosition: null,
+        mapMode: true,
         
-
         init(){
             this.route = Alpine.store('headerActions').route;
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
@@ -72,28 +73,49 @@ document.addEventListener('alpine:init', () => {
 
         initializeMap() {
             console.log('Initializing Map...');
-            this.map = L.map('map').setView([0, 0], 13);
+
+            this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
+
+            // this.map = L.map('map', {
+                // zoomAnimation: false,
+                // markerZoomAnimation: false,
+                // fadeAnimation: false
+                //doubleClickZoom: false
+            // }).setView([0, 0], 13);
+
+            // Ajouter des écouteurs pour tous les événements de la carte
+            this.map.on('movestart move moveend zoomstart zoom zoomend drag dragend', (e) => {
+                console.log('Map event:', e.type);
+            });
+
+            // Surveiller les changements de bounds
+            this.map.on('viewreset', (e) => {
+                console.log('View reset event');
+            });
+
+            // Surveiller les erreurs de tuiles
+            this.map.on('tileerror', (e) => {
+                console.log('Tile error:', e);
+            });
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
                 maxZoom: 18,
             }).addTo(this.map);
-            this.loadData('map');
-
-            // Enregistrer les fonctions dans le store
-            // Alpine.store('mapActions', {
-            //     actionFitAll: () => this.action_fitall(),
-            //     actionFitGPX: () => this.action_fitgpx(),
-            //     actionLocalise: () => this.action_localise()
-            // });
-
             this.showPopup("Loading map…");
-
+            this.loadMapData();
+            this.$watch('logs', (newLogs) => {
+                console.log("New logs");
+                this.updateMarkers(newLogs);
+                this.action_fitall();
+                console.log("End new log");
+            });
         },
 
-        loadData() {
-            console.log("loadData");
+        loadMapData() {
+            console.log("loadMapData");
             const formData = new URLSearchParams();
-            formData.append('view', this.view);
+            formData.append('view', 'loadMapData');
             formData.append('userid', this.userid);
             formData.append('userroute', this.userroute);
             formData.append('routeid', this.route.routeid);
@@ -109,41 +131,63 @@ document.addEventListener('alpine:init', () => {
                 },
                 body: formData.toString()
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                //return response.text(); // testing
-                return response.json();
-            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
             // .then(text => {
-            //     console.log("Raw Response Text:", text); // Vérifiez ici le texte brut
-            //     return JSON.parse(text); // Parse manuellement pour détecter les erreurs
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
             // })
+            .then(response => response.json())
             .then(data => {
                 console.log(data);
-                //this.data = data;
                 if(data.status == 'error'){
                     alert("Error:" + data.message);
-                }else if (this.view === 'map' && data.status == 'success') {
-                    this.updateMap(data.logs,data.geojson);
-                // } else if (type === 'list') {
-                //     this.updateList(data);
+                }else if (data.status == 'success') {
+                    this.geoJSON = data.geojson;
+                    this.updateGPX();
+                    this.mapMode = true;
+                    this.logs = data.logs;
                 }
             })
             .catch(error => console.error('Error:', error));
         },
 
+        userMarkers(userid){
+            console.log("userMarkers");
+            const formData = new URLSearchParams();
+            formData.append('view', 'userMarkers');
+            formData.append('userid', this.userid);
+            formData.append('loguser', userid);
+            formData.append('routeid', this.route.routeid);
 
-        updateMap(logs, geojson) {
-            console.log("updateMap");
+            // console.log(formData.toString());
 
-            //console.log(data);
-            // if (!data || data.length === 0) {
-            //     console.log("No cursors.");
-            //     this.action_localise();
-            //     return;
-            // }
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.usertoken}`
+                },
+                body: formData.toString()
+            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status == 'error'){
+                    alert("Error:" + data.message);
+                }else if (data.status == 'success') {
+                    this.mapMode = false;
+                    this.logs = data.logs;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        },
+
+        updateMarkers(logs) {
+            console.log("updateMarkers");
 
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
@@ -155,87 +199,102 @@ document.addEventListener('alpine:init', () => {
             // Ajout de nouveaux marqueurs à la carte
             logs.forEach((entry, index) => {
 
-                // Vérification de la présence d'une image pour cet utilisateur
-                const icon = entry.userimg ? L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `<div class="marker" style="width:30px;height:30px;border:2px solid white;background-size: cover;background-image: url('${entry.userimg}')"></div>`,
-                    iconSize: [34, 34],
-                    iconAnchor: [15, 15]
-                }) : L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `<div class="marker" style="background-color: ${entry.usercolor};">${entry.userinitials}</div>`,
-                    iconSize: [30, 30],
-                    iconAnchor: [15, 15]
-                });
+                if (entry.loglatitude && entry.loglongitude && entry.username_formatted){
 
-                // Initialisation du marqueur avec l'icône personnalisée
-                const marker = L.marker([entry.latitude, entry.longitude], { icon }).addTo(this.map);
+                    // Vérification de la présence d'une image pour cet utilisateur
+                    const icon = entry.userphoto ? L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div class="marker" style="width:30px;height:30px;border:2px solid white;background-size: cover;background-image: url('${entry.photopath}')"></div>`,
+                        iconSize: [34, 34],
+                        iconAnchor: [15, 15]
+                    }) : L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div class="marker" style="background-color: ${entry.usercolor};">${entry.userinitials}</div>`,
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    });
 
-                // Attachement d'une info-bulle au marqueur
-                marker.bindTooltip(entry.username_formatted);
+                    // Initialisation du marqueur avec l'icône personnalisée
+                    const marker = L.marker([entry.loglatitude, entry.loglongitude], {
+                        icon,
+                     }).addTo(this.map);
 
-                // Ajout des coordonnées du marqueur aux limites de la carte
-                this.markerBounds.extend(marker.getLatLng());
+                    // Contenu du popup avec des boutons d'action
+                    this.markerPopup(marker, entry);
 
-                // Gestion de l'événement de clic sur le marqueur
-                marker.on("click", () => this.highlightMarker(index));
+                    // Ajout des coordonnées du marqueur aux limites de la carte
+                    this.markerBounds.extend(marker.getLatLng());
 
-                // Stockage du marqueur dans le tableau des curseurs
-                this.cursors.push(marker);
+                    // Stockage du marqueur dans le tableau des curseurs
+                    this.cursors.push(marker);
+                }
             });
 
-            //console.log(geojson);
-            this.updateGPX(geojson);
-
-            // Ajustement des limites de la carte pour inclure tous les marqueurs
-            if (this.cursors.length > 0) {
-                const bounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
-                this.map.fitBounds(this.markerBounds, { maxZoom: 10 });
-                this.removePopup();
-            } else if (!geojson) {
+            if (!this.geoJSON && this.cursors.length == 0) {
                 //No cursor
                 this.action_localise();
             }
+            console.log("Fin Markers");
         },
 
+        markerPopup(marker, entry){
+            const popupContent = this.mapMode ? 
+                `<div class="geoPopup">
+                    <h3>${entry.username_formatted}</h3>
+                    <div class="popup-actions">
+                        <button @click="userMarkers(${entry.userid})">Map history</button>
+                    </div>
+                </div>` :
+                `<div class="geoPopup">
+                    <h3>${entry.username_formatted}</h3>
+                    <div class="popup-actions">
+                        <button @click="loadMapData()">All Users</button>
+                    </div>
+                </div>`;
+                      
+            marker.bindPopup(popupContent);
+        },
 
-        updateGPX(gpxfile) {
-            if (gpxfile) {
-                //console.log(gpxfile);
+        updateGPX() {
+            console.log("Display Geojson",this.geoJSON);
 
-                const startIcon = L.icon({
-                    iconUrl: 'images/start.png',
-                    iconSize: [30, 30],
-                    iconAnchor: [15, 15],
-                });
-
-                let isFirstTrack = true;
-                const map = this.map;
-
-                // Charge la trace GPX et l'ajoute à la carte
-                fetch(gpxfile)
-                    .then(response => response.json())
-                    .then(data => {
-                        this.geoJsonLayer = L.geoJSON(data, {
-                            style: function(feature) {
-                                return { color: feature.properties.stroke || '#3388ff' };
-                            },
-                            onEachFeature: function(feature, layer) {
-                                const firstPointLatLng = [feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][0]];
-                                if (isFirstTrack) {
-                                    L.marker(firstPointLatLng, {icon: startIcon}).addTo(map);
-                                    isFirstTrack = false;
-                                }
-                            }
-                        }).addTo(this.map);
-
-                        this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
-                        this.removePopup();
-                    })
-                    .catch(error => {
-                        console.log('Erreur GeoJSON:', error);
-                    });
+            if (!this.geoJSON) return;
+            if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
+                return;
             }
+
+            const startIcon = L.icon({
+                iconUrl: 'images/start.png',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15],
+            });
+
+            let isFirstTrack = true;
+            const map = this.map;
+
+            // Charge la trace GPX et l'ajoute à la carte
+            fetch(this.geoJSON)
+                .then(response => response.json())
+                .then(data => {
+                    this.geoJsonLayer = L.geoJSON(data, {
+                        style: function(feature) {
+                            return { color: feature.properties.stroke || '#3388ff' };
+                        },
+                        onEachFeature: function(feature, layer) {
+                            const firstPointLatLng = [feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][0]];
+                            if (isFirstTrack) {
+                                L.marker(firstPointLatLng, {icon: startIcon}).addTo(map);
+                                isFirstTrack = false;
+                            }
+                        }
+                    }).addTo(this.map);
+
+                    this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
+                    this.removePopup();
+                })
+                .catch(error => {
+                    console.log('Erreur GeoJSON:', error);
+                });
         },
 
         updateList(data) {
@@ -312,9 +371,43 @@ document.addEventListener('alpine:init', () => {
 
         finalizePosition(watchId) {
             navigator.geolocation.clearWatch(watchId);
-            L.marker(this.bestPosition).addTo(this.map).bindTooltip("Tourposition");
-            this.map.setView(this.bestPosition, 13);
+            // L.marker(this.bestPosition).addTo(this.map).bindTooltip("Tourposition");
+            // this.map.setView(this.bestPosition, 13);
             this.removePopup();
+            this.sendgeolocation();
+        },
+
+        sendgeolocation() {
+            // Envoyer une requête pour mettre à jour la route
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.usertoken}`
+                },
+                body: new URLSearchParams({
+                    view: "sendgeolocation",
+                    userid: this.userid,
+                    routeid: this.routeid,
+                    latitude: this.bestPosition[0],
+                    longitude: this.bestPosition[1]
+                })
+            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    this.logs = data.logs;
+                    console.log('New location');
+                } else {
+                    console.error('Error updating location:', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
         },
 
         updatePopup(message, watchId) {
@@ -371,16 +464,57 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_fitall() {
-            if (this.cursors.length > 0) {
-                const bounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
-                this.map.fitBounds(this.markerBounds, { maxZoom: 10 });
-            }
+            console.log("fitall");
+            
+            // Attendre un court instant avant d'effectuer l'opération
+            setTimeout(() => {
+                try {
+
+                    let bounds = null;
+
+                    // Inclure les limites des marqueurs
+                    if (this.cursors.length > 0) {
+                        const markerBounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
+                        bounds = markerBounds;
+                    }
+
+                    // Inclure les limites du GeoJSON si disponible
+                    if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
+                        const geoJsonBounds = this.geoJsonLayer.getBounds();
+                        if (bounds) {
+                            bounds.extend(geoJsonBounds);
+                        } else {
+                            bounds = geoJsonBounds;
+                        }
+                    }
+
+                    // Ajuster la carte aux nouvelles limites combinées
+                    if (bounds && bounds.isValid()) {
+                        this.map.fitBounds(bounds, { 
+                            padding: [50, 50], 
+                            maxZoom: 18,
+                            animate: false
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error in fitall:', error);
+                }
+            }, 100); // Délai de 100ms
         },
 
+
         action_fitgpx() {
-            if (this.geoJsonLayer) {
-                this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
-            }
+            console.log("fitgpx");
+
+            setTimeout(() => {
+                try {
+                    if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
+                        this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
+                    }
+                } catch (error) {
+                    console.error('Error in figpx:', error);
+                }
+            }, 100); // Délai de 100ms
         }
 
     }));

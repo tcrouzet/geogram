@@ -47,10 +47,12 @@ if($view == "login") {
     $data = routephoto();
 }elseif($view == "routeconnect"){
     $data = routeconnect();
-}elseif($view == "map") {
-    $data = get_chat_logs();
-}elseif($page=="userlogs" && isset($userid) && $chatobj){
-    $data = get_user_logs($userid, $chatobj);
+}elseif($view == "sendgeolocation"){
+    $data = sendgeolocation();    
+}elseif($view == "loadMapData") {
+    $data = loadMapData();
+}elseif($view == "userMarkers") {
+    $data = userMarkers();
 } else {
     $data = [];
 }
@@ -61,19 +63,29 @@ echo json_encode($data);
 lexit();
 
 
-function get_user_logs($userid, $chatid) {
+function userMarkers() {
     global $mysqli;
 
-    $query="SELECT * FROM logs WHERE userid=? AND chatid=? ORDER BY timestamp ASC;";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("ii", $userid, $chatid);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC);
+    lecho("userMarkers");
 
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $loguser = $_POST['loguser'] ?? '';
+    $routeid = $_POST['routeid'] ?? '';
+    $route = get_route_by_id($routeid);
+
+    $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ?";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("ii", $loguser, $routeid);
+
+    return format_map_data($stmt, $route);
 }
 
-function get_chat_logs(){
+function loadMapData(){
     global $mysqli;
 
     $routestatus = $_POST['routestatus'] ?? '';
@@ -91,51 +103,69 @@ function get_chat_logs(){
         }
     }
 
-    $route = get_route_by_id($routeid);
+    return get_map_data($routeid);
 
-    $fileManager = new FileManager();
+}
+
+function get_map_data($routeid){
+    global $mysqli;
+
+    $route = get_route_by_id($routeid);
 
     if(!empty($route["link"]) && $route["stop"]==0){
 
-        $start = time()-86400*7;
-        $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? AND timestamp> ? GROUP BY userid) ORDER BY km DESC,username ASC;";
-        $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("iii", $route['chatid'], $route['chatid'], $start);
+        // $start = time()-86400*7;
+        // $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? AND timestamp> ? GROUP BY userid) ORDER BY km DESC,username ASC;";
+        // $stmt = $mysqli->prepare($query);
+        // $stmt->bind_param("iii", $route['chatid'], $route['chatid'], $start);
 
     }elseif ($route["start"]>0){
 
-        $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? GROUP BY userid) ORDER BY km DESC,username ASC;";
-        $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("ii", $route['chatid'], $route['chatid']);
+        // $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? GROUP BY userid) ORDER BY km DESC,username ASC;";
+        // $stmt = $mysqli->prepare($query);
+        // $stmt->bind_param("ii", $route['chatid'], $route['chatid']);
 
     }else{
 
-        $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? GROUP BY userid) ORDER BY timestamp DESC,username ASC;";
+        $query = "SELECT *
+            FROM rlogs
+            INNER JOIN users ON rlogs.loguser = users.userid
+            WHERE rlogs.logroute = ?
+            AND (rlogs.loguser, rlogs.logtime) IN (
+                SELECT loguser, MAX(logtime)
+                FROM rlogs
+                WHERE logroute = ?
+                GROUP BY loguser
+            )
+            ORDER BY rlogs.logtime DESC;";
+
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param("ii", $routeid, $routeid);
     }
 
+    return format_map_data($stmt, $route); 
+}
+
+function format_map_data($stmt, $route){
+    lecho("format_map_data");
     $stmt->execute();
     $result = $stmt->get_result();
     $logs = $result->fetch_all(MYSQLI_ASSOC);
+    lecho($logs);
 
-    $geojson = $fileManager->route_geojson_web($route);
+    $filemanager = new FileManager();
+    $geojson = $filemanager->route_geojson_web($route);
 
     foreach ($logs as &$row) {
-        $row['username_formatted'] = fName($row["username"]) . "<br>" . MyDateFormatN($route, $row["timestamp"]) . "<br>" . meters_to_distance($row["km"], $route);
-        $row['usercolor'] = getDarkColorCode($row["userid"]);
-        $row['userinitials'] = initial($row["username"]);
-
-        if ($fileManager->avatarExists($routeid, $row["userid"])) {
-            $row['userimg'] = $fileManager->avatarWeb($route, $row["userid"], true);
-        } else {
-            $row['userimg'] = false;
-        }
-
+        //lecho("Routetime", $row["logtime"]);
+        $row['username_formatted'] = $row['username'] . "<br/>" . MyDateFormat2($row['logtime'],$route) . "<br/>" . meters_to_distance2($row["logkm"], $route);
+        $row['photopath'] = $filemanager->user_photo_web($row);
+        lecho($row['photopath']);
     }
 
     //lecho($logs);
-    return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson];
+    return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson];    
+
 }
 
 function get_login(){
@@ -438,7 +468,6 @@ function routeconnect(){
 }
 
 function gpxupload(){
-    global $mysqli;
 
     lecho("gpxUpload");
 
@@ -476,6 +505,77 @@ function gpxupload(){
     routeGPX($routeid,0);
     return ['status' => 'error', 'message' => 'Upload fail'];
 
+}
+
+
+function random_geoloc(){
+    $latitude = $_POST['latitude'] ?? '';
+    $longitude = $_POST['longitude'] ?? '';
+
+    // Rayon de variation en kilomètres
+    $radius = 150;
+
+    // Convertir le rayon en degrés
+    $lat_variation = $radius / 111; // 1 degré de latitude ~ 111 km
+    $lon_variation = $radius / (111 * cos(deg2rad($latitude))); // Ajustement longitude
+
+    // Générer une variation aléatoire
+    $random_lat_offset = (mt_rand() / mt_getrandmax() - 0.5) * 2 * $lat_variation;
+    $random_lon_offset = (mt_rand() / mt_getrandmax() - 0.5) * 2 * $lon_variation;
+
+    // Appliquer la variation
+    $new_latitude = $latitude + $random_lat_offset;
+    $new_longitude = $longitude + $random_lon_offset;
+
+    // Afficher les nouvelles valeurs
+    return [$new_latitude, $new_longitude];
+}
+
+function sendgeolocation(){
+    global $mysqli;
+
+    lecho("sendgeolocation");
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $routeid = $_POST['routeid'] ?? '';
+    if($routeid<1){
+        return ['status' => 'error', 'message' => 'Route problem'];
+    }
+
+    $latitude = $_POST['latitude'] ?? '';
+    $longitude = $_POST['longitude'] ?? '';
+
+    list($latitude,$longitude) = random_geoloc();
+
+    //lecho($_POST);
+
+    $nearest = new gpxnearest($routeid);
+    $point = $nearest->user($latitude, $longitude);
+
+    if($point){
+        $p = $point['gpxpoint'];
+        $km = round($point['gpxkm']);
+        $dev = round($point['dev']);
+        // $distance = round($point['distance']);
+    }else{
+        $p = -1;
+        $km = 0;
+        $dev = 0;
+    }
+ 
+    $insertQuery = "INSERT INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $insertStmt = $mysqli->prepare($insertQuery);
+    $insertStmt->bind_param("iiddiii", $routeid, $userid, $latitude, $longitude, $p, $km, $dev);
+    
+    if ($insertStmt->execute()) {
+        return get_map_data($routeid);
+    }
+
+    return ['status' => 'error', 'message' => 'test'];
 }
 
 function routephoto(){
