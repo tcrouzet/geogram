@@ -121,6 +121,47 @@ CREATE TABLE `options` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `rgpx`
+--
+
+DROP TABLE IF EXISTS `rgpx`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `rgpx` (
+  `gpxroute` bigint(20) NOT NULL,
+  `gpxpoint` int(11) NOT NULL,
+  `gpxlongitude` decimal(11,8) NOT NULL,
+  `gpxlatitude` decimal(10,8) NOT NULL,
+  `gpxkm` mediumint(9) NOT NULL,
+  `gpxdev` mediumint(9) NOT NULL,
+  `gpxtrack` tinyint(4) NOT NULL DEFAULT 0,
+  UNIQUE KEY `gpxroute` (`gpxroute`,`gpxpoint`,`gpxtrack`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `rlogs`
+--
+
+DROP TABLE IF EXISTS `rlogs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `rlogs` (
+  `logid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `logroute` bigint(20) NOT NULL,
+  `loguser` bigint(20) NOT NULL,
+  `loglatitude` float DEFAULT NULL,
+  `loglongitude` float DEFAULT NULL,
+  `loggpxpoint` int(11) DEFAULT NULL,
+  `logkm` int(11) DEFAULT NULL,
+  `logdev` int(11) DEFAULT NULL,
+  `logcomment` text DEFAULT NULL,
+  `logtime` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`logid`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `routes`
 --
 
@@ -142,11 +183,11 @@ CREATE TABLE `routes` (
   `gpx` tinyint(1) NOT NULL DEFAULT 0,
   `total_km` int(11) NOT NULL DEFAULT 0,
   `total_dev` int(11) NOT NULL DEFAULT 0,
-  `unit` tinyint(4) NOT NULL DEFAULT 0,
-  `timediff` tinyint(4) NOT NULL DEFAULT 0,
+  `routeunit` tinyint(1) NOT NULL DEFAULT 0,
+  `routetimediff` tinyint(4) NOT NULL DEFAULT 0,
   `routephoto` tinyint(1) NOT NULL DEFAULT 0,
-  `creationdate` timestamp NOT NULL DEFAULT current_timestamp(),
-  `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `routetime` timestamp NOT NULL DEFAULT current_timestamp(),
+  `routeupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `mode` tinyint(4) NOT NULL DEFAULT 0,
   `real_time` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`routeid`),
@@ -171,7 +212,7 @@ CREATE TABLE `users` (
   `usercreation` timestamp NOT NULL DEFAULT current_timestamp(),
   `userupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `userroute` bigint(20) DEFAULT NULL,
-  `auth_token` varchar(255) DEFAULT NULL,
+  `usertoken` varchar(255) DEFAULT NULL,
   `userphoto` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -186,4 +227,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-28  6:32:00
+-- Dump completed on 2024-10-29  8:35:04

@@ -6,7 +6,6 @@ html_header( "Map" );
 
     <?php include 'header.php'; ?>
 
-    <!-- Section Content -->
     <main x-data="mapComponent()">
 
         <template x-if="!route">
@@ -20,14 +19,53 @@ html_header( "Map" );
             </div>
         </template>
         <template x-if="route && route.routestatus < 2 || (isLoggedIn && routeid == userroute)">
-            <div id="mapcontainer">
-                <div id="map" x-init="initializeMap()"></div>
-                <div id="mapfooter">
-                    <button @click="action_fitall()">FitAll</button>
-                    <button @click="action_fitgpx()">FitGPX</button>
-                    <button @click="action_localise()">Localise</button>
-                </div>
+            <div id="globalcontainer">
+
+                <template x-if="viewMode === 'map'">
+                    <div id="mapcontainer">
+                        <div id="map" x-init="initializeMap()"></div>
+                        <div id="mapfooter">
+                            <button @click="action_list()">List</button>
+                            <button @click="action_fitall()">FitAll</button>
+                            <button @click="action_fitgpx()">FitGPX</button>
+                            <button @click="action_localise()">Ping</button>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="viewMode === 'list'">
+                    <div id="listcontainer">
+                        <div id="list">
+                            <div class="list-header">
+                                <span x-text="`${logs.length} adventurers`"></span>
+                                <div class="stats">
+                                    <span>km</span>
+                                    <span>m+</span>
+                                </div>
+                            </div>
+                            <div class="list-content">
+                                <template x-for="entry in logs" :key="entry.logid">
+                                    <div class="list-row">
+                                        <div class="user-col">
+                                            <span class="expand">+</span>
+                                            <span x-text="entry.username"></span>
+                                        </div>
+                                        <div class="stats">
+                                            <span x-text="entry.logkm"></span>
+                                            <span x-text="entry.logdev"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div id="mapfooter">
+                            <button @click="action_map()">Map</button>
+                            <button @click="action_localise()">Ping</button>
+                        </div>
+                    </div>
+                </template>
             </div>
+
         </template>
     </main>
 
@@ -39,6 +77,7 @@ html_footer();
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('mapComponent', () => ({
+        viewMode: 'map',
         route: null,
         user: null,
         isLoggedIn: false,
@@ -49,7 +88,6 @@ document.addEventListener('alpine:init', () => {
         usertoken: '',
         logs: [],
         map: [],
-        //cursors: [],
         cursors: Alpine.raw([]),
         geoJSON: null,
         geoJsonLayer: null,
@@ -76,38 +114,30 @@ document.addEventListener('alpine:init', () => {
 
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
-            // this.map = L.map('map', {
-                // zoomAnimation: false,
-                // markerZoomAnimation: false,
-                // fadeAnimation: false
-                //doubleClickZoom: false
-            // }).setView([0, 0], 13);
-
-            // Ajouter des écouteurs pour tous les événements de la carte
-            this.map.on('movestart move moveend zoomstart zoom zoomend drag dragend', (e) => {
-                console.log('Map event:', e.type);
-            });
-
-            // Surveiller les changements de bounds
-            this.map.on('viewreset', (e) => {
-                console.log('View reset event');
-            });
-
-            // Surveiller les erreurs de tuiles
-            this.map.on('tileerror', (e) => {
-                console.log('Tile error:', e);
-            });
+            // for debug
+            // this.map.on('movestart move moveend zoomstart zoom zoomend drag dragend', (e) => {
+            //     console.log('Map event:', e.type);
+            // });
+            // this.map.on('viewreset', (e) => {
+            //     console.log('View reset event');
+            // });
+            // this.map.on('tileerror', (e) => {
+            //     console.log('Tile error:', e);
+            // });
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
                 maxZoom: 18,
             }).addTo(this.map);
+            this.action_testlocalise();
             this.showPopup("Loading map…");
             this.loadMapData();
             this.$watch('logs', (newLogs) => {
                 console.log("New logs");
-                this.updateMarkers(newLogs);
-                this.action_fitall();
+                if(this.viewMode === 'map'){
+                    this.updateMarkers(newLogs);
+                    this.action_fitall();
+                }
                 console.log("End new log");
             });
         },
@@ -370,6 +400,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         finalizePosition(watchId) {
+            this.action_map();
             navigator.geolocation.clearWatch(watchId);
             // L.marker(this.bestPosition).addTo(this.map).bindTooltip("Tourposition");
             // this.map.setView(this.bestPosition, 13);
@@ -506,15 +537,62 @@ document.addEventListener('alpine:init', () => {
         action_fitgpx() {
             console.log("fitgpx");
 
-            setTimeout(() => {
-                try {
+            // setTimeout(() => {
+            //     try {
                     if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
                         this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
                     }
-                } catch (error) {
-                    console.error('Error in figpx:', error);
+            //     } catch (error) {
+            //         console.error('Error in figpx:', error);
+            //     }
+            // }, 100);
+        },
+
+        action_map() {
+            console.log("map");
+            this.viewMode = "map";
+        },
+
+        action_list() {
+            console.log("list");
+            this.viewMode = "list";
+        },
+
+        // action_testlocalise() {
+        //     this.map.once('click', (e) => {
+        //         console.log("testGeolocalise");
+        //         // Vérifier si on n'a pas cliqué sur un marker
+        //         const clickedMarker = this.cursors.some(marker => 
+        //             marker.getLatLng().equals(e.latlng)
+        //         );
+                
+        //         if (!clickedMarker) {
+        //             this.bestPosition = [e.latlng.lat, e.latlng.lng];
+        //             console.log(this.bestPosition);
+        //             this.sendgeolocation();
+        //         }
+        //     });
+        // }
+
+        action_testlocalise() {
+            const clickHandler = (e) => {
+                console.log("testGeolocalise");
+                // Vérifier si on n'a pas cliqué sur un marker
+                const clickedMarker = this.cursors.some(marker => 
+                    marker.getLatLng().equals(e.latlng)
+                );
+                
+                if (!clickedMarker) {
+                    this.bestPosition = [e.latlng.lat, e.latlng.lng];
+                    console.log(this.bestPosition);
+                    this.sendgeolocation();
                 }
-            }, 100); // Délai de 100ms
+                
+                // Réactiver l'écoute pour le prochain clic
+                this.map.once('click', clickHandler);
+            };
+            
+            this.map.once('click', clickHandler);
         }
 
     }));

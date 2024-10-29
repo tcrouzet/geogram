@@ -47,6 +47,8 @@ if($view == "login") {
     $data = routephoto();
 }elseif($view == "routeconnect"){
     $data = routeconnect();
+}elseif($view == "routeAction"){
+    $data = routeAction();
 }elseif($view == "sendgeolocation"){
     $data = sendgeolocation();    
 }elseif($view == "loadMapData") {
@@ -467,6 +469,36 @@ function routeconnect(){
     return ['status' => 'error', 'message' => 'Unknown user'];
 }
 
+function routeAction(){
+    global $mysqli;
+
+    lecho("routeAction");
+
+    $userid = $_POST['userid'] ?? '';
+    lecho("updateuser", $userid);
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $routeid = intval($_POST['routeid'] ?? '');
+    $action = intval($_POST['action'] ?? '');
+
+    if($action == "delete_all_logs"){
+        $message = delete_all_logs($routeid);
+    }else{
+        return ['status' => 'error', 'message' => "Unknown action: $action"];        
+    }
+
+    if($message)
+        return ['status' => 'success', 'message' => "Action $action done"];
+    else
+        return ['status' => 'error', 'message' => "Action $action fail"];
+}
+
+function delete_all_logs($roueid){
+    return true;
+}
+
 function gpxupload(){
 
     lecho("gpxUpload");
@@ -549,8 +581,6 @@ function sendgeolocation(){
     $latitude = $_POST['latitude'] ?? '';
     $longitude = $_POST['longitude'] ?? '';
 
-    list($latitude,$longitude) = random_geoloc();
-
     //lecho($_POST);
 
     $nearest = new gpxnearest($routeid);
@@ -559,7 +589,7 @@ function sendgeolocation(){
     if($point){
         $p = $point['gpxpoint'];
         $km = round($point['gpxkm']);
-        $dev = round($point['dev']);
+        $dev = round($point['gpxdev']);
         // $distance = round($point['distance']);
     }else{
         $p = -1;

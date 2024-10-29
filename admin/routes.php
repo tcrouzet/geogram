@@ -72,6 +72,13 @@ html_header( "Geogram routes" );
                                 <div class="input-group" x-show="photoPreview || route.photopath">
                                     <img :src="photoPreview || route.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
                                 </div>
+
+                                <div class="divider">ACTIONS</div>
+                                <button @click="route_actions(route.routeid,'delete_all_logs')">Delete all logs</button>
+                                <div x-show="actionError" class="error-message" x-text="actionError"></div>
+
+                                <div class="divider"></div>
+
                             </div>
                         </li>
                     </template>
@@ -115,7 +122,7 @@ document.addEventListener('alpine:init', () => {
         gpxError: '',
         photoError: '',
         photoPreview: null,
-        //selectedPhoto: null,
+        actionError: '',
         userid: null,
         loading: false,
 
@@ -287,6 +294,43 @@ document.addEventListener('alpine:init', () => {
                 }
             })
             .catch(error => console.error('Error:', error));
+        },
+
+        route_actions(routeid, action){
+            if (!confirm(' Do you really to ' + action.replace(/\_/g, " ") + '?')) {
+                    return;
+            }
+
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.usertoken}`
+                },
+                body: new URLSearchParams({
+                    view: "routeAction",
+                    action: action,
+                    userid: this.user.userid,
+                    routeid: routeid,
+                })
+            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
+            .then(response => response.json())
+            .then(data => {
+                this.actionError = data.message;
+                if (data.status === 'success') {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            .catch(error => {
+                alert('An error occurred during action.');
+            });
         },
 
         handleGPXUpload(routeid) {
