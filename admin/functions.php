@@ -175,8 +175,8 @@ function html_header_2($route, $pagename=""){
     echo '<base href="/">';
     echo '<link rel="shortcut icon" href="/favicon.ico" >';
     echo '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">';
     echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
-    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<link rel="canonical" href="'.$url.'">'."\n";
 
     $description="Geogram tracks adventures. No Spot or Garmin tracker, just your phone, your photos, your comments.";

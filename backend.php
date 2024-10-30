@@ -55,6 +55,8 @@ if($view == "login") {
     $data = loadMapData();
 }elseif($view == "userMarkers") {
     $data = userMarkers();
+}elseif($view == "logphoto") {
+    $data = logphoto();
 } else {
     $data = [];
 }
@@ -160,6 +162,7 @@ function format_map_data($stmt, $route){
 
     foreach ($logs as &$row) {
         //lecho("Routetime", $row["logtime"]);
+        $row['logkm_km'] = meters_to_distance2($row["logkm"], $route, false);
         $row['username_formatted'] = $row['username'] . "<br/>" . MyDateFormat2($row['logtime'],$route) . "<br/>" . meters_to_distance2($row["logkm"], $route);
         $row['photopath'] = $filemanager->user_photo_web($row);
         lecho($row['photopath']);
@@ -481,9 +484,12 @@ function routeAction(){
     }
 
     $routeid = intval($_POST['routeid'] ?? '');
-    $action = intval($_POST['action'] ?? '');
+    $action = $_POST['action'] ?? '';
 
-    if($action == "delete_all_logs"){
+    // lecho($_POST);
+    // lecho($action);
+
+    if($action == "purgeroute"){
         $message = delete_all_logs($routeid);
     }else{
         return ['status' => 'error', 'message' => "Unknown action: $action"];        
@@ -495,8 +501,14 @@ function routeAction(){
         return ['status' => 'error', 'message' => "Action $action fail"];
 }
 
-function delete_all_logs($roueid){
-    return true;
+function delete_all_logs($routeid){
+    global $mysqli;
+    $stmt = $mysqli->prepare("DELETE FROM rlogs WHERE logroute=?");
+    $stmt->bind_param("i", $routeid);
+    if ($stmt->execute())
+        return true;
+    else
+        return false;
 }
 
 function gpxupload(){
@@ -637,6 +649,12 @@ function routephoto(){
             set_route_photo($routeid,0);
         }
     }
+
+    return ['status' => 'error', 'message' => 'Upload fail'];
+
+}
+
+function logphoto(){
 
     return ['status' => 'error', 'message' => 'Upload fail'];
 

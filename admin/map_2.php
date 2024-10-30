@@ -29,6 +29,8 @@ html_header( "Map" );
                             <button @click="action_fitall()">FitAll</button>
                             <button @click="action_fitgpx()">FitGPX</button>
                             <button @click="action_localise()">Ping</button>
+                            <button @click="action_photo()">Photo</button>
+                            <button @click="action_gallery()">Gallery</button>
                         </div>
                     </div>
                 </template>
@@ -51,7 +53,7 @@ html_header( "Map" );
                                             <span x-text="entry.username"></span>
                                         </div>
                                         <div class="stats">
-                                            <span x-text="entry.logkm"></span>
+                                            <span x-text="entry.logkm_km"></span>
                                             <span x-text="entry.logdev"></span>
                                         </div>
                                     </div>
@@ -61,12 +63,15 @@ html_header( "Map" );
                         <div id="mapfooter">
                             <button @click="action_map()">Map</button>
                             <button @click="action_localise()">Ping</button>
+                            <button @click="action_message()">Message</button>
                         </div>
                     </div>
                 </template>
             </div>
 
         </template>
+
+
     </main>
 
 </div>
@@ -75,6 +80,7 @@ html_footer();
 ?>
 
 <script>
+
 document.addEventListener('alpine:init', () => {
     Alpine.data('mapComponent', () => ({
         viewMode: 'map',
@@ -93,6 +99,8 @@ document.addEventListener('alpine:init', () => {
         geoJsonLayer: null,
         bestPosition: null,
         mapMode: true,
+        uploading: false,
+
         
         init(){
             this.route = Alpine.store('headerActions').route;
@@ -126,7 +134,8 @@ document.addEventListener('alpine:init', () => {
             // });
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+                attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
+                // attribution: '',
                 maxZoom: 18,
             }).addTo(this.map);
             this.action_testlocalise();
@@ -498,8 +507,8 @@ document.addEventListener('alpine:init', () => {
             console.log("fitall");
             
             // Attendre un court instant avant d'effectuer l'opération
-            setTimeout(() => {
-                try {
+            // setTimeout(() => {
+            //     try {
 
                     let bounds = null;
 
@@ -527,10 +536,10 @@ document.addEventListener('alpine:init', () => {
                             animate: false
                         });
                     }
-                } catch (error) {
-                    console.error('Error in fitall:', error);
-                }
-            }, 100); // Délai de 100ms
+                // } catch (error) {
+                //     console.error('Error in fitall:', error);
+                // }
+            // }, 100); // Délai de 100ms
         },
 
 
@@ -558,21 +567,6 @@ document.addEventListener('alpine:init', () => {
             this.viewMode = "list";
         },
 
-        // action_testlocalise() {
-        //     this.map.once('click', (e) => {
-        //         console.log("testGeolocalise");
-        //         // Vérifier si on n'a pas cliqué sur un marker
-        //         const clickedMarker = this.cursors.some(marker => 
-        //             marker.getLatLng().equals(e.latlng)
-        //         );
-                
-        //         if (!clickedMarker) {
-        //             this.bestPosition = [e.latlng.lat, e.latlng.lng];
-        //             console.log(this.bestPosition);
-        //             this.sendgeolocation();
-        //         }
-        //     });
-        // }
 
         action_testlocalise() {
             const clickHandler = (e) => {
@@ -593,6 +587,76 @@ document.addEventListener('alpine:init', () => {
             };
             
             this.map.once('click', clickHandler);
+        },
+
+        action_photo() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+            this.handleImageSelection(input);
+        },
+
+        action_gallery() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            this.handleImageSelection(input);
+        },
+
+        handleImageSelection(input) {
+            input.onchange = (e) => {
+                const files = e.target.files;
+                if (!files || files.length === 0) return;
+                
+                this.showPopup("Uploading…");
+                Array.from(files).forEach(file => {
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select only images');
+                        return;
+                    }
+                    this.uploadImage(file);
+                });
+                this.removePopup();
+            };
+            input.click();
+        },
+
+
+        async uploadImage(file, position) {
+            try {
+
+                const formData = new FormData();
+                formData.append('view', 'logphoto');
+                formData.append('userid', this.user.userid);
+                formData.append('routeid', this.routeid);
+                formData.append('photofile', file);
+                formData.append('latitude', position[0]);
+                formData.append('longitude', position[1]);
+
+
+                const response = await fetch('backend.php', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${this.user.usertoken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                                
+                if (data.status === 'success') {
+                    return true;
+                } else {
+                    alert("Upload failed");
+                    return false;
+                }
+
+            } catch (error) {
+                this.uploading = false;
+                console.error('Error:', error);
+                alert('Upload error');
+            }
         }
 
     }));

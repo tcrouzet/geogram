@@ -74,7 +74,9 @@ html_header( "Geogram routes" );
                                 </div>
 
                                 <div class="divider">ACTIONS</div>
-                                <button @click="route_actions(route.routeid,'delete_all_logs')">Delete all logs</button>
+                                <div id="actions">
+                                    <button @click="route_actions(route.routeid,'purgeroute',$el.textContent)">Delete all logs</button>
+                                </div>
                                 <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
                                 <div class="divider"></div>
@@ -296,8 +298,8 @@ document.addEventListener('alpine:init', () => {
             .catch(error => console.error('Error:', error));
         },
 
-        route_actions(routeid, action){
-            if (!confirm(' Do you really to ' + action.replace(/\_/g, " ") + '?')) {
+        route_actions(routeid, action, message){
+            if (!confirm(' Do you really to ' + message.toLowerCase()) ) {
                     return;
             }
 
