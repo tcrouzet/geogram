@@ -261,8 +261,13 @@ main {
 }
 
 /* MAP */
-#geoPopup {text-align: center;}
-#geoPopup button{margin: 0.5rem;}
+div.geoPopup {text-align: center;max-width: 8rem;padding:0}
+div.geoPopup button{margin: 0.2rem;}
+div.geoPopup img{max-width:inherit;height: auto;}
+
+.leaflet-popup {
+    padding: 0 !important;
+}
 
 .custom-div-icon{
     position: absolute;

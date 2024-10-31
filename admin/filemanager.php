@@ -155,6 +155,24 @@ class FileManager {
         }
     }
 
+    public function user_route_photo($userid, $routeid, $timestamp) {
+        $dir = $this->user_route_dir($userid, $routeid);
+        if($dir)
+            return  $dir . "$timestamp.webp";
+        else
+            return false;
+    }
+
+    public function user_route_photo_web($log) {
+        if($log['logphoto']){
+            $photo = $this->user_route_photo($log['loguser'],$log['logroute'],$log['logphoto']);
+            return $this->relativize($photo,$this->datadir);
+        }else{
+            return false;
+        }
+    }
+
+
     //GPX
 
     public function chatgpx($chatid) {
@@ -191,6 +209,15 @@ class FileManager {
 
     public function user_dir2($userid){
         $userdir = $this->datadir_abs . "users/$userid/";
+        if (!is_dir($userdir)) {
+            if(!mkdir($userdir, 0777, true))
+                return false;
+        }
+        return $userdir;
+    }
+
+    public function user_route_dir($userid, $routeid){
+        $userdir = $this->datadir_abs . "users/$userid/$routeid/";
         if (!is_dir($userdir)) {
             if(!mkdir($userdir, 0777, true))
                 return false;

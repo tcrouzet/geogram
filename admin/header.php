@@ -1,4 +1,3 @@
-
 <!-- Section Top -->
 <header x-data="headerComponent()">
 

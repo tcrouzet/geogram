@@ -33,8 +33,6 @@ function gpx_minimise($gpxFile,$minDist=200,$multisegments=true){
             continue;
         }
 
-        // unset($file->tracks[$tindex]->extensions);
-        // unset($file->tracks[$tindex]->description);
         if (property_exists($file->tracks[$tindex], 'extensions')) {
             unset($file->tracks[$tindex]->extensions);
         }

@@ -155,7 +155,7 @@ function format_map_data($stmt, $route){
     $stmt->execute();
     $result = $stmt->get_result();
     $logs = $result->fetch_all(MYSQLI_ASSOC);
-    lecho($logs);
+    //lecho($logs);
 
     $filemanager = new FileManager();
     $geojson = $filemanager->route_geojson_web($route);
@@ -165,7 +165,8 @@ function format_map_data($stmt, $route){
         $row['logkm_km'] = meters_to_distance2($row["logkm"], $route, false);
         $row['username_formatted'] = $row['username'] . "<br/>" . MyDateFormat2($row['logtime'],$route) . "<br/>" . meters_to_distance2($row["logkm"], $route);
         $row['photopath'] = $filemanager->user_photo_web($row);
-        lecho($row['photopath']);
+        $row['photolog'] = $filemanager->user_route_photo_web($row);
+        //lecho($row['photopath']);
     }
 
     //lecho($logs);
@@ -576,7 +577,6 @@ function random_geoloc(){
 }
 
 function sendgeolocation(){
-    global $mysqli;
 
     lecho("sendgeolocation");
 
@@ -593,7 +593,14 @@ function sendgeolocation(){
     $latitude = $_POST['latitude'] ?? '';
     $longitude = $_POST['longitude'] ?? '';
 
-    //lecho($_POST);
+    return newlog($userid, $routeid, $latitude, $longitude);
+
+}
+
+function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = null, $timestamp = null){
+    global $mysqli;
+
+    lecho("NewLog");
 
     $nearest = new gpxnearest($routeid);
     $point = $nearest->user($latitude, $longitude);
@@ -608,16 +615,25 @@ function sendgeolocation(){
         $km = 0;
         $dev = 0;
     }
- 
-    $insertQuery = "INSERT INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $insertStmt = $mysqli->prepare($insertQuery);
-    $insertStmt->bind_param("iiddiii", $routeid, $userid, $latitude, $longitude, $p, $km, $dev);
+
+    // Conversion en date au format ISO 8601 (YYYY-MM-DD HH:MM:SS)
+    if($timestamp){
+        $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
+        $insertStmt = $mysqli->prepare($insertQuery);
+        $insertStmt->bind_param("iiddiiisii", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $timestamp);
+    }else{
+        $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertStmt = $mysqli->prepare($insertQuery);
+        $insertStmt->bind_param("iiddiiisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo);
+    }
     
     if ($insertStmt->execute()) {
         return get_map_data($routeid);
+    }else{
+        return ['status' => 'error', 'message' => 'SQL error'];    
     }
 
-    return ['status' => 'error', 'message' => 'test'];
+    return ['status' => 'error', 'message' => 'Log fail'];    
 }
 
 function routephoto(){
@@ -654,7 +670,68 @@ function routephoto(){
 
 }
 
+function photo64decode($photofile){
+
+    // Extraction du type MIME (si présent)
+    $matches = [];
+    preg_match('/data:image\/(\w+);base64/', $photofile, $matches);
+    $imageType = $matches[1] ?? 'jpeg'; // Par défaut, on considère que c'est un JPEG
+
+    // Suppression du préfixe
+    $base64_string = str_replace('data:image/' . $imageType . ';base64,', '', $photofile);
+
+    // Décodage en base64
+    $data = base64_decode($base64_string);
+
+    // Enregistrement du fichier
+    $tmpFilename = tempnam(sys_get_temp_dir(), 'photo_');
+
+    if (file_put_contents($tmpFilename, $data) === false) {
+        return false;
+    }
+
+    return $tmpFilename;
+
+}
+
 function logphoto(){
+    lecho("Route Photo Upload2");
+    //lecho($_POST);
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $latitude = $_POST['latitude'] ?? '';
+    $longitude = $_POST['longitude'] ?? '';
+    $timestamp = $_POST['timestamp'] ?? '';
+    if(empty($latitude) || empty($longitude) || empty($timestamp)){
+        return ['status' => 'error', 'message' => 'GPS error'];
+    }
+
+    $routeid = $_POST['routeid'] ?? '';
+    if(empty($routeid)){
+        return ['status' => 'error', 'message' => 'Empty route'];
+    }
+
+    $photofile = $_POST['photofile'] ?? '';
+    if(empty($photofile)) {
+        return ['status' => 'error', 'message' => 'Bad photo file'];
+    }
+    $photosource = photo64decode($photofile);
+    
+    $filemanager = new FileManager();
+    $target = $filemanager->user_route_photo($userid, $routeid, $timestamp);
+    lecho($target);
+
+    if($target){
+        if(resizeImage($photosource, $target, 1200)){
+            return newlog($userid, $routeid, $latitude, $longitude, null, $timestamp, $timestamp);
+        }else{
+            lecho("resizeFail");
+        }
+    }
 
     return ['status' => 'error', 'message' => 'Upload fail'];
 
@@ -878,17 +955,48 @@ function decodeInvitation($token) {
 }
 
 function resizeImage($sourcefile, $targetfile, $maxSize) {
-    list($width, $height) = getimagesize($sourcefile);
+
+    $imageInfo = getimagesize($sourcefile);
+    if ($imageInfo === false) {
+        return false;
+    }
+
+    $width = $imageInfo[0];
+    $height = $imageInfo[1];
+    $type = $imageInfo[2];
 
     // Calculer le ratio de redimensionnement
     $ratio = min($maxSize / $width, $maxSize / $height);
-
-    // Calculer la taille de la nouvelle image
     $newWidth = $width * $ratio;
     $newHeight = $height * $ratio;
 
     // Créer une nouvelle image avec la taille calculée
     $newImage = imagecreatetruecolor($newWidth, $newHeight);
+    $white = imagecolorallocate($newImage, 255, 255, 255);
+    imagefill($newImage, 0, 0, $white);
+
+    // Charger l'image source selon son type
+    $sourceImage = null;
+    switch ($type) {
+        case IMAGETYPE_JPEG:
+            $sourceImage = imagecreatefromjpeg($sourcefile);
+            break;
+        case IMAGETYPE_PNG:
+            $sourceImage = imagecreatefrompng($sourcefile);
+            break;
+        case IMAGETYPE_GIF:
+            $sourceImage = imagecreatefromgif($sourcefile);
+            break;
+        case IMAGETYPE_WEBP:
+            $sourceImage = imagecreatefromwebp($sourcefile);
+            break;
+        default:
+            return false;
+    }
+
+    if (!$sourceImage) {
+        return false;
+    }
 
     // Charger l'image d'origine
     $sourceImage = imagecreatefromjpeg($sourcefile);
@@ -896,11 +1004,13 @@ function resizeImage($sourcefile, $targetfile, $maxSize) {
     // Redimensionner l'image
     imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
-    // Sauvegarder l'image redimensionnée
-    imagejpeg($newImage, $targetfile, 60);
+    // Sauvegarder
+    // imagejpeg($newImage, $targetfile, 60);
+    imagewebp($newImage, $targetfile, 60);
 
     // Libérer la mémoire
     imagedestroy($newImage);
+    imagedestroy($sourceImage);
 
     return true;
 }

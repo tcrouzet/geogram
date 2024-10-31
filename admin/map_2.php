@@ -280,6 +280,7 @@ document.addEventListener('alpine:init', () => {
             const popupContent = this.mapMode ? 
                 `<div class="geoPopup">
                     <h3>${entry.username_formatted}</h3>
+                    <img src="${entry.photolog}">
                     <div class="popup-actions">
                         <button @click="userMarkers(${entry.userid})">Map history</button>
                     </div>
@@ -291,7 +292,7 @@ document.addEventListener('alpine:init', () => {
                     </div>
                 </div>`;
                       
-            marker.bindPopup(popupContent);
+            marker.bindPopup(popupContent,{className: 'custom-popup-content'});
         },
 
         updateGPX() {
@@ -405,7 +406,11 @@ document.addEventListener('alpine:init', () => {
                         const { latitude, longitude, accuracy } = position.coords;
 
                         if (accuracy < bestAccuracy) {
-                            bestPosition = [latitude, longitude, Date.now()];
+                            bestPosition = {
+                                latitude: latitude,
+                                longitude: longitude,
+                                timestamp: Math.floor(Date.now() / 1000)
+                            };
                             bestAccuracy = Math.floor(accuracy);
                         }
                         console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
@@ -439,8 +444,8 @@ document.addEventListener('alpine:init', () => {
                     view: "sendgeolocation",
                     userid: this.userid,
                     routeid: this.routeid,
-                    latitude: this.bestPosition[0],
-                    longitude: this.bestPosition[1]
+                    latitude: this.bestPosition["latitude"],
+                    longitude: this.bestPosition["longitude"]
                 })
             })
             // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -589,7 +594,11 @@ document.addEventListener('alpine:init', () => {
                 );
                 
                 if (!clickedMarker) {
-                    this.bestPosition = [e.latlng.lat, e.latlng.lng];
+                    this.bestPosition = {
+                        latitude: e.latlng.lat,
+                        longitude: e.latlng.lng,
+                        timestamp: Math.floor(Date.now() / 1000)
+                    };      
                     console.log(this.bestPosition);
                     this.sendgeolocation();
                 }
@@ -675,11 +684,18 @@ document.addEventListener('alpine:init', () => {
                             if (tags.GPSLatitudeRef === 'S') latitude = -latitude;
                             if (tags.GPSLongitudeRef === 'W') longitude = -longitude;
 
-                            const timestamp = null;
+                            //console.log(tags.DateTime);
+                            let timestamp = Date.now();
                             if (tags.DateTime) {
-                                const timestamp = tags.DateTime;
+                                // Format EXIF : "2024:01:31 15:30:45"
+                                const [date, time] = tags.DateTime.split(' ');
+                                const [year, month, day] = date.split(':');
+                                const [hours, minutes, seconds] = time.split(':');
+                                timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
                             }
-                            
+                            timestamp = Math.floor(timestamp / 1000);
+                            console.log(timestamp);
+
                             resolve({ latitude, longitude, timestamp });
                         } else {
                             reject('No GPS data found');
@@ -691,8 +707,19 @@ document.addEventListener('alpine:init', () => {
         },
 
 
-        async uploadImage(file, gpsData) {
+        async uploadImage1(file, gpsData) {
             try {
+
+                console.log('File details:', {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    lastModified: file.lastModified
+                });
+
+                if (!file.size) {
+                    throw new Error('File is empty');
+                }
 
                 const formData = new FormData();
                 formData.append('view', 'logphoto');
@@ -701,9 +728,12 @@ document.addEventListener('alpine:init', () => {
                 formData.append('photofile', file);
 
                 if(gpsData){
-                    formData.append('latitude', gpsData[0]);
-                    formData.append('longitude', gpsData[1]);
-                    formData.append('timestamp', gpsData[2]);
+                    formData.append('latitude', gpsData['latitude']);
+                    formData.append('longitude', gpsData['longitude']);
+                    formData.append('timestamp', gpsData['timestamp']);
+                }else{
+                    console.error('Error:', "No GPS Data");
+                    return false;
                 }
 
                 const response = await fetch('backend.php', {
@@ -714,19 +744,81 @@ document.addEventListener('alpine:init', () => {
                     body: formData
                 });
 
+                // const rawText = await response.text();
+                // console.log('Response Text:', rawText);
                 const data = await response.json();
                                 
                 if (data.status === 'success') {
                     return true;
                 } else {
-                    alert("Upload failed");
+                    alert(data.message);
                     return false;
                 }
 
             } catch (error) {
                 this.uploading = false;
                 console.error('Error:', error);
-                alert('Upload error');
+                alert('Upload error: ' + error.message);
+            }
+        },
+
+
+        uploadImage(file, gpsData) {
+            try {
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+
+                    const base64Image = event.target.result;
+
+                    const formData = new FormData();
+                    formData.append('view', 'logphoto');
+                    formData.append('userid', this.user.userid);
+                    formData.append('routeid', this.routeid);
+                    formData.append('photofile',  base64Image);
+
+                    if(gpsData){
+                        formData.append('latitude', gpsData['latitude']);
+                        formData.append('longitude', gpsData['longitude']);
+                        formData.append('timestamp', gpsData['timestamp']);
+                    }else{
+                        console.error('Error:', "No GPS Data");
+                        return false;
+                    }
+
+                    fetch('backend.php', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${this.user.usertoken}`
+                        },
+                        body: formData
+                    })
+                    // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+                    // .then(text => {
+                    //     console.log('Response Text:', text); // Affiche la réponse brute
+                    //     return JSON.parse(text); // Convertir en JSON si nécessaire
+                    // })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            return true;
+                        } else {
+                            alert(data.message);
+                            return false;
+                        }
+                    })
+                    .catch(error => {
+                        this.uploading = false;
+                        console.error('Error:', error);
+                        alert('An error occurred during upload.');
+                    });
+                }
+
+            } catch (error) {
+                this.uploading = false;
+                console.error('Error:', error);
+                alert('Upload error: ' + error.message);
             }
         }
 
