@@ -369,52 +369,62 @@ document.addEventListener('alpine:init', () => {
             cursor.setIcon(customMarker);
         },
 
-        action_localise() {
-            this.showPopup("Looking for position...");
-            if (navigator.geolocation) {
+        async action_localise(){
+            this.action_map();
+            try {
+                const bestPosition = await this.get_localisation();
+                if(bestPosition){
+                    this.bestPosition = bestPosition;
+                    this.sendgeolocation();
+                }
+            } catch (error) {
+                console.log('Error or cancelled:', error);
+            }
+        },
+
+        get_localisation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation not supported');
+                return null;
+            }
+
+            return new Promise((resolve, reject) => {
+                this.showPopup("Looking for position...");
+
                 const options = {
                     enableHighAccuracy: true,
-                    timeout: 5000,
+                    timeout: 10000,
                     maximumAge: 0
                 };
 
-                this.bestPosition = null;
+                let bestPosition = null;
                 let bestAccuracy = Infinity;
-                let firstwatch = true;
 
                 const watchId = navigator.geolocation.watchPosition(
                     position => {
                         const { latitude, longitude, accuracy } = position.coords;
 
                         if (accuracy < bestAccuracy) {
-                            this.bestPosition = [ latitude, longitude ];
+                            bestPosition = [latitude, longitude, Date.now()];
                             bestAccuracy = Math.floor(accuracy);
                         }
                         console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
 
                         if (bestAccuracy < 20) {
-                            this.finalizePosition(watchId);
+                            navigator.geolocation.clearWatch(watchId);
+                            this.removePopup();
+                            resolve(bestPosition);
                         } else if (bestAccuracy < 10000) {
-                            this.updatePopup(`Accuracy: ${bestAccuracy}m`, watchId);
+                            this.updatePopup(`Accuracy: ${bestAccuracy}m`, watchId, bestPosition, resolve, reject);
                         }
                     },
                     error => {
-                        this.updatePopup('Geolocalisation Error:' + error);
+                        this.updatePopup('Geolocalisation Error:' + error, watchId, bestPosition, resolve, reject);
+                        reject(error);
                     },
                     options
                 );
-            } else {
-                this.updatePopup('Geoilocation not suppored');
-            }
-        },
-
-        finalizePosition(watchId) {
-            this.action_map();
-            navigator.geolocation.clearWatch(watchId);
-            // L.marker(this.bestPosition).addTo(this.map).bindTooltip("Tourposition");
-            // this.map.setView(this.bestPosition, 13);
-            this.removePopup();
-            this.sendgeolocation();
+            });
         },
 
         sendgeolocation() {
@@ -450,7 +460,7 @@ document.addEventListener('alpine:init', () => {
             .catch(error => console.error('Error:', error));
         },
 
-        updatePopup(message, watchId) {
+        updatePopup(message, watchId, bestPosition, resolve, reject) {
             const popup = document.getElementById('geoPopup');
             if (popup) {
                 popup.querySelector('p').textContent = message;
@@ -458,22 +468,24 @@ document.addEventListener('alpine:init', () => {
                     const button = document.createElement('button');
                     button.id = 'confirmBtn';
                     button.textContent = 'Validate';
-                    button.addEventListener('click', () => {
-                        this.finalizePosition(watchId);
-                    });
+                    button.onclick = () => {
+                        navigator.geolocation.clearWatch(watchId);
+                        this.removePopup();
+                        resolve(bestPosition);
+                    };
                     popup.appendChild(button);
                 }
                 if (!document.getElementById('cancelBtn')) {
                     const cancelButton = document.createElement('button');
                     cancelButton.id = 'cancelBtn';
                     cancelButton.textContent = 'Cancel';
-                    cancelButton.addEventListener('click', () => {
+                    cancelButton.onclick = () => {
                         navigator.geolocation.clearWatch(watchId);
                         this.removePopup();
-                    });
+                        reject('Cancelled by user');
+                    };
                     popup.appendChild(cancelButton);
                 }
-
             }
         },
 
@@ -615,7 +627,28 @@ document.addEventListener('alpine:init', () => {
                         alert('Please select only images');
                         return;
                     }
-                    this.uploadImage(file);
+
+                    // Lancer l'extraction EXIF
+                    this.getExifData(file)
+                        .then(gpsData => {
+                            console.log('GPS data:');
+                            this.uploadImage(file, gpsData);
+                        })
+                        .catch(error => {
+
+                            console.log('No GPS data:', error);
+                            // Si pas d'EXIF, utiliser la géolocalisation actuelle
+                            return this.get_localisation()
+                                .then(position => {
+                                    this.uploadImage(file, position);
+                                })
+                                .catch(geoError => {
+                                    alert('No location available' + geoError );
+                                    return;
+                            });            
+
+                        });
+            
                 });
                 this.removePopup();
             };
@@ -623,7 +656,42 @@ document.addEventListener('alpine:init', () => {
         },
 
 
-        async uploadImage(file, position) {
+        async getExifData(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    EXIF.getData(file, function() {
+                        const tags = EXIF.getAllTags(this);
+                        //console.log('All EXIF tags:', tags);
+                        
+                        if (tags.GPSLatitude && tags.GPSLongitude) {
+                            let latitude = tags.GPSLatitude[0] + 
+                                        tags.GPSLatitude[1]/60 + 
+                                        tags.GPSLatitude[2]/3600;
+                            let longitude = tags.GPSLongitude[0] + 
+                                        tags.GPSLongitude[1]/60 + 
+                                        tags.GPSLongitude[2]/3600;
+                            
+                            if (tags.GPSLatitudeRef === 'S') latitude = -latitude;
+                            if (tags.GPSLongitudeRef === 'W') longitude = -longitude;
+
+                            const timestamp = null;
+                            if (tags.DateTime) {
+                                const timestamp = tags.DateTime;
+                            }
+                            
+                            resolve({ latitude, longitude, timestamp });
+                        } else {
+                            reject('No GPS data found');
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);  // Changé de readAsArrayBuffer à readAsDataURL
+            });
+        },
+
+
+        async uploadImage(file, gpsData) {
             try {
 
                 const formData = new FormData();
@@ -631,9 +699,12 @@ document.addEventListener('alpine:init', () => {
                 formData.append('userid', this.user.userid);
                 formData.append('routeid', this.routeid);
                 formData.append('photofile', file);
-                formData.append('latitude', position[0]);
-                formData.append('longitude', position[1]);
 
+                if(gpsData){
+                    formData.append('latitude', gpsData[0]);
+                    formData.append('longitude', gpsData[1]);
+                    formData.append('timestamp', gpsData[2]);
+                }
 
                 const response = await fetch('backend.php', {
                     method: 'POST',

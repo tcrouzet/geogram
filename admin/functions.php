@@ -220,8 +220,7 @@ function html_header_2($route, $pagename=""){
     echo "\n<link rel='stylesheet' id='style-css' href='/geogram_2.css?$version' type='text/css' media='screen' />\n";
     echo "\n<script src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\" defer></script>\n";
     echo "\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css\"\n>";
-
-
+    echo "\n<script src=\"https://cdn.jsdelivr.net/npm/exif-js\"></script>\"\n>";
 
     echo '</head>';
     echo '<body>';
