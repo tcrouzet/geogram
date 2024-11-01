@@ -73,14 +73,6 @@ class UserService
         ];
 
     }
-
-    public function delete_user($userid){
-        $query = "DELETE FROM users WHERE userid=?;";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $userid);
-        $stmt->execute();
-        return $this->db->affected_rows;
-    }
     
     public function initial($name){
         $r=substr(fName($name), 0, 2);

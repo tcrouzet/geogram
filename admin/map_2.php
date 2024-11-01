@@ -162,7 +162,7 @@ document.addEventListener('alpine:init', () => {
 
             // console.log(formData.toString());
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

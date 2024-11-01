@@ -4,6 +4,7 @@ require_once '../app/config/config.php';
 
 use App\Controllers\AuthController;
 use App\Services\UserService;
+use App\Services\MapService;
 
 $logger = \App\Services\Logger::getInstance();
 
@@ -34,11 +35,14 @@ try {
             $data = $auth->login();
             break;
         case 'createuser':
-            $uservice = new UserService();
-            $data = $auth->createUser();
+            $userservice = new UserService();
+            $data = $userservice->createUser();
+            break;
+        case 'loadMapData':
+            $mapservice = new MapService();
+            $data = $mapservice->loadMapData();
             break;
     
-        // ... autres cas
         default:
             $data = ['status' => 'error', 'message' => 'Invalid endpoint'];
     }
