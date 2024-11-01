@@ -1,6 +1,7 @@
 <?php
+namespace App\Services;
 
-class FileManager {
+class FilesManager {
     public $absolute_path;
 
     //OLD
@@ -12,13 +13,8 @@ class FileManager {
     public $datadir_abs;
 
     public function __construct() {
-        $this->absolute_path = realpath(__DIR__ . '/..')."/";
+        $this->absolute_path = ROOT_PATH . "/";
 
-        //OLD
-        $this->userimg_dir = "userimg/";
-        $this->userimg =  $this->absolute_path . ltrim($this->userimg_dir,"/");
-
-        //NEW
         $this->datadir = "userdata/";
         $this->datadir_abs = $this->absolute_path . $this->datadir;
     }
@@ -80,6 +76,7 @@ class FileManager {
         return $this->supDir($dir);
     }
 
+    // TOOLS
 
     function supDir($dossier) {
         if (is_dir($dossier)) {
@@ -395,7 +392,4 @@ class FileManager {
         return $this->userimg . "avatars/" . (string)round($userid). ".jpeg";
     }
 
-
 }
-
-?>

@@ -1,15 +1,26 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 
+	# Authorization header
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Security headers
+    <IfModule mod_headers.c>
+        Header set X-Content-Type-Options "nosniff"
+        Header set X-XSS-Protection "1; mode=block"
+    </IfModule>
+
 	# Forbidden directories
 	RewriteRule ^admin/ - [F]
 	RewriteRule ^vendor/ - [F]
 	RewriteRule ^logs/ - [F]
 	RewriteRule ^composer\..* - [F]
-	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 	# Block files in root starting with _
 	RewriteRule ^_([^/]+)$ - [F]
+
+	# Route API calls to api/v1/index.php
+    RewriteRule ^api/(.*)$ api/index.php [QSA,L]
 
 	# Do not rewrite URL if index.php
 	RewriteRule ^index\.php$ - [L]

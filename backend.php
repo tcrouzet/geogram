@@ -15,6 +15,9 @@ require_once(__DIR__ . '/admin/mylogs.php');
 require_once(__DIR__ . '/admin/tools_gpx.php');
 require_once(__DIR__ . '/admin/gpxmanager.php');
 
+require_once(__DIR__ . '/admin/gpxmanager.php');
+
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -57,6 +60,8 @@ if($view == "login") {
     $data = userMarkers();
 }elseif($view == "logphoto") {
     $data = logphoto();
+}elseif($view == "userAction") {
+    $data = userAction();
 } else {
     $data = [];
 }
@@ -66,6 +71,109 @@ header('Content-Type: application/json');
 echo json_encode($data);
 lexit();
 
+function get_login(){
+    global $mysqli;
+
+    lecho("get_login");
+
+    $email = $_POST['email'] ?? '';
+    if(!empty($email)){
+        $isEmailValid = filter_var($email, FILTER_VALIDATE_EMAIL);
+    }else{
+        $isEmailValid = false;
+    }
+    if(!$isEmailValid){
+         return ['status' => 'error', 'message' => 'Invalid email'];
+    }
+
+    $password = $_POST['password'] ?? '';
+    if (empty($password)) {
+        return ['status' => 'error', 'message' => 'Invalid password'];
+    }
+
+    if ($user = get_user($email)) {
+        if (password_verify($password, $user['userpsw'])) {
+
+            if (!testToken($user['userid'])){
+                $user['usertoken'] = saveToken($user['userid']);
+            }
+            unset($user['userpsw']);
+
+            return ['status' => 'success', 'userdata' => $user];
+        } else {
+            return ['status' => 'error', 'message' => 'Wrong password'];
+        }
+    }
+
+    return ['status' => 'not_found', 'message' => $email.' is not a user, do you want to sign in?', 'email' => $email, 'password' => $password];
+
+}
+
+function create_user(){
+    global $mysqli;
+
+    lecho("CreateUser");
+
+    $result = get_login();
+    if($result['status'] != 'not_found') return ['status' => "fail", 'message' => "User allready there…"];
+
+    list($username, $domain) = explode('@', $result['email']);
+    $userinitials = initial($username);
+    $usercolor = getDarkColorCode(rand(0,10000));
+
+    $hashedPassword = password_hash($result['password'], PASSWORD_DEFAULT);
+    $isPasswordValid = password_verify($result['password'], $hashedPassword);
+    if(!$isPasswordValid){
+        return ['status' => "fail", 'message' => "Bad password"];
+    }
+
+    $userroute = TESTROUTE; // Connected to testroute by default
+
+    $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userpsw, userroute) VALUES (?, ?, ?, ?, ?, ?)";
+    $insertStmt = $mysqli->prepare($insertQuery);
+    $insertStmt->bind_param("sssssi", $username, $userinitials, $usercolor, $result['email'], $hashedPassword, $userroute);
+    
+    if ($insertStmt->execute()) {
+
+        $userid = $mysqli->insert_id;
+
+        connect($userid,$userroute,0);
+
+        // Retourne les données du nouvel utilisateur
+        $token = saveToken($userid);
+        if ($token){
+            $user = [
+                'userid' => $userid,
+                'useremail' => $result['email'],
+                'username' => $username,
+                'userinitials' => $userinitials,
+                'usercolor' => $usercolor,
+                'userimg' => '',
+                'usertoken' => $token,
+                'userroute' => $userroute,
+                'routeid' => $userroute
+            ];
+            return [
+                'status' => "success",
+                'userdata' => $user,
+                'route' => null
+            ];
+        } else {
+            return [
+                'status' => "fail",
+                'message' => "Bad token"
+            ];    
+        }
+    } else {
+        // Erreur lors de la création de l'utilisateur
+        delete_user($mysqli->insert_id);
+        return [
+            'status' => "fail",
+            'message' => "Can't add user"
+        ];
+    }
+
+}
 
 function userMarkers() {
     global $mysqli;
@@ -174,109 +282,7 @@ function format_map_data($stmt, $route){
 
 }
 
-function get_login(){
-    global $mysqli;
 
-    lecho("get_login");
-
-    $email = $_POST['email'] ?? '';
-    if(!empty($email)){
-        $isEmailValid = filter_var($email, FILTER_VALIDATE_EMAIL);
-    }else{
-        $isEmailValid = false;
-    }
-    if(!$isEmailValid){
-         return ['status' => 'error', 'message' => 'Invalid email'];
-    }
-
-    $password = $_POST['password'] ?? '';
-    if (empty($password)) {
-        return ['status' => 'error', 'message' => 'Invalid password'];
-    }
-
-    if ($user = get_user($email)) {
-        if (password_verify($password, $user['userpsw'])) {
-
-            if (!testToken($user['userid'])){
-                $user['usertoken'] = saveToken($user['userid']);
-            }
-            unset($user['userpsw']);
-
-            return ['status' => 'success', 'userdata' => $user];
-        } else {
-            return ['status' => 'error', 'message' => 'Wrong password'];
-        }
-    }
-
-    return ['status' => 'not_found', 'message' => $email.' is not a user, do you want to sign in?', 'email' => $email, 'password' => $password];
-
-}
-
-function create_user(){
-    global $mysqli;
-
-    lecho("CreateUser");
-
-    $result = get_login();
-    if($result['status'] != 'not_found') return ['status' => "fail", 'message' => "User allready there…"];
-
-    list($username, $domain) = explode('@', $result['email']);
-    $userinitials = initial($username);
-    $usercolor = getDarkColorCode(rand(0,10000));
-
-    $hashedPassword = password_hash($result['password'], PASSWORD_DEFAULT);
-    $isPasswordValid = password_verify($result['password'], $hashedPassword);
-    if(!$isPasswordValid){
-        return ['status' => "fail", 'message' => "Bad password"];
-    }
-
-    $userroute = TESTROUTE; // Connected to testroute by default
-
-    $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userpsw, userroute) VALUES (?, ?, ?, ?, ?, ?)";
-    $insertStmt = $mysqli->prepare($insertQuery);
-    $insertStmt->bind_param("sssssi", $username, $userinitials, $usercolor, $result['email'], $hashedPassword, $userroute);
-    
-    if ($insertStmt->execute()) {
-
-        $userid = $mysqli->insert_id;
-
-        connect($userid,$userroute,0);
-
-        // Retourne les données du nouvel utilisateur
-        $token = saveToken($userid);
-        if ($token){
-            $user = [
-                'userid' => $userid,
-                'useremail' => $result['email'],
-                'username' => $username,
-                'userinitials' => $userinitials,
-                'usercolor' => $usercolor,
-                'userimg' => '',
-                'usertoken' => $token,
-                'userroute' => $userroute,
-                'routeid' => $userroute
-            ];
-            return [
-                'status' => "success",
-                'userdata' => $user,
-                'route' => null
-            ];
-        } else {
-            return [
-                'status' => "fail",
-                'message' => "Bad token"
-            ];    
-        }
-    } else {
-        // Erreur lors de la création de l'utilisateur
-        delete_user($mysqli->insert_id);
-        return [
-            'status' => "fail",
-            'message' => "Can't add user"
-        ];
-    }
-
-}
 
 function updateuser(){
     global $mysqli;
@@ -474,7 +480,6 @@ function routeconnect(){
 }
 
 function routeAction(){
-    global $mysqli;
 
     lecho("routeAction");
 
@@ -511,6 +516,47 @@ function delete_all_logs($routeid){
     else
         return false;
 }
+
+function userAction(){
+    lecho("userAction");
+
+    $userid = $_POST['userid'] ?? '';
+    if (!testToken($userid)){
+        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+    }
+
+    $action = $_POST['action'] ?? '';
+
+    // lecho($_POST);
+    // lecho($action);
+
+    if($action == "purgeuser"){
+        $message = purgeuser($userid);
+    }else{
+        return ['status' => 'error', 'message' => "Unknown action: $action"];        
+    }
+
+    if($message)
+        return ['status' => 'success', 'message' => "Action $action done"];
+    else
+        return ['status' => 'error', 'message' => "Action $action fail"];
+}
+
+function purgeuser($userid){
+    global $mysqli;
+    $stmt = $mysqli->prepare("DELETE FROM rlogs WHERE loguser=?");
+    $stmt->bind_param("i", $userid);
+
+    if ($stmt->execute()){
+        $filemanager = New FileManager();
+        $filemanager->purgeUserData($userid);
+        return true;
+    }else{
+        return false;
+    }
+
+}
+
 
 function gpxupload(){
 
@@ -622,7 +668,7 @@ function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo 
         $insertStmt = $mysqli->prepare($insertQuery);
         $insertStmt->bind_param("iiddiiisii", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $timestamp);
     }else{
-        $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $insertStmt = $mysqli->prepare($insertQuery);
         $insertStmt->bind_param("iiddiiisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo);
     }

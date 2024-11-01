@@ -35,4 +35,5 @@ return array(
     'Google\\' => array($vendorDir . '/google/apiclient/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Cmfcmf\\' => array($vendorDir . '/cmfcmf/openweathermap-php-api/Cmfcmf'),
+    'App\\' => array($baseDir . '/app/src'),
 );

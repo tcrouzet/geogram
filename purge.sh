@@ -1,6 +1,7 @@
 #!/bin/bash
 #chmod +x purge.sh
 sudo truncate -s 0 logs/robot.log
+sudo truncate -s 0 logs/error_php.log
 sudo rm -f logs/*.txt
 
 # Find and sort the _backup_ files, then delete all but the latest one

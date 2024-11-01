@@ -19,6 +19,7 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         '221a7c0887f892e44dd08191321d3815' => __DIR__ . '/..' . '/eleirbag89/telegrambotphp/TelegramErrorLogger.php',
         'a8d3953fd9959404dd22d3dfcd0a79f0' => __DIR__ . '/..' . '/google/apiclient/src/aliases.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        'a412447063dcc065e3fbf7d2dc3d18d1' => __DIR__ . '/../..' . '/app/src/Utils/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -83,6 +84,10 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         'C' => 
         array (
             'Cmfcmf\\' => 7,
+        ),
+        'A' => 
+        array (
+            'App\\' => 4,
         ),
     );
 
@@ -205,6 +210,10 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         'Cmfcmf\\' => 
         array (
             0 => __DIR__ . '/..' . '/cmfcmf/openweathermap-php-api/Cmfcmf',
+        ),
+        'App\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/app/src',
         ),
     );
 

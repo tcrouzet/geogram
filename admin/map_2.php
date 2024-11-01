@@ -280,13 +280,14 @@ document.addEventListener('alpine:init', () => {
             const popupContent = this.mapMode ? 
                 `<div class="geoPopup">
                     <h3>${entry.username_formatted}</h3>
-                    <img src="${entry.photolog}">
+                    ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
                     <div class="popup-actions">
                         <button @click="userMarkers(${entry.userid})">Map history</button>
                     </div>
                 </div>` :
                 `<div class="geoPopup">
                     <h3>${entry.username_formatted}</h3>
+                    ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
                     <div class="popup-actions">
                         <button @click="loadMapData()">All Users</button>
                     </div>
@@ -707,62 +708,6 @@ document.addEventListener('alpine:init', () => {
         },
 
 
-        async uploadImage1(file, gpsData) {
-            try {
-
-                console.log('File details:', {
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    lastModified: file.lastModified
-                });
-
-                if (!file.size) {
-                    throw new Error('File is empty');
-                }
-
-                const formData = new FormData();
-                formData.append('view', 'logphoto');
-                formData.append('userid', this.user.userid);
-                formData.append('routeid', this.routeid);
-                formData.append('photofile', file);
-
-                if(gpsData){
-                    formData.append('latitude', gpsData['latitude']);
-                    formData.append('longitude', gpsData['longitude']);
-                    formData.append('timestamp', gpsData['timestamp']);
-                }else{
-                    console.error('Error:', "No GPS Data");
-                    return false;
-                }
-
-                const response = await fetch('backend.php', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${this.user.usertoken}`
-                    },
-                    body: formData
-                });
-
-                // const rawText = await response.text();
-                // console.log('Response Text:', rawText);
-                const data = await response.json();
-                                
-                if (data.status === 'success') {
-                    return true;
-                } else {
-                    alert(data.message);
-                    return false;
-                }
-
-            } catch (error) {
-                this.uploading = false;
-                console.error('Error:', error);
-                alert('Upload error: ' + error.message);
-            }
-        },
-
-
         uploadImage(file, gpsData) {
             try {
 
@@ -802,6 +747,8 @@ document.addEventListener('alpine:init', () => {
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
+                            this.logs = data.logs;
+                            this.showPhoto();
                             return true;
                         } else {
                             alert(data.message);
@@ -819,6 +766,25 @@ document.addEventListener('alpine:init', () => {
                 this.uploading = false;
                 console.error('Error:', error);
                 alert('Upload error: ' + error.message);
+            }
+        },
+
+        showPhoto(){
+            console.log("showPhoto");
+            const userMarker = this.cursors.find(marker => {
+                // Recherche de l'entrée correspondante dans les logs
+                const entry = this.logs.find(log => log.userid === this.user.userid);
+                return marker.getLatLng().lat === entry.loglatitude && 
+                    marker.getLatLng().lng === entry.loglongitude;
+            });
+
+            if (userMarker) {
+                console.log("showPhoto2");
+                // Recherche de l'entrée correspondante dans les logs pour la mise à jour du popup
+                const entry = this.logs.find(log => log.userid === this.user.userid);
+                this.markerPopup(userMarker, entry);
+                // Ouvre le popup immédiatement
+                userMarker.openPopup();
             }
         }
 

@@ -156,9 +156,11 @@ CREATE TABLE `rlogs` (
   `logkm` int(11) DEFAULT NULL,
   `logdev` int(11) DEFAULT NULL,
   `logcomment` text DEFAULT NULL,
+  `logphoto` int(11) NOT NULL DEFAULT 0,
   `logtime` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`logid`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  PRIMARY KEY (`logid`),
+  UNIQUE KEY `logroute` (`logroute`,`loguser`,`logphoto`)
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -227,4 +229,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-29  8:35:04
+-- Dump completed on 2024-10-31 11:35:14

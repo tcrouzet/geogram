@@ -18,4 +18,5 @@ return array(
     '221a7c0887f892e44dd08191321d3815' => $vendorDir . '/eleirbag89/telegrambotphp/TelegramErrorLogger.php',
     'a8d3953fd9959404dd22d3dfcd0a79f0' => $vendorDir . '/google/apiclient/src/aliases.php',
     '667aeda72477189d0494fecd327c3641' => $vendorDir . '/symfony/var-dumper/Resources/functions/dump.php',
+    'a412447063dcc065e3fbf7d2dc3d18d1' => $baseDir . '/app/src/Utils/helpers.php',
 );

@@ -78,6 +78,13 @@ html_header( "Geogram login" );
                     @input="checkPasswordLength"  @change="updatePSW">
                 <div x-show="passwordError" class="error-message" x-text="passwordError"></div>
 
+                <div class="divider">ACTIONS</div>
+                <div id="actions">
+                    <button @click="user_actions(user.userid,'purgeuser',$el.textContent)">Delete all logs</button>
+                </div>
+                <div x-show="actionError" class="error-message" x-text="actionError"></div>
+
+
             </div>  
         </template>
 
@@ -105,6 +112,7 @@ document.addEventListener('alpine:init', () => {
         photoError: '',
         photoPreview: null,
         selectedPhoto: null,
+        actionError: '',
 
         init(){
             console.log("loginInit");
@@ -166,7 +174,7 @@ document.addEventListener('alpine:init', () => {
             formData.append('email', this.email);
             formData.append('password', this.password);
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -327,6 +335,44 @@ document.addEventListener('alpine:init', () => {
                 });
             }
         },
+
+
+        user_actions(userid, action, message){
+            if (!confirm(' Do you really to ' + message.toLowerCase()) ) {
+                    return;
+            }
+
+            fetch('backend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.usertoken}`
+                },
+                body: new URLSearchParams({
+                    view: "userAction",
+                    action: action,
+                    userid: userid
+                })
+            })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
+            .then(response => response.json())
+            .then(data => {
+                this.actionError = data.message;
+                if (data.status === 'success') {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            .catch(error => {
+                alert('An error occurred during action.');
+            });
+        },
+
 
         connected(userdata){
             console.log('Utilisateur connecté:', userdata);
