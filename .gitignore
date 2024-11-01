@@ -10,4 +10,5 @@ userimg/*
 userdata/*
 !userimg/.gitkeep
 perso
+app/config/*
 _*
