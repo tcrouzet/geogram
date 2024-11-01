@@ -200,7 +200,7 @@ document.addEventListener('alpine:init', () => {
 
             // console.log(formData.toString());
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -435,7 +435,7 @@ document.addEventListener('alpine:init', () => {
 
         sendgeolocation() {
             // Envoyer une requête pour mettre à jour la route
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

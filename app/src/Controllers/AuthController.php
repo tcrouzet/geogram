@@ -17,7 +17,6 @@ class AuthController {
     }
     
     public function login(){
-    
         lecho("get_login");
     
         $email = $_POST['email'] ?? '';
@@ -27,7 +26,7 @@ class AuthController {
             $isEmailValid = false;
         }
         if(!$isEmailValid){
-             return ['status' => 'error', 'message' => 'Invalid email'];
+            return ['status' => 'error', 'message' => 'Invalid email'];
         }
     
         $password = $_POST['password'] ?? '';
@@ -38,21 +37,15 @@ class AuthController {
         if ($user = $this->get_user($email)) {
             if (password_verify($password, $user['userpsw'])) {
     
-                if (!$this->testToken($user['userid'])){
-                    $user['usertoken'] = $this->saveToken($user['userid']);
-                }
+                $user['usertoken'] = $this->saveToken($user['userid']);
                 unset($user['userpsw']);
-    
                 return ['status' => 'success', 'userdata' => $user];
             } else {
                 return ['status' => 'error', 'message' => 'Wrong password'];
             }
         }
-    
         return ['status' => 'not_found', 'message' => $email.' is not a user, do you want to sign in?', 'email' => $email, 'password' => $password];
-    
     }
-
 
     public function get_user($param) {
     
@@ -107,42 +100,111 @@ class AuthController {
             return false;
         }
     }
-    
-    public function saveToken($userid){
-    
+
+    public function saveToken($userid) {
         $token = $this->generateToken($userid);
-    
-        $stmt = $this->db->prepare("UPDATE users SET usertoken = ? WHERE userid = ?");
-        $stmt->bind_param("si", $token, $userid);
-        if ($stmt->execute())
+        $expiresAt = date('Y-m-d H:i:s', time() + 86400*90);
+        $deviceInfo = $this->getDeviceInfo();
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO user_tokens (userid, token, device_info, expires_at) 
+                VALUES (?, ?, ?, ?)"
+        );
+        $stmt->bind_param("isss", $userid, $token, $deviceInfo, $expiresAt);
+        
+        if ($stmt->execute()) {
+            // Nettoyer les tokens expirés
+            $this->cleanExpiredTokens($userid);
             return $token;
-        else
-            return false;
+        }
+        
+        return false;
     }
-    
-    public function testToken($userid){
-    
-        //lecho("testToken", $userid);
+
+    private function getDeviceInfo(): string {
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        return json_encode([
+            'user_agent' => $userAgent,
+            'ip' => $ip,
+            'timestamp' => time()
+        ]);
+    }
+
+    public function testToken($userid) {
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
         if(empty($authHeader)) return false;
         list($jwt) = sscanf($authHeader, 'Bearer %s');
         
-        $stmt = $this->db->prepare("SELECT usertoken FROM users WHERE userid = ?");
-        $stmt->bind_param("i", $userid);
+        // Vérifier le token dans la table user_tokens
+        $stmt = $this->db->prepare(
+            "SELECT * FROM user_tokens 
+                WHERE userid = ? AND token = ? AND expires_at > NOW()"
+        );
+        $stmt->bind_param("is", $userid, $jwt);
         $stmt->execute();
         $result = $stmt->get_result();
-    
+
         if ($result && $result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-    
-            $decoded = validateToken($jwt);
-            if ($jwt && $jwt === $row['usertoken'] && $decoded) {
-                if($decoded->exp - time() > 300) {
-                    return true;
-                }
+            $tokenData = $result->fetch_assoc();
+            $decoded = $this->validateToken($jwt);
+            
+            if ($decoded) {
+                // Mettre à jour last_used
+                $this->updateTokenUsage($tokenData['token_id']);
+                return true;
             }
         }
+        
         return false;
     }
 
+    private function updateTokenUsage($tokenId) {
+        $stmt = $this->db->prepare(
+            "UPDATE user_tokens SET last_used = CURRENT_TIMESTAMP 
+                WHERE token_id = ?"
+        );
+        $stmt->bind_param("i", $tokenId);
+        $stmt->execute();
+    }
+
+    private function cleanExpiredTokens($userid) {
+        // Supprimer les tokens expirés
+        $stmt = $this->db->prepare(
+            "DELETE FROM user_tokens 
+                WHERE userid = ? AND expires_at < NOW()"
+        );
+        $stmt->bind_param("i", $userid);
+        $stmt->execute();
+    }
+
+    public function logout($userid, $currentToken = null) {
+        if ($currentToken) {
+            // Révoquer uniquement le token courant
+            $stmt = $this->db->prepare(
+                "DELETE FROM user_tokens 
+                    WHERE userid = ? AND token = ?"
+            );
+            $stmt->bind_param("is", $userid, $currentToken);
+        } else {
+            // Révoquer tous les tokens de l'utilisateur
+            $stmt = $this->db->prepare(
+                "DELETE FROM user_tokens WHERE userid = ?"
+            );
+            $stmt->bind_param("i", $userid);
+        }
+        return $stmt->execute();
+    }
+
+    public function listUserSessions($userid) {
+        $stmt = $this->db->prepare(
+            "SELECT token_id, device_info, last_used, created_at 
+                FROM user_tokens 
+                WHERE userid = ? AND expires_at > NOW() 
+                ORDER BY last_used DESC"
+        );
+        $stmt->bind_param("i", $userid);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }

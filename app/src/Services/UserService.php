@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Controllers\AuthController;
 use App\Services\Database;
+use App\Utils\Logger;
 
 
 class UserService 

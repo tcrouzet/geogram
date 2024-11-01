@@ -6,7 +6,7 @@ use App\Controllers\AuthController;
 use App\Services\UserService;
 use App\Services\MapService;
 
-$logger = \App\Services\Logger::getInstance();
+$logger = \App\Utils\Logger::getInstance();
 
 // Configuration des erreurs
 set_time_limit(60);
@@ -25,26 +25,43 @@ header('Content-Type: application/json');
 
 try {
     $view = $_POST['view'] ?? '';
-    lecho($view);
+    //lecho($view);
     
-    // Pour commencer, on peut garder la logique existante
-    // mais on la déplacera progressivement vers les controllers
-    switch($view) {
-        case 'login':
-            $auth = new AuthController();
-            $data = $auth->login();
-            break;
-        case 'createuser':
-            $userservice = new UserService();
-            $data = $userservice->createUser();
-            break;
-        case 'loadMapData':
-            $mapservice = new MapService();
-            $data = $mapservice->loadMapData();
-            break;
+    // Routes publiques (pas besoin de token)
+    $publicRoutes = [
+        'login' => [AuthController::class, 'login'],
+        'createuser' => [UserService::class, 'createUser']
+    ];
     
-        default:
-            $data = ['status' => 'error', 'message' => 'Invalid endpoint'];
+    // Routes protégées (nécessitent un token valide)
+    $protectedRoutes = [
+        'loadMapData' => [MapService::class, 'loadMapData'],
+        'sendgeolocation' => [MapService::class, 'sendgeolocation'],
+        'userMarkers' => [MapService::class, 'userMarkers'],
+        //'route' => [RouteService::class, 'createRoute'],
+    ];
+    
+    if (isset($publicRoutes[$view])) {
+        // Route publique
+        [$class, $method] = $publicRoutes[$view];
+        $controller = new $class();
+        $data = $controller->$method();
+    } 
+    elseif (isset($protectedRoutes[$view])) {
+        // Route protégée : vérifier le token d'abord
+        $userid = $_POST['userid'] ?? '';
+        $auth = new AuthController();
+        
+        if (!$auth->testToken($userid)) {
+            $data = ['status' => 'error', 'message' => 'Unauthorized. Please login again.'];
+        } else {
+            [$class, $method] = $protectedRoutes[$view];
+            $controller = new $class();
+            $data = $controller->$method();
+        }
+    } 
+    else {
+        $data = ['status' => 'error', 'message' => 'Invalid endpoint'];
     }
     
     echo json_encode($data);

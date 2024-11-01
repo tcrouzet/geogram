@@ -3,13 +3,11 @@
 
 namespace App\Services;
 
-use App\Controllers\AuthController;
 use App\Services\Database;
 use App\Services\RouteService;
 use App\Utils\Tools;
 use App\Services\FilesManager;
-use App\Services\Logger;
-
+use App\Services\Gpx\GpxNearest;
 
 class MapService 
 {
@@ -23,8 +21,6 @@ class MapService
     {
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
-        $this->logger = Logger::getInstance();
-        $this->auth = new AuthController();
         $this->route = new RouteService();
     }
     
@@ -109,5 +105,74 @@ class MapService
         return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson];    
 
     }
+
+    function sendgeolocation(){
+        lecho("sendgeolocation");
+    
+        $userid = $_POST['userid'] ?? '';
+    
+        $routeid = $_POST['routeid'] ?? '';
+        if($routeid<1){
+            return ['status' => 'error', 'message' => 'Route problem'];
+        }
+    
+        $latitude = $_POST['latitude'] ?? '';
+        $longitude = $_POST['longitude'] ?? '';
+    
+        return $this->newlog($userid, $routeid, $latitude, $longitude);
+    
+    }
+    
+    function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = null, $timestamp = null){    
+        lecho("NewLog");
+    
+        $nearest = new GpxNearest($routeid);
+        $point = $nearest->user($latitude, $longitude);
+    
+        if($point){
+            $p = $point['gpxpoint'];
+            $km = round($point['gpxkm']);
+            $dev = round($point['gpxdev']);
+            // $distance = round($point['distance']);
+        }else{
+            $p = -1;
+            $km = 0;
+            $dev = 0;
+        }
+    
+        // Conversion en date au format ISO 8601 (YYYY-MM-DD HH:MM:SS)
+        if($timestamp){
+            $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
+            $insertStmt = $this->db->prepare($insertQuery);
+            $insertStmt->bind_param("iiddiiisii", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $timestamp);
+        }else{
+            $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertStmt = $this->db->prepare($insertQuery);
+            $insertStmt->bind_param("iiddiiisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo);
+        }
+        
+        if ($insertStmt->execute()) {
+            return $this->get_map_data($routeid);
+        }else{
+            return ['status' => 'error', 'message' => 'SQL error'];    
+        }
+    
+        return ['status' => 'error', 'message' => 'Log fail'];    
+    }
+
+    function userMarkers() {
+        lecho("userMarkersN");
+    
+        $loguser = $_POST['loguser'] ?? '';
+        $routeid = $_POST['routeid'] ?? '';
+        $route = $this->route->get_route_by_id($routeid);
+    
+        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ii", $loguser, $routeid);
+    
+        return $this->format_map_data($stmt, $route);
+    }
+    
 
 }
