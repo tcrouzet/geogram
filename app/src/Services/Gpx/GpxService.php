@@ -59,7 +59,7 @@ class GpxService {
         $long=0;
         $lat=0;
         $trackscount=0;
-        $stmt->bind_param('iiddiii', $routeid, $p, $lat, $long, $km, $dev, $trackscount);
+        $stmt->bind_param('iiddiii', $this->routeid, $p, $lat, $long, $km, $dev, $trackscount);
     
         foreach ($file->tracks as $tindex => $track){
     

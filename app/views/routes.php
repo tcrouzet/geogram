@@ -394,7 +394,7 @@ document.addEventListener('alpine:init', () => {
                 formData.append('routeid', routeid);
                 formData.append('photofile', file);
 
-                fetch('backend.php', {
+                fetch('/api/', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${this.user.usertoken}`

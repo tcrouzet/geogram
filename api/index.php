@@ -46,12 +46,13 @@ try {
         'updateroute' => [RouteService::class, 'updateroute'],
         'routeconnect' => [RouteService::class, 'routeconnect'],
         'gpxupload' => [RouteService::class, 'gpxupload'],
+        'routephoto' => [RouteService::class, 'routephoto'],
 
         'updateuser' => [UserService::class, 'updateuser'],
         'userphoto' => [UserService::class, 'userphoto'],
         'userAction' => [UserService::class, 'userAction'],
     ];
-    
+
     if (isset($publicRoutes[$view])) {
         // Route publique
         [$class, $method] = $publicRoutes[$view];

@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Services\Database;
+use App\Services\Gpx\GpxService;
+use App\Services\Gpx\GpxTools;
 use App\Utils\Tools;
 use App\Controllers\AuthController;
 
@@ -218,7 +220,7 @@ class RouteService
         return $insertStmt->execute();
     }
     
-    function updateroute(){
+    public function updateroute(){
     
         $userid = $_POST['userid'] ?? '';    
         $routeid = $_POST['routeid'] ?? '';
@@ -255,7 +257,7 @@ class RouteService
     
     }
 
-    function routeconnect(){
+    public function routeconnect(){
         lecho("routeconnect");
     
         $userid = $_POST['userid'] ?? '';
@@ -278,8 +280,7 @@ class RouteService
         return ['status' => 'error', 'message' => 'Unknown user'];
     }
     
-
-    function gpxupload(){
+    public function gpxupload(){
         lecho("gpxUpload");
     
         $userid = $_POST['userid'] ?? '';
@@ -298,20 +299,68 @@ class RouteService
         if($source){
             if (move_uploaded_file($_FILES['gpxfile']['tmp_name'], $source)) {
     
-                $nimigpx = gpx_minimise($source);
-                $geojson = gpx_geojson($nimigpx);
+                $nimigpx = GpxTools::gpx_minimise($source);
+                $geojson = GpxTools::gpx_geojson($nimigpx);
                 if($geojson){
-                    if ($gpxdata = new_gpx($routeid)){
-                        routeGPX($routeid,1);
+                    $gpxService = new GpxService($routeid);
+                    if ($gpxdata = $gpxService->new_GPX()){
+                        $this->routeGPX($routeid,1);
                         return ['status' => 'success', 'gpx' => $gpxdata];
                     }
                 }
             }
         }
     
-        routeGPX($routeid,0);
+        $this->routeGPX($routeid,0);
         return ['status' => 'error', 'message' => 'Upload fail'];
     
     }
 
+    public function routeGPX($routeid,$value){
+        $stmt = $this->db->prepare("UPDATE routes SET gpx = ? WHERE routeid = ?");
+        $stmt->bind_param("ii", $value, $routeid);
+        if ($stmt->execute())
+            return true;
+        else
+            return false;
+    }
+
+    public function routephoto(){
+        lecho("Route Photo Upload");
+    
+        $userid = $_POST['userid'] ?? '';
+    
+        if (!isset($_FILES['photofile']) || $_FILES['photofile']['error'] !== UPLOAD_ERR_OK) {
+            return ['status' => 'error', 'message' => 'Bad photo file'];
+        }
+    
+        $routeid = $_POST['routeid'] ?? '';
+        if(empty($routeid)){
+            return ['status' => 'error', 'message' => 'Empty route'];
+        }
+    
+       $target = $this->fileManager->route_photo($routeid);
+    
+        if($target){
+            if(Tools::resizeImage($_FILES['photofile']['tmp_name'], $target, 500)){
+                $this->set_route_photo($routeid,1);
+                return ['status' => 'success', 'message' => 'File uploaded successfully'];
+            }else{
+                $this->set_route_photo($routeid,0);
+            }
+        }
+    
+        return ['status' => 'error', 'message' => 'Upload fail'];
+    
+    }
+    
+    public function set_route_photo($routeid,$value){
+        $stmt = $this->db->prepare("UPDATE routes SET routephoto = ? WHERE routeid = ?");
+        $stmt->bind_param("ii", $value, $routeid);
+        if ($stmt->execute())
+            return true;
+        else
+            return false;
+    }
+    
 }

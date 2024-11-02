@@ -222,5 +222,28 @@ class MapService
     
         return ['status' => 'error', 'message' => 'Upload fail'];
     }
+
+    private function random_geoloc(){
+        $latitude = $_POST['latitude'] ?? '';
+        $longitude = $_POST['longitude'] ?? '';
+    
+        // Rayon de variation en kilomètres
+        $radius = 150;
+    
+        // Convertir le rayon en degrés
+        $lat_variation = $radius / 111; // 1 degré de latitude ~ 111 km
+        $lon_variation = $radius / (111 * cos(deg2rad($latitude))); // Ajustement longitude
+    
+        // Générer une variation aléatoire
+        $random_lat_offset = (mt_rand() / mt_getrandmax() - 0.5) * 2 * $lat_variation;
+        $random_lon_offset = (mt_rand() / mt_getrandmax() - 0.5) * 2 * $lon_variation;
+    
+        // Appliquer la variation
+        $new_latitude = $latitude + $random_lat_offset;
+        $new_longitude = $longitude + $random_lon_offset;
+    
+        // Afficher les nouvelles valeurs
+        return [$new_latitude, $new_longitude];
+    }
     
 }
