@@ -10,10 +10,15 @@ use Exception;
 class AuthController {
     private $db;
     private $FilesManager;
+    private $error = false;
     
     public function __construct() {
         $this->db = Database::getInstance()->getConnection();
         $this->FilesManager = new FilesManager();
+    }
+
+    public function getError() {
+        return $this->error;
     }
     
     public function login(){

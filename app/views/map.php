@@ -67,6 +67,16 @@
 
         </template>
 
+        <!-- Ajouter dans votre template -->
+        <div x-show="showCommentModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <textarea x-model="commentText" placeholder="Your comment..." rows="4"></textarea>
+                <div class="modal-buttons">
+                    <button @click="submitComment()">Send</button>
+                    <button @click="showCommentModal = false">Cansel</button>
+                </div>
+            </div>
+        </div>
 
     </main>
 
@@ -94,6 +104,10 @@ document.addEventListener('alpine:init', () => {
         mapMode: true,
         uploading: false,
         newPhoto: false,
+        // Comments
+        showCommentModal: false,
+        commentText: '',
+        currentLogId: null,
 
         
         init(){
@@ -275,23 +289,81 @@ document.addEventListener('alpine:init', () => {
         },
 
         markerPopup(marker, entry){
+            console.log(entry);
+
+            const commentButton = entry.loguser === this.userid ? 
+                `<button @click="addComment(${entry.logid})">
+                    ${entry.logcomment ? 'Edit comment' : 'Add comment'}
+                </button>` : '';
+ 
             const popupContent = this.mapMode ? 
                 `<div class="geoPopup">
                     <h3>${entry.username_formatted}</h3>
                     ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
+                    ${entry.logcomment ? `<p class="commentText">${entry.logcomment}</p>` : ''}
                     <div class="popup-actions">
+                        ${commentButton}
                         <button @click="userMarkers(${entry.userid})">Map history</button>
                     </div>
                 </div>` :
                 `<div class="geoPopup">
                     <h3>${entry.username_formatted}</h3>
                     ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
+                    ${entry.logcomment ? `<p class="commentText">${entry.logcomment}</p>` : ''}
                     <div class="popup-actions">
+                        ${commentButton}
                         <button @click="loadMapData()">All Users</button>
                     </div>
                 </div>`;
                       
             marker.bindPopup(popupContent,{className: 'custom-popup-content'});
+        },
+
+        addComment(logId) {
+            this.currentLogId = logId;
+            const entry = this.logs.find(log => log.logid === logId);
+            if (entry) {
+                this.commentText = entry.logcomment || '';
+            }
+            this.showCommentModal = true;
+        },
+
+        submitComment() {
+            if (this.commentText.trim() === '') {
+                alert('Le commentaire ne peut pas être vide');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('view', 'submitComment');
+            formData.append('logid', this.currentLogId);
+            formData.append('comment', this.commentText);
+            formData.append('userid', this.userid);
+            formData.append('routeid', this.routeid);
+            
+            fetch('/api/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${this.usertoken}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    this.mapMode = false;
+                    //this.newPhoto = true;
+                    this.logs = data.logs;
+                    this.showCommentModal = false;
+                    this.showPhoto();
+                } else {
+                    console.log('Erreur : ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erreur lors de l\'ajout du commentaire');
+            });
         },
 
         updateGPX() {
@@ -746,6 +818,7 @@ document.addEventListener('alpine:init', () => {
                     .then(data => {
                         if (data.status === 'success') {
                             this.newPhoto = true;
+                            this.mapMode = false;
                             this.logs = data.logs;
                             return true;
                         } else {
@@ -788,7 +861,6 @@ document.addEventListener('alpine:init', () => {
 
                 if (userMarker) {
                     console.log("showPhoto2", userMarker);
-                    //this.markerPopup(userMarker, latestLog);
                     userMarker.openPopup();
                 }
             }

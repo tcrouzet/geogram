@@ -14,12 +14,17 @@ class RouteService
     private $db;
     private $fileManager;
     private $auth;
+    private $error = false;
     
     public function __construct() 
     {
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
         $this->auth = new AuthController();
+    }
+
+    public function getError() {
+        return $this->error;
     }
 
     public function getroutes(): array

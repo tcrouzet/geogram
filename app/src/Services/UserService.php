@@ -12,12 +12,17 @@ class UserService
     private $db;
     private $auth;
     private $fileManager;
+    private $error = false;
     
     public function __construct() 
     {
         $this->db = Database::getInstance()->getConnection();
         $this->auth = new AuthController();
         $this->fileManager = new FilesManager();
+    }
+
+    public function getError() {
+        return $this->error;
     }
 
     public function createUser(){

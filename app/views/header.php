@@ -1,7 +1,7 @@
 <!-- Section Top -->
 <header x-data="headerComponent()">
 
-    <div id="geogram"><a href="/"><img src="/images/geogram-logo-2.svg" alt="Geogram"></a></div>
+    <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo-2.svg" alt="Geogram"></a></div>
 
     <div id="routename">
         <template x-if="route && route.routename">

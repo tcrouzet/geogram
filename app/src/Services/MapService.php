@@ -14,36 +14,30 @@ class MapService
     private $db;
     private $fileManager;
     private $route;
+    private $routeid;
+    private $error = false;
     
     public function __construct() 
     {
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
         $this->route = new RouteService();
+
+        $this->routeid = $_POST['routeid'] ?? '';
+        if ($this->routeid < 1) {
+            $this->error = ['status' => 'error', 'message' => "Route $this->routeid error"];
+        }
+    }
+
+    public function getError() {
+        return $this->error;
     }
     
-    function loadMapData(){
-
-        //$routestatus = $_POST['routestatus'] ?? '';
-        $routeid = $_POST['routeid'] ?? '';
-        //$userroute = $_POST['userroute'] ?? '';
-
-        // if($routestatus >1 ){
-        //     //Private route
-        //     $userid = $_POST['userid'] ?? '';
-        //     if (!$this->auth->testToken($userid)){
-        //         return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
-        //     }
-        //     if ($routeid != $userroute){
-        //         return ['status' => 'error', 'message' => "User $userid (on route:$userroute) not connected to this route $routeid (status:$routestatus)"];
-        //     }
-        // }
-
-        return $this->get_map_data($routeid);
-
+    public function loadMapData(){
+        return $this->get_map_data($this->routeid);
     }
 
-    function get_map_data($routeid){
+    public function get_map_data($routeid){
 
         $route = $this->route->get_route_by_id($routeid);
 
@@ -72,7 +66,7 @@ class MapService
                     WHERE logroute = ?
                     GROUP BY loguser
                 )
-                ORDER BY rlogs.logtime DESC;";
+                ORDER BY rlogs.logtime ASC;";
 
             $stmt = $this->db->prepare($query);
             $stmt->bind_param("ii", $routeid, $routeid);
@@ -81,7 +75,7 @@ class MapService
         return $this->format_map_data($stmt, $route); 
     }
 
-    function format_map_data($stmt, $route){
+    public function format_map_data($stmt, $route){
         lecho("format_map_data");
         $stmt->execute();
         if($result = $stmt->get_result()){
@@ -107,27 +101,22 @@ class MapService
 
     }
 
-    function sendgeolocation(){
+    public function sendgeolocation(){
         lecho("sendgeolocation");
     
         $userid = $_POST['userid'] ?? '';
-        $routeid = $_POST['routeid'] ?? '';
-        if($routeid<1){
-            return ['status' => 'error', 'message' => 'Route problem'];
-        }
-    
         $latitude = $_POST['latitude'] ?? '';
         $longitude = $_POST['longitude'] ?? '';
         // lecho($latitude,  $longitude);
     
-        if ($this->newlog($userid, $routeid, $latitude, $longitude)){
-            return $this->get_map_data($routeid);
+        if ($this->newlog($userid, $this->routeid, $latitude, $longitude)){
+            return $this->get_map_data($this->routeid);
         }
         
         return ['status' => 'error', 'message' => 'Newlog error'];
     }
     
-    function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null){    
+    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null){    
         lecho("NewLog");
     
         $nearest = new GpxNearest($routeid);
@@ -166,26 +155,25 @@ class MapService
         return false;
     }
 
-    function userMarkers() {
+    public function userMarkers() {
         lecho("userMarkersN");
     
         $loguser = $_POST['loguser'] ?? '';
-        $routeid = $_POST['routeid'] ?? '';
-        return $this->get_userMarkers($loguser, $routeid);
+        return $this->get_userMarkers($loguser, $this->routeid);
 
     }
 
-    function get_userMarkers($userid, $routeid) {
+    public function get_userMarkers($userid, $routeid) {
         $route = $this->route->get_route_by_id($routeid);
     
-        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ? ORDER BY l.loginsertime ASC";
+        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ? ORDER BY l.logupdate ASC";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ii", $userid, $routeid);
     
         return $this->format_map_data($stmt, $route);
     }
 
-    function logphoto(){
+    public function logphoto(){
         lecho("Route Photo Upload2");
         //lecho($_POST);
     
@@ -196,25 +184,20 @@ class MapService
         if(empty($latitude) || empty($longitude) || empty($timestamp)){
             return ['status' => 'error', 'message' => 'GPS error'];
         }
-    
-        $routeid = $_POST['routeid'] ?? '';
-        if(empty($routeid)){
-            return ['status' => 'error', 'message' => 'Empty route'];
-        }
-    
+        
         $photofile = $_POST['photofile'] ?? '';
         if(empty($photofile)) {
             return ['status' => 'error', 'message' => 'Bad photo file'];
         }
         $photosource = Tools::photo64decode($photofile);
         
-        $target = $this->fileManager->user_route_photo($userid, $routeid, $timestamp);
+        $target = $this->fileManager->user_route_photo($userid, $this->routeid, $timestamp);
         //lecho($target);
     
         if($target){
             if(Tools::resizeImage($photosource, $target, 1200)){
-                if($this->newlog($userid, $routeid, $latitude, $longitude, null, $timestamp, $timestamp)){
-                    return $this->get_userMarkers($userid, $routeid);
+                if($this->newlog($userid, $this->routeid, $latitude, $longitude, null, $timestamp, $timestamp)){
+                    return $this->get_userMarkers($userid, $this->routeid);
                 }
             }
             lecho("resizeFail");
@@ -245,5 +228,17 @@ class MapService
         // Afficher les nouvelles valeurs
         return [$new_latitude, $new_longitude];
     }
-    
+
+    public function submitComment(){
+        $userid = $_POST['userid'] ?? '';
+        $logid = $_POST['logid'] ?? '';
+        $comment = $_POST['comment'] ?? '';
+        $stmt = $this->db->prepare("UPDATE rlogs SET logcomment = ? WHERE logid = ?");
+        $stmt->bind_param("si", $comment, $logid);
+        if ($stmt->execute()){
+            return $this->get_userMarkers($userid, $this->routeid);
+        }
+        return ['status' => 'error', 'message' => 'Comment error'];
+    }
+
 }

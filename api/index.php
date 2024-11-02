@@ -38,7 +38,8 @@ try {
     // Routes protégées (nécessitent un token valide)
     $protectedRoutes = [
         'sendgeolocation' => [MapService::class, 'sendgeolocation'],
-        'logphoto'  => [MapService::class, 'logphoto'],
+        'logphoto' => [MapService::class, 'logphoto'],
+        'submitComment' => [MapService::class, 'submitComment'],
         
         'getroutes' => [RouteService::class, 'getroutes'],
         'routeAction' => [RouteService::class, 'routeAction'],
@@ -57,7 +58,11 @@ try {
         // Route publique
         [$class, $method] = $publicRoutes[$view];
         $controller = new $class();
-        $data = $controller->$method();
+        if ($response = $controller->getError()) {
+            $data = $response;
+        } else {
+            $data = $controller->$method();
+        }
     } 
     elseif (isset($protectedRoutes[$view])) {
         // Route protégée : vérifier le token d'abord
@@ -69,7 +74,11 @@ try {
         } else {
             [$class, $method] = $protectedRoutes[$view];
             $controller = new $class();
-            $data = $controller->$method();
+            if ($response = $controller->getError()) {
+                $data = $response;
+            } else {
+                $data = $controller->$method();
+            }
         }
     } 
     else {
