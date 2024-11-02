@@ -4,23 +4,16 @@ namespace App\Services;
 
 use App\Controllers\AuthController;
 use App\Services\Database;
-use App\Utils\Logger;
-
 
 class UserService 
 {
     private $db;
-    private $fileManager;
-    private $logger;
     private $auth;
     
     public function __construct() 
     {
         $this->db = Database::getInstance()->getConnection();
-        $this->fileManager = new FilesManager();
-        $this->logger = Logger::getInstance();
         $this->auth = new AuthController();
-
     }
 
     public function createUser(){
@@ -118,4 +111,13 @@ class UserService
         $insertStmt->bind_param("iii", $routeid, $userid, $status);
         return $insertStmt->execute();
     }
+
+    public function delete_user($userid){
+        $query = "DELETE FROM users WHERE userid=?;";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $userid);
+        $stmt->execute();
+        return $this->db->affected_rows;
+    }
+
 }

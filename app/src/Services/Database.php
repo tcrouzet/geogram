@@ -25,12 +25,4 @@ class Database {
         return $this->db;
     }
 
-    public function delete_user($userid){
-        $query = "DELETE FROM users WHERE userid=?;";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $userid);
-        $stmt->execute();
-        return $this->db->affected_rows;
-    }
-
 }

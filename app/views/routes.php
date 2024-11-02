@@ -1,7 +1,3 @@
-<?php
-html_header( "Geogram routes" );
-?>
-
 <div id="page">
 
     <?php include 'header.php'; ?>
@@ -66,7 +62,7 @@ html_header( "Geogram routes" );
                                     </button>
                                 </div>
             
-                                <label>Route image (JPEG only):</label>
+                                <br/><label>Route image (JPEG only):</label>
                                 <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
                                 <div x-show="photoError" class="error-message" x-text="photoError"></div>
                                 <div class="input-group" x-show="photoPreview || route.photopath">
@@ -103,10 +99,6 @@ html_header( "Geogram routes" );
     </main>
 
 </div>
-
-<?php
-html_footer();
-?>
 
 <script>
 document.addEventListener('alpine:init', () => {
@@ -149,7 +141,7 @@ document.addEventListener('alpine:init', () => {
 
             // console.log(formData.toString());
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -303,7 +295,7 @@ document.addEventListener('alpine:init', () => {
                     return;
             }
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

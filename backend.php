@@ -41,7 +41,7 @@ if($view == "login") {
 }elseif($view == "route") {
     $data = new_route();
 }elseif($view == "getroutes") {
-    $data = getroutes();
+//    $data = getroutes();
 }elseif($view == "updateroute"){
     $data = updateroute();
 }elseif($view == "gpxupload"){
@@ -479,44 +479,6 @@ function routeconnect(){
     return ['status' => 'error', 'message' => 'Unknown user'];
 }
 
-function routeAction(){
-
-    lecho("routeAction");
-
-    $userid = $_POST['userid'] ?? '';
-    lecho("updateuser", $userid);
-    if (!testToken($userid)){
-        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
-    }
-
-    $routeid = intval($_POST['routeid'] ?? '');
-    $action = $_POST['action'] ?? '';
-
-    // lecho($_POST);
-    // lecho($action);
-
-    if($action == "purgeroute"){
-        $message = delete_all_logs($routeid);
-    }else{
-        return ['status' => 'error', 'message' => "Unknown action: $action"];        
-    }
-
-    if($message)
-        return ['status' => 'success', 'message' => "Action $action done"];
-    else
-        return ['status' => 'error', 'message' => "Action $action fail"];
-}
-
-function delete_all_logs($routeid){
-    global $mysqli;
-    $stmt = $mysqli->prepare("DELETE FROM rlogs WHERE logroute=?");
-    $stmt->bind_param("i", $routeid);
-    if ($stmt->execute())
-        return true;
-    else
-        return false;
-}
-
 function userAction(){
     lecho("userAction");
 
@@ -783,36 +745,7 @@ function logphoto(){
 
 }
 
-function getroutes(){
-    global $mysqli;
 
-    lecho("getroutes");
-
-    $userid = $_POST['userid'] ?? '';
-    if (!testToken($userid)){
-        return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
-    }
-
-    //lecho("userid",$userid);
-
-    $query = "SELECT * FROM connectors c INNER JOIN routes r ON c.conrouteid = r.routeid WHERE c.conuserid = ?;";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("i", $userid);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $routes = $result->fetch_all(MYSQLI_ASSOC);
-
-    //lecho($routes);
-
-    $filemanager = new FileManager();
-
-    foreach ($routes as &$route) {
-        $route['photopath'] = $filemanager->route_photo_web($route);
-    }
-
-    return $routes;
-
-}
 
 function generateToken($userid) {
     $payload = [

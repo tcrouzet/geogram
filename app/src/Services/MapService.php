@@ -110,7 +110,6 @@ class MapService
         lecho("sendgeolocation");
     
         $userid = $_POST['userid'] ?? '';
-    
         $routeid = $_POST['routeid'] ?? '';
         if($routeid<1){
             return ['status' => 'error', 'message' => 'Route problem'];
@@ -118,6 +117,8 @@ class MapService
     
         $latitude = $_POST['latitude'] ?? '';
         $longitude = $_POST['longitude'] ?? '';
+
+        lecho($latitude,  $longitude);
     
         return $this->newlog($userid, $routeid, $latitude, $longitude);
     

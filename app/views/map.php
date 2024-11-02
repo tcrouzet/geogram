@@ -1,7 +1,3 @@
-<?php
-html_header( "Map" );
-?>
-
 <div id="page">
 
     <?php include 'header.php'; ?>
@@ -75,9 +71,6 @@ html_header( "Map" );
     </main>
 
 </div>
-<?php
-html_footer();
-?>
 
 <script>
 

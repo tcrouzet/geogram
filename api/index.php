@@ -5,6 +5,7 @@ require_once '../app/config/config.php';
 use App\Controllers\AuthController;
 use App\Services\UserService;
 use App\Services\MapService;
+use App\Services\RouteService;
 
 $logger = \App\Utils\Logger::getInstance();
 
@@ -25,7 +26,6 @@ header('Content-Type: application/json');
 
 try {
     $view = $_POST['view'] ?? '';
-    //lecho($view);
     
     // Routes publiques (pas besoin de token)
     $publicRoutes = [
@@ -38,7 +38,8 @@ try {
         'loadMapData' => [MapService::class, 'loadMapData'],
         'sendgeolocation' => [MapService::class, 'sendgeolocation'],
         'userMarkers' => [MapService::class, 'userMarkers'],
-        //'route' => [RouteService::class, 'createRoute'],
+        'getroutes' => [RouteService::class, 'getroutes'],
+        'routeAction' => [RouteService::class, 'routeAction'],
     ];
     
     if (isset($publicRoutes[$view])) {

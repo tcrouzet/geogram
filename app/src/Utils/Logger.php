@@ -156,17 +156,16 @@ class Logger
                 throw new \RuntimeException("LogError: " . $error['message']);
             }
         }
+        unset($this->logBuffer);
     }    
     
-    public function exit(...$args): never 
-    {
+
+    public function lexit(): never {
         $endTime = microtime(true);
         $executionTime = $endTime - $this->startTime;
         $mydate = trim(date("d.m.y H:i", time())) . " (" . number_format($executionTime, 4) . ")";
         
-        array_unshift($args, $mydate);
-        array_push($args, "\n---\n");
-        $this->log(...$args);
+        $this->log($mydate . "\n---\n");
         
         $this->flushBuffer();
         http_response_code(200);

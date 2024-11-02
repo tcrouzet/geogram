@@ -5,9 +5,9 @@ function lecho(...$args): void
     \App\Utils\Logger::getInstance()->log(...$args);
 }
 
-function lexit(...$args): never 
+function lexit(): never 
 {
-    \App\Utils\Logger::getInstance()->exit(...$args);
+    \App\Utils\Logger::getInstance()->lexit();
 }
 
 function virtual_finish(): void 
