@@ -156,7 +156,6 @@ document.addEventListener('alpine:init', () => {
                     this.action_fitall();
                     if(this.newPhoto){
                         this.showPhoto();
-                        this.newPhoto = false;
                     }
                 }
                 console.log("End new log");
@@ -289,7 +288,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         markerPopup(marker, entry){
-            console.log(entry);
+            //console.log(entry);
 
             const commentButton = entry.loguser === this.userid ? 
                 `<button @click="addComment(${entry.logid})">
@@ -352,10 +351,10 @@ document.addEventListener('alpine:init', () => {
             .then(data => {
                 if (data.status === 'success') {
                     this.mapMode = false;
-                    //this.newPhoto = true;
-                    this.logs = data.logs;
                     this.showCommentModal = false;
-                    this.showPhoto();
+                    this.newPhoto = true;
+                    this.logs = data.logs;
+                    //this.showPhoto();
                 } else {
                     console.log('Erreur : ' + data.message);
                 }
@@ -842,25 +841,26 @@ document.addEventListener('alpine:init', () => {
 
         showPhoto() {
             console.log("showPhoto");
+            this.newPhoto = false;
             
             // Trouver le log le plus récent
             const latestLog = this.logs.reduce((latest, current) => {
-                return (!latest || current.logtime > latest.logtime) ? current : latest;
+                return (!latest || current.logupdate > latest.logupdate) ? current : latest;
             }, null);
 
 
             if (latestLog) {
-                console.log("showPhoto1",latestLog);
+                //console.log("showPhoto1",latestLog);
                 // Trouver le marker correspondant
                 const userMarker = this.cursors.find(marker => 
                     marker.getLatLng().lat === latestLog.loglatitude && 
                     marker.getLatLng().lng === latestLog.loglongitude
                 );
 
-                console.log("marker",userMarker);
+                //console.log("marker",userMarker);
 
                 if (userMarker) {
-                    console.log("showPhoto2", userMarker);
+                    //console.log("showPhoto2", userMarker);
                     userMarker.openPopup();
                 }
             }
