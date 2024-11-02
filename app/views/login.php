@@ -1,7 +1,3 @@
-<?php
-html_header( "Geogram login" );
-?>
-
 <div id="page">
 
     <?php include 'header.php'; ?>
@@ -185,13 +181,8 @@ document.addEventListener('alpine:init', () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
-                //return response.text(); // testing
                 return response.json();
             })
-            // .then(text => {
-            //     console.log("Raw Response Text:", text);
-            //     return JSON.parse(text);
-            // })
             .then(data => {
                 //console.log(data);
                 if (data.status === 'success') {
@@ -217,7 +208,7 @@ document.addEventListener('alpine:init', () => {
             formData.append('email', this.email);
             formData.append('password', this.password);
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -250,7 +241,7 @@ document.addEventListener('alpine:init', () => {
 
         updateUser() {
             // Envoyer une requête pour mettre à jour la route
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -305,7 +296,7 @@ document.addEventListener('alpine:init', () => {
                 formData.append('userid', this.user.userid);
                 formData.append('photofile', file);
 
-                fetch('backend.php', {
+                fetch('/api/', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${this.user.usertoken}`
@@ -342,7 +333,7 @@ document.addEventListener('alpine:init', () => {
                     return;
             }
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

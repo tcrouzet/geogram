@@ -13,8 +13,6 @@ class MapService
 {
     private $db;
     private $fileManager;
-    private $logger;
-    private $auth;
     private $route;
     
     public function __construct() 
@@ -26,20 +24,20 @@ class MapService
     
     function loadMapData(){
 
-        $routestatus = $_POST['routestatus'] ?? '';
+        //$routestatus = $_POST['routestatus'] ?? '';
         $routeid = $_POST['routeid'] ?? '';
-        $userroute = $_POST['userroute'] ?? '';
+        //$userroute = $_POST['userroute'] ?? '';
 
-        if($routestatus >1 ){
-            //Private route
-            $userid = $_POST['userid'] ?? '';
-            if (!$this->auth->testToken($userid)){
-                return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
-            }
-            if ($routeid != $userroute){
-                return ['status' => 'error', 'message' => "User $userid (on route:$userroute) not connected to this route $routeid (status:$routestatus)"];
-            }
-        }
+        // if($routestatus >1 ){
+        //     //Private route
+        //     $userid = $_POST['userid'] ?? '';
+        //     if (!$this->auth->testToken($userid)){
+        //         return ['status' => 'error', 'message' => 'Bad token, please reconnect'];
+        //     }
+        //     if ($routeid != $userroute){
+        //         return ['status' => 'error', 'message' => "User $userid (on route:$userroute) not connected to this route $routeid (status:$routestatus)"];
+        //     }
+        // }
 
         return $this->get_map_data($routeid);
 
@@ -86,23 +84,26 @@ class MapService
     function format_map_data($stmt, $route){
         lecho("format_map_data");
         $stmt->execute();
-        $result = $stmt->get_result();
-        $logs = $result->fetch_all(MYSQLI_ASSOC);
-        //lecho($logs);
+        if($result = $stmt->get_result()){
+            $logs = $result->fetch_all(MYSQLI_ASSOC);
+            //lecho($logs);
 
-        $geojson = $this->fileManager->route_geojson_web($route);
+            $geojson = $this->fileManager->route_geojson_web($route);
 
-        foreach ($logs as &$row) {
-            //lecho("Routetime", $row["logtime"]);
-            $row['logkm_km'] = Tools::meters_to_distance($row["logkm"], $route, false);
-            $row['username_formatted'] = $row['username'] . "<br/>" . Tools::MyDateFormat($row['logtime'],$route) . "<br/>" . Tools::meters_to_distance($row["logkm"], $route);
-            $row['photopath'] = $this->fileManager->user_photo_web($row);
-            $row['photolog'] = $this->fileManager->user_route_photo_web($row);
-            //lecho($row['photopath']);
+            foreach ($logs as &$row) {
+                //lecho("Routetime", $row["logtime"]);
+                $row['logkm_km'] = Tools::meters_to_distance($row["logkm"], $route, false);
+                $row['username_formatted'] = $row['username'] . "<br/>" . Tools::MyDateFormat($row['logtime'],$route) . "<br/>" . Tools::meters_to_distance($row["logkm"], $route);
+                $row['photopath'] = $this->fileManager->user_photo_web($row);
+                $row['photolog'] = $this->fileManager->user_route_photo_web($row);
+                lecho($row['photopath']);
+            }
+
+            //lecho($logs);
+            return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson];
+        }else{
+            return ['status' => 'error', 'message' => 'Map format fail'];
         }
-
-        //lecho($logs);
-        return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson];    
 
     }
 
@@ -117,18 +118,21 @@ class MapService
     
         $latitude = $_POST['latitude'] ?? '';
         $longitude = $_POST['longitude'] ?? '';
-
-        lecho($latitude,  $longitude);
+        // lecho($latitude,  $longitude);
     
-        return $this->newlog($userid, $routeid, $latitude, $longitude);
-    
+        if ($this->newlog($userid, $routeid, $latitude, $longitude)){
+            return $this->get_map_data($routeid);
+        }
+        
+        return ['status' => 'error', 'message' => 'Newlog error'];
     }
     
-    function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = null, $timestamp = null){    
+    function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null){    
         lecho("NewLog");
     
         $nearest = new GpxNearest($routeid);
         $point = $nearest->user($latitude, $longitude);
+        // lecho($point);
     
         if($point){
             $p = $point['gpxpoint'];
@@ -147,18 +151,19 @@ class MapService
             $insertStmt = $this->db->prepare($insertQuery);
             $insertStmt->bind_param("iiddiiisii", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $timestamp);
         }else{
+            // lecho("No timestamp");
             $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertStmt = $this->db->prepare($insertQuery);
             $insertStmt->bind_param("iiddiiisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo);
         }
         
-        if ($insertStmt->execute()) {
-            return $this->get_map_data($routeid);
-        }else{
-            return ['status' => 'error', 'message' => 'SQL error'];    
+        if ($insertStmt->execute() &&  $insertStmt->affected_rows > 0) {
+            return true;
         }
-    
-        return ['status' => 'error', 'message' => 'Log fail'];    
+        // lecho($insertStmt->error);
+        // lecho($insertStmt->sqlstate);
+        // lecho($insertStmt->errno);
+        return false;
     }
 
     function userMarkers() {
@@ -166,14 +171,56 @@ class MapService
     
         $loguser = $_POST['loguser'] ?? '';
         $routeid = $_POST['routeid'] ?? '';
+        return $this->get_userMarkers($loguser, $routeid);
+
+    }
+
+    function get_userMarkers($userid, $routeid) {
         $route = $this->route->get_route_by_id($routeid);
     
-        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ?";
+        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ? ORDER BY l.loginsertime ASC";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $loguser, $routeid);
+        $stmt->bind_param("ii", $userid, $routeid);
     
         return $this->format_map_data($stmt, $route);
     }
-    
 
+    function logphoto(){
+        lecho("Route Photo Upload2");
+        //lecho($_POST);
+    
+        $userid = $_POST['userid'] ?? '';
+        $latitude = $_POST['latitude'] ?? '';
+        $longitude = $_POST['longitude'] ?? '';
+        $timestamp = $_POST['timestamp'] ?? '';
+        if(empty($latitude) || empty($longitude) || empty($timestamp)){
+            return ['status' => 'error', 'message' => 'GPS error'];
+        }
+    
+        $routeid = $_POST['routeid'] ?? '';
+        if(empty($routeid)){
+            return ['status' => 'error', 'message' => 'Empty route'];
+        }
+    
+        $photofile = $_POST['photofile'] ?? '';
+        if(empty($photofile)) {
+            return ['status' => 'error', 'message' => 'Bad photo file'];
+        }
+        $photosource = Tools::photo64decode($photofile);
+        
+        $target = $this->fileManager->user_route_photo($userid, $routeid, $timestamp);
+        //lecho($target);
+    
+        if($target){
+            if(Tools::resizeImage($photosource, $target, 1200)){
+                if($this->newlog($userid, $routeid, $latitude, $longitude, null, $timestamp, $timestamp)){
+                    return $this->get_userMarkers($userid, $routeid);
+                }
+            }
+            lecho("resizeFail");
+        }
+    
+        return ['status' => 'error', 'message' => 'Upload fail'];
+    }
+    
 }

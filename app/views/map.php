@@ -93,6 +93,7 @@ document.addEventListener('alpine:init', () => {
         bestPosition: null,
         mapMode: true,
         uploading: false,
+        newPhoto: false,
 
         
         init(){
@@ -139,6 +140,10 @@ document.addEventListener('alpine:init', () => {
                 if(this.viewMode === 'map'){
                     this.updateMarkers(newLogs);
                     this.action_fitall();
+                    if(this.newPhoto){
+                        this.showPhoto();
+                        this.newPhoto = false;
+                    }
                 }
                 console.log("End new log");
             });
@@ -725,7 +730,7 @@ document.addEventListener('alpine:init', () => {
                         return false;
                     }
 
-                    fetch('backend.php', {
+                    fetch('/api/', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.user.usertoken}`
@@ -740,8 +745,8 @@ document.addEventListener('alpine:init', () => {
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
+                            this.newPhoto = true;
                             this.logs = data.logs;
-                            this.showPhoto();
                             return true;
                         } else {
                             alert(data.message);
@@ -762,22 +767,30 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        showPhoto(){
+        showPhoto() {
             console.log("showPhoto");
-            const userMarker = this.cursors.find(marker => {
-                // Recherche de l'entrée correspondante dans les logs
-                const entry = this.logs.find(log => log.userid === this.user.userid);
-                return marker.getLatLng().lat === entry.loglatitude && 
-                    marker.getLatLng().lng === entry.loglongitude;
-            });
+            
+            // Trouver le log le plus récent
+            const latestLog = this.logs.reduce((latest, current) => {
+                return (!latest || current.logtime > latest.logtime) ? current : latest;
+            }, null);
 
-            if (userMarker) {
-                console.log("showPhoto2");
-                // Recherche de l'entrée correspondante dans les logs pour la mise à jour du popup
-                const entry = this.logs.find(log => log.userid === this.user.userid);
-                this.markerPopup(userMarker, entry);
-                // Ouvre le popup immédiatement
-                userMarker.openPopup();
+
+            if (latestLog) {
+                console.log("showPhoto1",latestLog);
+                // Trouver le marker correspondant
+                const userMarker = this.cursors.find(marker => 
+                    marker.getLatLng().lat === latestLog.loglatitude && 
+                    marker.getLatLng().lng === latestLog.loglongitude
+                );
+
+                console.log("marker",userMarker);
+
+                if (userMarker) {
+                    console.log("showPhoto2", userMarker);
+                    //this.markerPopup(userMarker, latestLog);
+                    userMarker.openPopup();
+                }
             }
         }
 

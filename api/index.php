@@ -30,16 +30,26 @@ try {
     // Routes publiques (pas besoin de token)
     $publicRoutes = [
         'login' => [AuthController::class, 'login'],
-        'createuser' => [UserService::class, 'createUser']
+        'createuser' => [UserService::class, 'createUser'],
+        'loadMapData' => [MapService::class, 'loadMapData'],
+        'userMarkers' => [MapService::class, 'userMarkers'],
     ];
     
     // Routes protégées (nécessitent un token valide)
     $protectedRoutes = [
-        'loadMapData' => [MapService::class, 'loadMapData'],
         'sendgeolocation' => [MapService::class, 'sendgeolocation'],
-        'userMarkers' => [MapService::class, 'userMarkers'],
+        'logphoto'  => [MapService::class, 'logphoto'],
+        
         'getroutes' => [RouteService::class, 'getroutes'],
         'routeAction' => [RouteService::class, 'routeAction'],
+        'newRoute' => [RouteService::class, 'newRoute'],
+        'updateroute' => [RouteService::class, 'updateroute'],
+        'routeconnect' => [RouteService::class, 'routeconnect'],
+        'gpxupload' => [RouteService::class, 'gpxupload'],
+
+        'updateuser' => [UserService::class, 'updateuser'],
+        'userphoto' => [UserService::class, 'userphoto'],
+        'userAction' => [UserService::class, 'userAction'],
     ];
     
     if (isset($publicRoutes[$view])) {
@@ -62,7 +72,7 @@ try {
         }
     } 
     else {
-        $data = ['status' => 'error', 'message' => 'Invalid endpoint'];
+        $data = ['status' => 'error', 'message' => "Invalid endpoint... $view"];
     }
     
     echo json_encode($data);

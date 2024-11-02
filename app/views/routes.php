@@ -195,14 +195,14 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
-                    view: "route",
+                    view: "newRoute",
                     userid: this.user.userid,
                     routename: this.routename
                 })
@@ -226,7 +226,7 @@ document.addEventListener('alpine:init', () => {
 
         updateRoute(route) {
             // Envoyer une requête pour mettre à jour la route
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -260,7 +260,7 @@ document.addEventListener('alpine:init', () => {
         toggleConnect(routeid) {
             // Envoyer une requête pour mettre à jour la route
             console.log("connect",routeid);
-            fetch('backend.php', {
+            fetch('/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -342,7 +342,7 @@ document.addEventListener('alpine:init', () => {
                 formData.append('routeid', routeid);
                 formData.append('gpxfile', file);
 
-                fetch('backend.php', {
+                fetch('/api/', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${this.user.usertoken}`

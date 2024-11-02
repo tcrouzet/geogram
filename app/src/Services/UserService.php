@@ -4,16 +4,20 @@ namespace App\Services;
 
 use App\Controllers\AuthController;
 use App\Services\Database;
+use App\Utils\Tools;
+use App\Services\FilesManager;
 
 class UserService 
 {
     private $db;
     private $auth;
+    private $fileManager;
     
     public function __construct() 
     {
         $this->db = Database::getInstance()->getConnection();
         $this->auth = new AuthController();
+        $this->fileManager = new FilesManager();
     }
 
     public function createUser(){
@@ -120,4 +124,96 @@ class UserService
         return $this->db->affected_rows;
     }
 
+    public function updateuser(){
+    
+        $userid = $_POST['userid'] ?? '';
+        $username = $_POST['username'] ?? '';
+        $useremail = $_POST['useremail'] ?? '';
+        lecho($useremail);
+    
+        if ($user = $this->auth->get_user($userid)) {
+    
+            $user['username'] = $username;
+            $user['useremail'] = $useremail;
+            unset($user['userpsw']);
+    
+            $stmt = $this->db->prepare("UPDATE users SET username = ? WHERE userid = ?");
+            $stmt->bind_param("si", $username, $userid);
+            if ($stmt->execute())
+               return ['status' => 'success', 'user' => $user];
+            else
+                return ['status' => 'error', 'message' => 'Update fail'];
+    
+        }
+    
+        return ['status' => 'error', 'message' => 'Unknown user'];
+    
+    }
+
+    public function userphoto(){
+        lecho("userphoto");
+    
+        $userid = $_POST['userid'] ?? '';
+    
+        if (!isset($_FILES['photofile']) || $_FILES['photofile']['error'] !== UPLOAD_ERR_OK) {
+            return ['status' => 'error', 'message' => 'Bad photo file'];
+        }
+    
+        $target = $this->fileManager->user_photo($userid);
+    
+        if($target){
+            if(Tools::resizeImage($_FILES['photofile']['tmp_name'], $target, 500)){
+                $this->set_user_photo($userid,1);
+                return ['status' => 'success', 'message' => 'File uploaded successfully'];
+            }else{
+                $this->set_user_photo($userid,0);
+            }
+        }
+    
+        return ['status' => 'error', 'message' => 'Upload fail'];
+    }
+
+    public function set_user_photo($userid,$value){
+        $stmt = $this->db->prepare("UPDATE users SET userphoto = ? WHERE userid = ?");
+        $stmt->bind_param("ii", $value, $userid);
+        if ($stmt->execute())
+            return true;
+        else
+            return false;
+    }
+    
+
+    public function userAction(){
+        lecho("userAction");
+    
+        $userid = $_POST['userid'] ?? '';
+        $action = $_POST['action'] ?? '';    
+        // lecho($_POST);
+        // lecho($action);
+    
+        if($action == "purgeuser"){
+            $message = $this->purgeuser($userid);
+        }else{
+            return ['status' => 'error', 'message' => "Unknown action: $action"];        
+        }
+    
+        if($message)
+            return ['status' => 'success', 'message' => "Action $action done"];
+        else
+            return ['status' => 'error', 'message' => "Action $action fail"];
+    }
+    
+    public function purgeuser($userid){
+        $stmt = $this->db->prepare("DELETE FROM rlogs WHERE loguser=?");
+        $stmt->bind_param("i", $userid);
+    
+        if ($stmt->execute()){
+            $this->fileManager->purgeUserData($userid);
+            return true;
+        }else{
+            return false;
+        }
+    
+    }
+    
 }

@@ -114,6 +114,7 @@ class FilesManager {
             }
             return true;
         }
+        return false;
     }
 
     // CHAT PHOTO
