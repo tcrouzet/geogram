@@ -62,7 +62,7 @@ $OnMap = true;
 //     require("admin/routes.php");
 // }else
 
-$slugs = ['login', 'routes', 'test'];
+$slugs = ['login', 'routes', 'test', 'callback', 'user'];
 if (!empty($route_slug) && !in_array($route_slug, $slugs)) {
     $route_O = new RouteService(); 
     $route = $route_O->get_route_by_slug($route_slug);

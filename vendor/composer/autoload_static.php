@@ -44,7 +44,10 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
+            'Psr\\EventDispatcher\\' => 20,
+            'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
+            'PsrDiscovery\\' => 13,
             'Phpfastcache\\Tests\\' => 19,
             'Phpfastcache\\' => 13,
             'ParagonIE\\ConstantTime\\' => 23,
@@ -64,7 +67,9 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         'H' => 
         array (
             'Http\\Promise\\' => 13,
+            'Http\\Message\\MultipartStream\\' => 29,
             'Http\\Factory\\Guzzle\\' => 20,
+            'Http\\Discovery\\' => 15,
             'Http\\Client\\' => 12,
             'Http\\Adapter\\Guzzle7\\' => 21,
         ),
@@ -83,10 +88,12 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         ),
         'C' => 
         array (
+            'Composer\\Semver\\' => 16,
             'Cmfcmf\\' => 7,
         ),
         'A' => 
         array (
+            'Auth0\\SDK\\' => 10,
             'App\\' => 4,
         ),
     );
@@ -133,9 +140,28 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
+        'Psr\\EventDispatcher\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
+        ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
         'Psr\\Cache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
+        ),
+        'PsrDiscovery\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+            1 => __DIR__ . '/..' . '/psr-discovery/discovery/src',
+            2 => __DIR__ . '/..' . '/psr-discovery/log-implementations/src',
+            3 => __DIR__ . '/..' . '/psr-discovery/http-factory-implementations/src',
+            4 => __DIR__ . '/..' . '/psr-discovery/http-client-implementations/src',
+            5 => __DIR__ . '/..' . '/psr-discovery/event-dispatcher-implementations/src',
+            6 => __DIR__ . '/..' . '/psr-discovery/container-implementations/src',
+            7 => __DIR__ . '/..' . '/psr-discovery/cache-implementations/src',
         ),
         'Phpfastcache\\Tests\\' => 
         array (
@@ -167,9 +193,17 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         array (
             0 => __DIR__ . '/..' . '/php-http/promise/src',
         ),
+        'Http\\Message\\MultipartStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-http/multipart-stream-builder/src',
+        ),
         'Http\\Factory\\Guzzle\\' => 
         array (
             0 => __DIR__ . '/..' . '/http-interop/http-factory-guzzle/src',
+        ),
+        'Http\\Discovery\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-http/discovery/src',
         ),
         'Http\\Client\\' => 
         array (
@@ -207,9 +241,17 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
+        'Composer\\Semver\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/semver/src',
+        ),
         'Cmfcmf\\' => 
         array (
             0 => __DIR__ . '/..' . '/cmfcmf/openweathermap-php-api/Cmfcmf',
+        ),
+        'Auth0\\SDK\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/auth0/auth0-php/src',
         ),
         'App\\' => 
         array (

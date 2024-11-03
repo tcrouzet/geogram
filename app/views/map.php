@@ -252,14 +252,18 @@ document.addEventListener('alpine:init', () => {
                 if (entry.loglatitude && entry.loglongitude && entry.username_formatted){
 
                     // Vérification de la présence d'une image pour cet utilisateur
+                    const statusIcon = entry.logphoto ? 
+                        '<i class="fa-solid fa-camera status-icon"></i>' : 
+                        (entry.logcomment ? '<i class="fa-solid fa-comment status-icon"></i>' : '');
+
                     const icon = entry.userphoto ? L.divIcon({
                         className: 'custom-div-icon',
-                        html: `<div class="marker" style="width:30px;height:30px;border:2px solid white;background-size: cover;background-image: url('${entry.photopath}')"></div>`,
+                        html: `<div class="marker" style="background-size: cover;background-image: url('${entry.photopath}')">${statusIcon}</div>`,
                         iconSize: [34, 34],
                         iconAnchor: [15, 15]
                     }) : L.divIcon({
                         className: 'custom-div-icon',
-                        html: `<div class="marker" style="background-color: ${entry.usercolor};">${entry.userinitials}</div>`,
+                        html: `<div class="marker" style="background-color: ${entry.usercolor};">${entry.userinitials}${statusIcon}</div>`,
                         iconSize: [30, 30],
                         iconAnchor: [15, 15]
                     });
