@@ -10,10 +10,6 @@
         "cmfcmf/openweathermap-php-api": "^3.3",
         "http-interop/http-factory-guzzle": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
-        "league/oauth2-google": "^4.0",
-        "league/oauth2-facebook": "^2.2",
-        "google/apiclient": "*",
-        "firebase/php-jwt": "^6.10",
         "auth0/auth0-php": "^8.11"
     },
     "autoload": {

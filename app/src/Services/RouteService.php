@@ -55,7 +55,7 @@ class RouteService
     
     }
 
-    public function get_route_by_id($routeid): array
+    public function get_route_by_id($routeid)
     {
     
         $query="SELECT * FROM `routes` WHERE routeid = ?";
@@ -63,14 +63,14 @@ class RouteService
         $stmt->bind_param("i", $routeid);
         $stmt->execute();
         $result = $stmt->get_result();
-        if($result){
+        if($result && $result->num_rows > 0){
             return $this->supercharge($result->fetch_assoc());
         }else{
             return false;
         }
     }
 
-    public function get_route_by_slug($slug): array
+    public function get_route_by_slug($slug)
     {
     
         $query="SELECT * FROM `routes` WHERE routeslug = ?";
@@ -78,7 +78,7 @@ class RouteService
         $stmt->bind_param("s", $slug);
         $stmt->execute();
         $result = $stmt->get_result();
-        if($result){
+        if($result && $result->num_rows > 0){
             return $this->supercharge($result->fetch_assoc());
         }else{
             return false;

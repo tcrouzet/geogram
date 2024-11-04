@@ -6,7 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'phpseclib3\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'phpGPX\\' => array($vendorDir . '/sibyx/phpgpx/src/phpGPX'),
     'maxh\\Nominatim\\' => array($vendorDir . '/maxh/php-nominatim/src'),
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
@@ -19,12 +18,9 @@ return array(
     'Psr\\EventDispatcher\\' => array($vendorDir . '/psr/event-dispatcher/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
-    'PsrDiscovery\\' => array($baseDir . '/src', $vendorDir . '/psr-discovery/discovery/src', $vendorDir . '/psr-discovery/log-implementations/src', $vendorDir . '/psr-discovery/http-factory-implementations/src', $vendorDir . '/psr-discovery/http-client-implementations/src', $vendorDir . '/psr-discovery/event-dispatcher-implementations/src', $vendorDir . '/psr-discovery/container-implementations/src', $vendorDir . '/psr-discovery/cache-implementations/src'),
+    'PsrDiscovery\\' => array($baseDir . '/src', $vendorDir . '/psr-discovery/cache-implementations/src', $vendorDir . '/psr-discovery/container-implementations/src', $vendorDir . '/psr-discovery/discovery/src', $vendorDir . '/psr-discovery/event-dispatcher-implementations/src', $vendorDir . '/psr-discovery/http-client-implementations/src', $vendorDir . '/psr-discovery/http-factory-implementations/src', $vendorDir . '/psr-discovery/log-implementations/src'),
     'Phpfastcache\\Tests\\' => array($vendorDir . '/phpfastcache/phpfastcache/tests/lib'),
     'Phpfastcache\\' => array($vendorDir . '/phpfastcache/phpfastcache/lib/Phpfastcache'),
-    'ParagonIE\\ConstantTime\\' => array($vendorDir . '/paragonie/constant_time_encoding/src'),
-    'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
-    'League\\OAuth2\\Client\\' => array($vendorDir . '/league/oauth2-client/src', $vendorDir . '/league/oauth2-facebook/src', $vendorDir . '/league/oauth2-google/src'),
     'InstagramScraper\\' => array($vendorDir . '/raiym/instagram-php-scraper/src/InstagramScraper'),
     'Http\\Promise\\' => array($vendorDir . '/php-http/promise/src'),
     'Http\\Message\\MultipartStream\\' => array($vendorDir . '/php-http/multipart-stream-builder/src'),
@@ -35,10 +31,6 @@ return array(
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
-    'Google\\Service\\' => array($vendorDir . '/google/apiclient-services/src'),
-    'Google\\Auth\\' => array($vendorDir . '/google/auth/src'),
-    'Google\\' => array($vendorDir . '/google/apiclient/src'),
-    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Composer\\Semver\\' => array($vendorDir . '/composer/semver/src'),
     'Cmfcmf\\' => array($vendorDir . '/cmfcmf/openweathermap-php-api/Cmfcmf'),
     'Auth0\\SDK\\' => array($vendorDir . '/auth0/auth0-php/src'),

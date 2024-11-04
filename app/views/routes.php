@@ -7,7 +7,7 @@
 
         <template x-if="!isLoggedIn">
 
-            <div id="login" class="loginwidth">
+            <div id="splash">
 
                 <h1>Sorry</h1>
                 <p>You have to be logged.</p>
@@ -16,7 +16,7 @@
         </template>
 
         <template x-if="isLoggedIn">
-            <div id="login" class="userwidth">
+            <div id="splash">
 
 
                 <div class="divider">ROUTE CONNECTOR</div>
@@ -85,7 +85,7 @@
                 <div class="divider">ROUTE PLANNER</div>
 
                 <div class="input-group">
-                    <input type="text" placeholder="Route name" class="input-field" x-model="routename" required minlength="3" maxlength="30" @input="checkRoutename">
+                    <input type="text" placeholder="Route name" class="input-field" x-model="routename" required minlength="3" maxlength="30" @keyup="checkRoutename">
                 </div>
                 <div x-show="routenameError" class="error-message" x-text="routenameError"></div>
 
@@ -119,6 +119,8 @@ document.addEventListener('alpine:init', () => {
         actionError: '',
         userid: null,
         loading: false,
+        reservedNames: <?= json_encode(FORBIDDEN_SLUG) ?>,
+
 
         init(){
             console.log("Init routes");
@@ -172,6 +174,8 @@ document.addEventListener('alpine:init', () => {
                 this.routenameError = 'Routename must be at least 3 characters.';
             } else if (this.routename.length > 30) {
                 this.routenameError = 'Routename must not exceed 30 characters.';
+            } else if (this.reservedNames.some(name => name === this.routename.toLowerCase())) {
+                this.routenameError = 'Forbidden routename';
             } else {
                 this.routenameError = '';
             }

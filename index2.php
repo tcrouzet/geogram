@@ -62,12 +62,13 @@ $OnMap = true;
 //     require("admin/routes.php");
 // }else
 
-$slugs = ['login', 'routes', 'test', 'callback', 'user'];
-if (!empty($route_slug) && !in_array($route_slug, $slugs)) {
+if (!empty($route_slug) && !in_array($route_slug, FORBIDDEN_SLUG)) {
     $route_O = new RouteService(); 
     $route = $route_O->get_route_by_slug($route_slug);
-    $pagename = $route['routename'];
-}elseif(in_array($route_slug, $slugs)){
+    if($route){
+        $pagename = $route['routename'];
+    }
+}elseif(in_array($route_slug, FORBIDDEN_SLUG)){
     $OnMap = false;
     $pagename = $route_slug;
 }

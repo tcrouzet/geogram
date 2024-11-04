@@ -7,7 +7,7 @@
 
         <template x-if="!isLoggedIn">
 
-            <div id="login" class="loginwidth">
+            <div id="splash">
 
                 <h1>Welcome</h1>
                 <p>Connect to Geogram.</p>
@@ -16,7 +16,7 @@
         </template>
 
         <template x-if="isLoggedIn">
-            <div id="login" class="userwidth">
+            <div id="splash">
 
                 <label>Email</label>
                 <input type="email" placeholder="Email" class="input-field" x-model="user.useremail" disabled>

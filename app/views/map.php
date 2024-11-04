@@ -5,12 +5,12 @@
     <main x-data="mapComponent()">
 
         <template x-if="!route">
-            <div id="login" class="loginwidth">
+            <div id="splash" class="loginwidth">
                 <p>No route selected or available.</p>
             </div>
         </template>
         <template x-if="route && route.routestatus > 1 && !(isLoggedIn && routeid == userroute)">
-            <div id="login" class="loginwidth">
+            <div id="splash">
                 <p>This route is for invited and logged-in users only.</p>
             </div>
         </template>
