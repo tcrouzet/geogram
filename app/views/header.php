@@ -1,7 +1,7 @@
 <!-- Section Top -->
 <header x-data="headerComponent()">
 
-    <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo-2.svg" alt="Geogram"></a></div>
+    <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo.svg?1" alt="Geogram"></a></div>
 
     <div id="routename">
         <template x-if="route && route.routename">
@@ -30,7 +30,7 @@
 
         <template x-if="!isLoggedIn">
             <div class="user-sign">
-                <a href="#" @click.prevent="login">Log in/Sign in</a>
+                <a href="#" @click.prevent="login">Connect</a>
             </div>
         </template>
     </div>
@@ -47,12 +47,25 @@ document.addEventListener('alpine:init', () => {
         isLoggedIn: false,
         isOnRoute: false,
 
-        init(reset=false) {
+        async init(reset=false) {
             console.log("Initializing header");
 
-            this.user = this.getUserFromLocalStorage();
-            this.isLoggedIn = this.user !== null;
-            if(this.isLoggedIn){
+            this.initStore();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('login') === 'success') {
+                this.user = await this.checkAuthStatus();
+            } else {
+                this.user = this.getUserFromLocalStorage();
+            }
+            console.log("Initializing header end");
+
+
+            console.log("initialize");
+            this.isLoggedIn = this.user !== null && this.user !== undefined;
+            if(this.isLoggedIn) {
+                console.log("logged");
+                //console.log(this.user);
                 this.isOnRoute = this.user.routeid > 0 ? true : false;
                 if ((this.route === null || reset === true) && this.isOnRoute) {
                     this.route = {};
@@ -63,23 +76,54 @@ document.addEventListener('alpine:init', () => {
                     }
                 }
             }
-            //console.log(this.user);
-            //console.log(this.route);
 
-            // Enregistrer les fonctions dans le store
+            this.initStore(true);
+            Alpine.store('headerActions').init = this.init.bind(this);
+            console.log("Header initilalized");
+        },
+
+        initStore(ended=false){
+            console.log("Init store");
             Alpine.store('headerActions', {
                 user: this.user,
                 route: this.route,
                 isLoggedIn: this.isLoggedIn,
                 isOnRoute: this.isOnRoute,
+                ended: ended,
             });
-
-            // Ajouter init au store après l'initialisation
-            Alpine.store('headerActions').init = this.init.bind(this);
-
         },
-        
+
+        async checkAuthStatus() {
+            console.log("checkAuthStatus");
+            const formData = new FormData();
+            formData.append('view', 'getSession');
+            
+            return new Promise((resolve) => {
+                fetch('/api/', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        console.log("GetSession OK");
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        console.log(data.user);
+                        resolve(data.user);
+                    } else {
+                        console.log("No user data");
+                        resolve(null);
+                    }
+                })
+                .catch(error => {
+                    console.error("Auth check failed:", error);
+                    resolve(null);
+                });
+            });
+        },
+
         getUserFromLocalStorage() {
+            console.log("getUserFromLocalStorage");
             const user = localStorage.getItem('user');
             return user ? JSON.parse(user) : null;
         },
@@ -91,15 +135,27 @@ document.addEventListener('alpine:init', () => {
             return $style;
         },
 
-        userpage() {
-            window.location.href = `/login`;
+        logout() {
+            const formData = new FormData();
+            formData.append('view', 'logout');
+            
+            fetch('/api/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Nettoyer le stockage local
+                    console.log("Logout success");
+                    localStorage.removeItem('user');
+                    window.location.href = '/';
+                }
+            });
         },
 
-        logout() {
-            // Logique de déconnexion
-            localStorage.removeItem('user');
-            this.isLoggedIn = false;
-            window.location.href = `/`;
+        userpage() {
+            window.location.href = `/user`;
         },
 
         login() {

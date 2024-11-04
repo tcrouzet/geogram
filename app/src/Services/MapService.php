@@ -11,17 +11,22 @@ use App\Services\Gpx\GpxNearest;
 
 class MapService 
 {
+    private $user = null;
+    private $userid = null;
     private $db;
     private $fileManager;
     private $route;
     private $routeid;
     private $error = false;
     
-    public function __construct() 
+    public function __construct($user=null) 
     {
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
         $this->route = new RouteService();
+        $this->user = $user;
+        if($this->user)
+        $this->userid = $this->user['userid'];
 
         $this->routeid = $_POST['routeid'] ?? '';
         if ($this->routeid < 1) {
@@ -104,12 +109,11 @@ class MapService
     public function sendgeolocation(){
         lecho("sendgeolocation");
     
-        $userid = $_POST['userid'] ?? '';
         $latitude = $_POST['latitude'] ?? '';
         $longitude = $_POST['longitude'] ?? '';
         // lecho($latitude,  $longitude);
     
-        if ($this->newlog($userid, $this->routeid, $latitude, $longitude)){
+        if ($this->newlog($this->userid, $this->routeid, $latitude, $longitude)){
             return $this->get_map_data($this->routeid);
         }
         
@@ -177,7 +181,6 @@ class MapService
         lecho("Route Photo Upload2");
         //lecho($_POST);
     
-        $userid = $_POST['userid'] ?? '';
         $latitude = $_POST['latitude'] ?? '';
         $longitude = $_POST['longitude'] ?? '';
         $timestamp = $_POST['timestamp'] ?? '';
@@ -191,13 +194,13 @@ class MapService
         }
         $photosource = Tools::photo64decode($photofile);
         
-        $target = $this->fileManager->user_route_photo($userid, $this->routeid, $timestamp);
+        $target = $this->fileManager->user_route_photo($this->userid, $this->routeid, $timestamp);
         //lecho($target);
     
         if($target){
             if(Tools::resizeImage($photosource, $target, 1200)){
-                if($this->newlog($userid, $this->routeid, $latitude, $longitude, null, $timestamp, $timestamp)){
-                    return $this->get_userMarkers($userid, $this->routeid);
+                if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, $timestamp, $timestamp)){
+                    return $this->get_userMarkers($this->userid, $this->routeid);
                 }
             }
             lecho("resizeFail");
@@ -230,13 +233,12 @@ class MapService
     }
 
     public function submitComment(){
-        $userid = $_POST['userid'] ?? '';
         $logid = $_POST['logid'] ?? '';
         $comment = $_POST['comment'] ?? '';
         $stmt = $this->db->prepare("UPDATE rlogs SET logcomment = ? WHERE logid = ?");
         $stmt->bind_param("si", $comment, $logid);
         if ($stmt->execute()){
-            return $this->get_userMarkers($userid, $this->routeid);
+            return $this->get_userMarkers($this->userid, $this->routeid);
         }
         return ['status' => 'error', 'message' => 'Comment error'];
     }

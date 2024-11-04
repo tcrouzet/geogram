@@ -5,10 +5,12 @@ namespace App\Services;
 
 use Auth0\SDK\Auth0;
 use Auth0\SDK\Configuration\SdkConfiguration;
+use App\Services\UserService;
 
 class AuthService 
 {
     private Auth0 $auth0;
+    private $userService;
     
     public function __construct() 
     {
@@ -28,20 +30,7 @@ class AuthService
         ]);
                 
         $this->auth0 = new Auth0($configuration);
-    }
-
-    public function loginWithCredentials($email, $password) 
-    {
-        try {
-            return $this->auth0->authentication()->login(
-                $email,
-                $password,
-                'Username-Password-Authentication',
-                ['scope' => 'openid profile email']
-            );
-        } catch (\Exception $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
-        }
+        $this->userService = new UserService();
     }
 
     public function loginWithSocial($provider) 
@@ -49,7 +38,7 @@ class AuthService
         lecho("AuthService loginSocial");
         try {
             $this->auth0->clear();
-            $url = $this->auth0->login(null, ['connection' => $provider]);
+            $url = $this->auth0->login(null, ['connection' => $provider, 'scope' => 'openid profile email']);
             return ['status' => 'redirect', 'url' => $url];
         } catch (\Exception $e) {
             return ['status' => 'error', 'message' => $e->getMessage()];
@@ -62,57 +51,50 @@ class AuthService
             lecho("HandleCallBack");
             $this->auth0->exchange();
             $userInfo = $this->auth0->getUser();
-            lecho("UserInfo:", $userInfo);
+            lecho($userInfo);
+            $user = $this->userService->findOrCreateUser($userInfo);
+            lecho($user);
 
-
-        } catch (\Exception $e) {
-            lecho("Auth0 error:", $e->getMessage());
-            return ['status' => 'error', 'message' => $e->getMessage()];
-        }
-    }
-
-    public function handleCallbackO($params) 
-    {
-        try {
-            lecho("HandleCallBack");
-            $tokens = $this->auth0->exchange($params['code']);
-            lecho("Tokens:", $tokens);
-            
-            if ($tokens) {
-                $userInfo = $this->auth0->authentication()->userInfo($tokens['access_token']);
-                lecho("UserInfo:", $userInfo);
-                return ['status' => 'success', 'userdata' => $userInfo];
+            if($user['status']=="success"){
+                // Stocker le userid dans la session Auth0
+                $this->auth0->setUser([
+                    ...$userInfo,
+                    'app_userid' => $user['user']['userid']
+                ]);
+                lecho("userid",$user['user']['userid']);
             }
-            
+
+            flushBuffer();
+            // Rediriger vers l'app avec les données
+            header('Location: /?login=success');
+            exit();
+
         } catch (\Exception $e) {
-            lecho("Auth0 error:", $e->getMessage());
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            flushBuffer();
+            header('Location: /?login=error&message=' . urlencode($e->getMessage()));
+            exit();
         }
     }
-    
-    private function syncUser($auth0User) 
+
+    public function handleSession() 
     {
-        lecho("synUser");
-        lecho($auth0User);
-        // Synchroniser avec votre table users
-        $email = $auth0User['email'];
-        $name = $auth0User['name'];
-        // ... autres champs
-        
-        // Retourner le format attendu par votre front
-        return [
-            'status' => 'success',
-            'userdata' => [
-                'userid' => '$userId',
-                'username' => $name,
-                // ... autres champs
-            ]
-        ];
+        $session = $this->auth0->getCredentials();
+        if ($session && isset($session->user['app_userid'])) {
+            // Récupérer les données utilisateur via UserService
+            $user = $this->userService->get_user($session->user['app_userid']);
+            if($user)
+                return ['status' => 'success', 'user' => $user];
+            else
+                return ['status' => 'error', 'message' => "Unknown user"];
+        }
+        return ['status' => 'error', 'message' => 'No active session'];
     }
 
-    public function getSession()
+    public function handleLogout() 
     {
-        return $this->auth0->getCredentials();
+        // Nettoyer la session Auth0
+        $this->auth0->clear();
+        return true;
     }
 
 }

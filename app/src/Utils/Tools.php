@@ -89,6 +89,7 @@ class Tools
     
         // Calculer le ratio de redimensionnement
         $ratio = min($maxSize / $width, $maxSize / $height);
+        if($ratio>1) $ratio = 1;
         $newWidth = $width * $ratio;
         $newHeight = $height * $ratio;
     
@@ -119,10 +120,7 @@ class Tools
         if (!$sourceImage) {
             return false;
         }
-    
-        // Charger l'image d'origine
-        $sourceImage = imagecreatefromjpeg($sourcefile);
-    
+        
         // Redimensionner l'image
         imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
     
@@ -133,7 +131,9 @@ class Tools
         // Libérer la mémoire
         imagedestroy($newImage);
         imagedestroy($sourceImage);
-        unlink($sourcefile);
+
+        if( !preg_match('@^http?://@i', $sourcefile))
+            unlink($sourcefile);
     
         return true;
     }
@@ -150,95 +150,51 @@ class Tools
         return $text;
     }
     
+    public static function initial($name){
+        $r=substr(self::fName($name), 0, 2);
+        $r=strtr($r, 'áàâãäåçéèêëìíîïñóòôõöøúùûüýÿ', 'aaaaaaceeeeiiiinoooooouuuuyy');
+        return ucfirst($r);
+    }
 
-    // /**
-    //  * Formate une date selon les paramètres spécifiés
-    //  */
-    // public static function formatDate($timestamp, $route = null, $format = null): string 
-    // {
-    //     if (empty($timestamp)) return '';
-        
-    //     if (is_string($timestamp)) {
-    //         $timestamp = strtotime($timestamp);
-    //     }
-        
-    //     // Si un format spécifique est demandé
-    //     if ($format) {
-    //         return date($format, $timestamp);
-    //     }
-        
-    //     // Si une route est spécifiée avec des paramètres particuliers
-    //     if ($route && isset($route['dateformat'])) {
-    //         return date($route['dateformat'], $timestamp);
-    //     }
-        
-    //     // Format par défaut
-    //     return date('d.m.y H:i', $timestamp);
-    // }
+    public static function fName($name){
+        return self::format_title($name);
+    }
     
-    // /**
-    //  * Génère les initiales à partir d'un texte
-    //  */
-    // public static function generateInitials(string $text): string 
-    // {
-    //     $words = preg_split('/[\s-]+/', $text);
-    //     $initials = '';
-        
-    //     foreach ($words as $word) {
-    //         $initials .= mb_strtoupper(mb_substr($word, 0, 1));
-    //     }
-        
-    //     return mb_substr($initials, 0, 2);
-    // }
-    
-    // /**
-    //  * Génère une couleur aléatoire sombre
-    //  */
-    // public static function generateDarkColor(): string 
-    // {
-    //     $red = mt_rand(0, 128);
-    //     $green = mt_rand(0, 128);
-    //     $blue = mt_rand(0, 128);
-        
-    //     return sprintf('#%02X%02X%02X', $red, $green, $blue);
-    // }
-    
-    // /**
-    //  * Convertit une distance en format lisible
-    //  */
-    // public static function formatDistance(float $meters): string 
-    // {
-    //     if ($meters >= 1000) {
-    //         return round($meters / 1000, 1) . ' km';
-    //     }
-    //     return round($meters) . ' m';
-    // }
-    
-    // /**
-    //  * Vérifie si une chaîne est une date valide
-    //  */
-    // public static function isValidDate(string $date, string $format = 'Y-m-d'): bool 
-    // {
-    //     $d = \DateTime::createFromFormat($format, $date);
-    //     return $d && $d->format($format) === $date;
-    // }
-    
-    // /**
-    //  * Tronque un texte à une longueur donnée
-    //  */
-    // public static function truncate(string $text, int $length = 100, string $ending = '...'): string 
-    // {
-    //     if (mb_strlen($text) <= $length) {
-    //         return $text;
-    //     }
-    //     return mb_substr($text, 0, $length - mb_strlen($ending)) . $ending;
-    // }
-    
-    // /**
-    //  * Nettoie une chaîne HTML
-    //  */
-    // public static function cleanHTML(string $text): string 
-    // {
-    //     return htmlspecialchars(strip_tags($text), ENT_QUOTES, 'UTF-8');
-    // }
+    public static function format_title($message){
+        $title = iconv('UTF-8', 'ASCII//TRANSLIT', trim($message));
+        $title = str_replace(" ","_",$title);
+        $title = preg_replace('/[^A-Za-z0-9_\-]/', '', $title);        
+        return $title;
+    }
+
+    public static function getDarkColorCode($number) {
+        $code = intval(substr(strval($number), -4));
+        $code = $code % 20;
+        //https://colorhunt.co/palettes/dark
+        $colors =[
+            '#712B75',  //violet
+            '#533483',  //violet
+            '#726A95',  //violet
+            '#C147E9',  //violet
+            '#790252',  //Violet 
+            '#C74B50',
+            '#D49B54',
+            '#E94560',
+            '#950101',
+            '#87431D',
+            '#2F58CD',  //jaune
+            '#0F3460',  //bleu
+            '#3282B8',  //bleu
+            '#1597BB',  //bleu
+            '#46B5D1',  //bleu
+            '#346751',  //vert
+            '#519872',  //vert
+            '#03C4A1',  //vert
+            '#6B728E',  //Gris
+            '#7F8487'   //Gris
+        ];
+        //FF4C29 F10086 trop rouge
+        return $colors[$code];
+    }
+
 }

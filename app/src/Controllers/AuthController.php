@@ -20,14 +20,6 @@ class AuthController
         }
     }
 
-    public function login() 
-    {
-        lecho("AuthService login");
-        $email = $_POST['emain'] ?? null;
-        $password = $_POST['password'] ?? null;
-        return $this->authService->loginWithCredentials($email, $password);
-    }
-
     // Login social
     public function loginSocial()
     {
@@ -52,6 +44,25 @@ class AuthController
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
+    public function getSession() 
+    {
+        try {
+            return $this->authService->handleSession();
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function logout() 
+    {
+        try {
+            $this->authService->handleLogout();
+            return ['status' => 'success'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }    
 
     public function getError() 
     {

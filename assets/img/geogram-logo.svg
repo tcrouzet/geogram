@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -45 300 200" preserveAspectRatio="xMinYMin meet" style="position: absolute; top:0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -45 300 200" preserveAspectRatio="xMinYMin meet">
   
   <path d="M170 15 L163 8 M190 5 L190 15 M210 15 L217 8"
-        stroke="#FBBC05" stroke-width="5" stroke-linecap="round"
+        stroke="#FF6B6B" stroke-width="5" stroke-linecap="round"
         transform="translate(-21, -45) scale(0.7, 0.7)"/>
   
   <path d=" M190 65 L190 75 M210 55 L217 62 M170 55 L163 62"
-        stroke="#FBBC05" stroke-width="5" stroke-linecap="round"
+        stroke="#FF6B6B" stroke-width="5" stroke-linecap="round"
         transform="translate(-21, -41) scale(0.7, 0.7)"/>
 
   <text x="0" y="0" font-family="Helvetica Rounded, Arial, sans-serif" font-size="60" font-weight="bold" letter-spacing="-5">
-    <tspan fill="#90B44B">G</tspan>
-    <tspan fill="#FF4B3E">e</tspan>
-    <tspan fill="#FBBC05">o</tspan>
-    <tspan fill="#90B44B">g</tspan>
-    <tspan fill="#FF4B3E">r</tspan>
-    <tspan fill="#FF69B4">a</tspan>
-    <tspan fill="#FBBC05">m</tspan>
+    <tspan fill="#4ECDC4">G</tspan>
+    <tspan fill="#FF6B6B">e</tspan>
+    <tspan fill="#FF6B6B">o</tspan>
+    <tspan fill="#4ECDC4">g</tspan>
+    <tspan fill="#FF6B6B">r</tspan>
+    <tspan fill="#4ECDC4">a</tspan>
+    <tspan fill="#FF6B6B">m</tspan>
   </text>
 </svg>

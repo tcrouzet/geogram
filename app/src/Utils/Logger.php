@@ -147,7 +147,7 @@ class Logger
         $this->logBuffer[] = trim($msg) . "\n";
     }
     
-    private function flushBuffer(): void 
+    public function flushBuffer(): void 
     {
         if (!empty($this->logBuffer) && DEBUG) {
             $logContent = trim(implode('', $this->logBuffer)) . "\n";

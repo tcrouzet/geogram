@@ -45,7 +45,9 @@ main {
 }
 
 #login h1 {
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+    padding: 0;
 }
 #login .btn {
     display: flex;
@@ -60,38 +62,35 @@ main {
     position: relative;
     border-radius: var(--button-border-radius);
 }
-#login .btn-google {
+#login .btn-google, #login .btn-facebook, #login .btn-apple, #login .btn-mail {
     background-color: white;
     border: 1px solid #ccc;
     color: #333;
     padding-left: 50px;
 }
-#login .btn-google::before {
+#login .btn-google::before, #login .btn-facebook::before, #login .btn-apple::before, #login .btn-mail::before {
     content: '';
     position: absolute;
     left: 15px;
     width: 20px;
     height: 20px;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 48 48'%3E%3Cdefs%3E%3Cpath id='a' d='M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z'/%3E%3C/defs%3E%3CclipPath id='b'%3E%3Cuse xlink:href='%23a' overflow='visible'/%3E%3C/clipPath%3E%3Cpath clip-path='url(%23b)' fill='%23FBBC05' d='M0 37V11l17 13z'/%3E%3Cpath clip-path='url(%23b)' fill='%23EA4335' d='M0 11l17 13 7-6.1L48 14V0H0z'/%3E%3Cpath clip-path='url(%23b)' fill='%2334A853' d='M0 37l30-23 7.9 1L48 0v48H0z'/%3E%3Cpath clip-path='url(%23b)' fill='%234285F4' d='M48 48L17 24l-4-3 35-10z'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
 }
-#login .btn-facebook {
-    background-color: white;
-    border: 1px solid #ccc;
-    color: #333;
-    padding-left: 50px;
+
+#login .btn-google::before{
+    background-image: url("/assets/img/logo-google.svg");
 }
 #login .btn-facebook::before {
-    content: '';
-    position: absolute;
-    left: 15px;
-    width: 20px;
-    height: 20px;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%231877F2' d='M24 0C10.8 0 0 10.8 0 24c0 11.9 8.7 21.7 20 23.7v-16.8h-6v-7h6v-5.2c0-6 3.6-9.3 9.1-9.3 2.6 0 5.3.5 5.3.5v5.9h-3c-3 0-3.9 1.9-3.9 3.9v4.3h6.6l-1 7h-5.6v16.8c11.3-2 20-11.8 20-23.7 0-13.2-10.8-24-24-24z'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
+    background-image: url("/assets/img/logo-facebook.svg");
 }
+#login .btn-apple::before {
+    background-image: url('/assets/img/logo-apple.svg');
+}
+#login .btn-mail::before {
+    background-image: url('/assets/img/logo-mail.svg');
+}
+
 #login .divider {
     margin: 1rem 0;
     display: flex;
@@ -241,7 +240,8 @@ header {
 
 #routename{
     flex-grow: 1;
-    text-align: center;
+    text-align: left;
+    margin-left: 1rem;
 }
 
 /* MAP */
@@ -261,9 +261,44 @@ header {
 #mapfooter {
     height: 5rem;
     width: 100%;
-    flex-shrink: 0;
     position: sticky;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+#mapfooter .small-line {
+    display: flex;
+    justify-content: space-around;
+    max-width: 20rem;
+    width: 100%;
+    margin-bottom: 0.4rem;
+  }
+#mapfooter .small-bt {
+    background-color: var(--color-background);
+    color: var(--color-G);
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+#mapfooter .big-line {
+    display: flex;
+    justify-content: center;
+}
+#mapfooter .big-bt {
+    background-color: var(--color-background);
+    color: var(--coloe-e);
+    border: none;
+    padding: 0;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 2rem;
+}
+
 
 div.geoPopup {text-align: center;max-width: 8rem;padding:0}
 div.geoPopup button{margin: 0.2rem;}

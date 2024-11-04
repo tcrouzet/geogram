@@ -2,22 +2,24 @@
 
 namespace App\Services;
 
-use App\Controllers\AuthController;
 use App\Services\Database;
 use App\Utils\Tools;
 use App\Services\FilesManager;
 
 class UserService 
 {
+    private $user = null;
+    private $userid = null;
     private $db;
-    private $auth;
     private $fileManager;
     private $error = false;
     
-    public function __construct() 
+    public function __construct($user=null) 
     {
+        $this->user = $user;
+        if($this->user)
+            $this->userid = $user["userid"];
         $this->db = Database::getInstance()->getConnection();
-        $this->auth = new AuthController();
         $this->fileManager = new FilesManager();
     }
 
@@ -25,92 +27,94 @@ class UserService
         return $this->error;
     }
 
-    public function createUser(){
-    
-        lecho("CreateUser");
-    
-        $result = $this->auth->login();
-        if($result['status'] != 'not_found') return ['status' => "fail", 'message' => "User allready there…"];
-    
-        list($username, $domain) = explode('@', $result['email']);
-        $userinitials = $this->initial($username);
-        $usercolor = $this->getDarkColorCode(rand(0,10000));
-    
-        $hashedPassword = password_hash($result['password'], PASSWORD_DEFAULT);
-        $isPasswordValid = password_verify($result['password'], $hashedPassword);
-        if(!$isPasswordValid){
-            return ['status' => "fail", 'message' => "Bad password"];
+    public function findOrCreateUser($userInfo){
+
+        if($userInfo["email"] && $user = $this->get_user($userInfo["email"])){
+            return ['status' => "success", 'user' => $user];
+        }else{
+            return $this->createUser($userInfo);
         }
-    
+
+    }
+
+    public function createUser($userInfo){
+        lecho("CreateUser");
+        
+        if( empty($userInfo["email"]) || !filter_var($userInfo["email"], FILTER_VALIDATE_EMAIL) ){
+            return ['status' => 'error', 'message' => 'Invalid email'];
+        }else{
+            $email = $userInfo["email"];
+        }
+
+        if( empty($userInfo["name"]) ){
+            list($username, $domain) = explode('@', $email);
+        }else{
+            $username = $userInfo["name"];
+        }
+
+        $userinitials = Tools::initial($username);
+        $usercolor = Tools::getDarkColorCode(rand(0,10000));    
         $userroute = TESTROUTE; // Connected to testroute by default
     
-        $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userpsw, userroute) VALUES (?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userroute) VALUES (?, ?, ?, ?, ?)";
         $insertStmt = $this->db->prepare($insertQuery);
-        $insertStmt->bind_param("sssssi", $username, $userinitials, $usercolor, $result['email'], $hashedPassword, $userroute);
+        $insertStmt->bind_param("ssssi", $username, $userinitials, $usercolor, $email, $userroute);
         
         if ($insertStmt->execute()) {
     
             $userid = $this->db->insert_id;
     
-            $this->connect($userid,$userroute,0);
-    
-            // Retourne les données du nouvel utilisateur
-            $token = $this->auth->saveToken($userid);
-            if ($token){
-                $user =  $this->auth->get_user($userid);
-                return [
-                    'status' => "success",
-                    'userdata' => $user,
-                    'route' => $userroute
-                ];
-            } else {
-                $message = "Bad token";
+            $this->connect($userid,$userroute,2);
+
+            if( !empty($userInfo["picture"]) ){
+                $source = stripslashes($userInfo["picture"]);
+                $target = $this->fileManager->user_photo($userid);
+                if(Tools::resizeImage($source, $target, 250)){
+                    $this->set_user_photo($userid,1);
+                }
             }
+
+            $user = $this->get_user($userid);
+
+            return ['status' => "success", 'user' => $user];
+
             
-        } else {
-            $essage = "Can't insert in database";
         }
         return [
             'status' => "error",
-            'message' => $message
+            'message' => "Can't insert in database"
         ];
 
     }
+
+    public function get_user($param) {
     
-    public function initial($name){
-        $r=substr(fName($name), 0, 2);
-        $r=strtr($r, 'áàâãäåçéèêëìíîïñóòôõöøúùûüýÿ', 'aaaaaaceeeeiiiinoooooouuuuyy');
-        return ucfirst($r);
-    }
-
-    public function getDarkColorCode($number) {
-        $code = intval(substr(strval($number), -4));
-        $code = $code % 20;
-        //https://colorhunt.co/palettes/dark
-        $colors =[
-            '#712B75',  //violet
-            '#533483',  //violet
-            '#726A95',  //violet
-            '#C147E9',  //violet
-            '#790252',  //Violet 
-            '#C74B50',
-            '#D49B54',
-            '#E94560',
-            '#950101',
-            '#87431D',
-            '#2F58CD',  //jaune
-            '#0F3460',  //bleu
-            '#3282B8',  //bleu
-            '#1597BB',  //bleu
-            '#46B5D1',  //bleu
-            '#346751',  //vert
-            '#519872',  //vert
-            '#03C4A1',  //vert
-            '#6B728E',  //Gris
-            '#7F8487'   //Gris
-        ];
-        //FF4C29 F10086 trop rouge
-        return $colors[$code];
+        $isEmail = strpos($param, '@') !== false;
+    
+        if ($isEmail) {
+            $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.useremail = ?";
+        } else {
+            $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.userid = ?";
+        }
+    
+        $stmt = $this->db->prepare($query);
+    
+        if ($isEmail) {
+            $stmt->bind_param("s", $param);
+        } else {
+            $stmt->bind_param("i", $param);
+        }
+    
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result && $result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            $user['photopath'] = $this->fileManager->user_photo_web($user);
+            return $user;
+        } else {
+            return false;
+        }
     }
 
     public function connect($userid,$routeid,$status=2){
@@ -130,24 +134,21 @@ class UserService
     }
 
     public function updateuser(){
-    
-        $userid = $_POST['userid'] ?? '';
+        lecho("Update user");
         $username = $_POST['username'] ?? '';
-        $useremail = $_POST['useremail'] ?? '';
-        lecho($useremail);
     
-        if ($user = $this->auth->get_user($userid)) {
+        if ($this->userid) {
     
             $user['username'] = $username;
-            $user['useremail'] = $useremail;
-            unset($user['userpsw']);
     
             $stmt = $this->db->prepare("UPDATE users SET username = ? WHERE userid = ?");
-            $stmt->bind_param("si", $username, $userid);
-            if ($stmt->execute())
-               return ['status' => 'success', 'user' => $user];
-            else
+            $stmt->bind_param("si", $username, $this->userid);
+            if ($stmt->execute()){
+                $this->user['username'] = $username; 
+                return ['status' => 'success', 'user' => $this->user];
+            }else{
                 return ['status' => 'error', 'message' => 'Update fail'];
+            }
     
         }
     
@@ -157,21 +158,19 @@ class UserService
 
     public function userphoto(){
         lecho("userphoto");
-    
-        $userid = $_POST['userid'] ?? '';
-    
+        
         if (!isset($_FILES['photofile']) || $_FILES['photofile']['error'] !== UPLOAD_ERR_OK) {
             return ['status' => 'error', 'message' => 'Bad photo file'];
         }
     
-        $target = $this->fileManager->user_photo($userid);
+        $target = $this->fileManager->user_photo($this->userid);
     
         if($target){
-            if(Tools::resizeImage($_FILES['photofile']['tmp_name'], $target, 500)){
-                $this->set_user_photo($userid,1);
+            if(Tools::resizeImage($_FILES['photofile']['tmp_name'], $target, 250)){
+                $this->set_user_photo($this->userid,1);
                 return ['status' => 'success', 'message' => 'File uploaded successfully'];
             }else{
-                $this->set_user_photo($userid,0);
+                $this->set_user_photo($this->userid,0);
             }
         }
     
@@ -186,18 +185,14 @@ class UserService
         else
             return false;
     }
-    
 
     public function userAction(){
         lecho("userAction");
     
-        $userid = $_POST['userid'] ?? '';
-        $action = $_POST['action'] ?? '';    
-        // lecho($_POST);
-        // lecho($action);
+        $action = $_POST['action'] ?? '';
     
         if($action == "purgeuser"){
-            $message = $this->purgeuser($userid);
+            $message = $this->purgeuser($this->userid);
         }else{
             return ['status' => 'error', 'message' => "Unknown action: $action"];        
         }

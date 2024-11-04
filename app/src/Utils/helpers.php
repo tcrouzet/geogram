@@ -19,3 +19,8 @@ function lmicrotime(string $msg = ""): void
 {
     \App\Utils\Logger::getInstance()->microtime($msg);
 }
+
+function flushBuffer(): void 
+{
+    \App\Utils\Logger::getInstance()->flushBuffer();
+}

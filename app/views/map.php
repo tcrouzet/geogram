@@ -21,12 +21,28 @@
                     <div id="mapcontainer">
                         <div id="map" x-init="initializeMap()"></div>
                         <div id="mapfooter">
-                            <button @click="action_list()">List</button>
-                            <button @click="action_fitall()">FitAll</button>
-                            <button @click="action_fitgpx()">FitGPX</button>
-                            <button @click="action_localise()">Ping</button>
-                            <button @click="action_photo()">Photo</button>
-                            <button @click="action_gallery()">Gallery</button>
+                            <div class="small-line">
+                                <button @click="action_list()" class="small-bt">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                                <button @click="action_fitall()" class="small-bt">
+                                    <i class="fas fa-expand-arrows-alt"></i>
+                                </button>
+                                <button @click="action_fitgpx()" class="small-bt">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </button>
+                                <button @click="action_gallery()" class="small-bt">
+                                    <i class="fas fa-images"></i>
+                                </button>
+                            </div>
+                            <div class="big-line">
+                                <button @click="action_localise()" class="big-bt">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </button>
+                                <button @click="action_photo()" class="big-bt">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -94,7 +110,7 @@ document.addEventListener('alpine:init', () => {
         userid: 0,
         userroute: 0,
         routeid: 0,
-        usertoken: '',
+        // usertoken: '',
         logs: [],
         map: [],
         cursors: Alpine.raw([]),
@@ -109,8 +125,22 @@ document.addEventListener('alpine:init', () => {
         commentText: '',
         currentLogId: null,
 
-        
-        init(){
+        async init() {
+            console.log("Init map");
+
+            // Attendre que headerComponent soit initialisé
+            if (!Alpine.store('headerActions').ended) {
+                await new Promise(resolve => {
+                    const checkStore = setInterval(() => {
+                        if (Alpine.store('headerActions').ended) {
+                            clearInterval(checkStore);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
+
+            console.log("header store OK");
             this.route = Alpine.store('headerActions').route;
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
             if(this.isLoggedIn){
@@ -119,7 +149,6 @@ document.addEventListener('alpine:init', () => {
                 this.isOnRoute = Alpine.store('headerActions').isOnRoute;
                 this.username = this.user.username;
                 this.userid = this.user.userid;
-                this.usertoken = this.user.usertoken;
                 this.userroute = this.user.userroute;
                 this.routeid = this.route.routeid;
             }

@@ -13,7 +13,7 @@ $logger = \App\Utils\Logger::getInstance();
 // Configuration des erreurs
 set_time_limit(60);
 
-lecho($_POST);
+//lecho($_POST);
 
 if (DEBUG) {
     ini_set('display_errors', 1);
@@ -35,13 +35,15 @@ try {
         $view = 'callback';
     }
      
-    lecho("View:",$view);
+    //lecho("View:",$view);
     
     // Routes publiques (pas besoin de token)
     $publicRoutes = [
-        'login' => [AuthController::class, 'login'],
         'loginSocial' => [AuthController::class, 'loginSocial'],
         'callback' => [AuthController::class, 'callback'],
+        'getSession' => [AuthController::class, 'getSession'],
+        'logout' => [AuthController::class, 'logout'],
+
         // 'createuser' => [UserService::class, 'createUser'],
         'loadMapData' => [MapService::class, 'loadMapData'],
         'userMarkers' => [MapService::class, 'userMarkers'],
@@ -84,39 +86,23 @@ try {
 
        // Nouvelle vérification avec Auth0
        $authService = new AuthService();
-       $session = $authService->getSession();
+       $session = $authService->handleSession();
        
-       if (!$session || !$session->user) {
-           $data = ['status' => 'error', 'message' => 'Unauthorized. Please login again.'];
-       } else {
-           [$class, $method] = $protectedRoutes[$view];
-           $controller = new $class();
-           if ($response = $controller->getError()) {
-               $data = $response;
-           } else {
-               // Passer l'ID utilisateur Auth0 au contrôleur si nécessaire
-               $_POST['auth0_user_id'] = $session->user['sub'];
-               $data = $controller->$method();
-           }
-       }
+       if ($session['status'] === 'error') {
+            $data = $session;
+        } else {
+            [$class, $method] = $protectedRoutes[$view];
+            // Passer l'utilisateur au constructeur
+            $controller = new $class($session['user']);
+            if ($response = $controller->getError()) {
+                $data = $response;
+            } else {
+                // Passer l'ID utilisateur Auth0 au contrôleur si nécessaire
+                $data = $controller->$method();
+            }
+        }
 
-
-        // $userid = $_POST['userid'] ?? '';
-        // $auth = new AuthController();
-        
-        // if (!$auth->testToken($userid)) {
-        //     $data = ['status' => 'error', 'message' => 'Unauthorized. Please login again.'];
-        // } else {
-        //     [$class, $method] = $protectedRoutes[$view];
-        //     $controller = new $class();
-        //     if ($response = $controller->getError()) {
-        //         $data = $response;
-        //     } else {
-        //         $data = $controller->$method();
-        //     }
-        // }
-    } 
-    else {
+    } else {
         $data = ['status' => 'error', 'message' => "Invalid endpoint... $view"];
     }
     

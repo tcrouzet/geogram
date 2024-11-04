@@ -3,24 +3,27 @@
 namespace App\Services;
 
 use App\Services\Database;
+use App\Services\UserService;
 use App\Services\Gpx\GpxService;
 use App\Services\Gpx\GpxTools;
 use App\Utils\Tools;
-use App\Controllers\AuthController;
+//use App\Controllers\AuthController;
 
 
 class RouteService 
 {
     private $db;
     private $fileManager;
-    private $auth;
+    //private $auth;
     private $error = false;
+    private $userService;
     
     public function __construct() 
     {
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
-        $this->auth = new AuthController();
+        $this->userService = new UserService();
+        //$this->auth = new AuthController();
     }
 
     public function getError() {
@@ -269,12 +272,12 @@ class RouteService
         $routeid = intval($_POST['routeid'] ?? '');
         //lecho($_POST);
     
-        if ($user = $this->auth->get_user($userid)) {
+        if ($user = $this->userService->get_user($userid)) {
     
             $stmt = $this->db->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
             $stmt->bind_param("ii", $routeid, $userid);
             if ($stmt->execute()){
-                $user = $this->auth->get_user($userid);
+                $user = $this->userService->get_user($userid);
                 unset($user['userpsw']);
                 return ['status' => 'success', 'user' => $user ];
             }else
