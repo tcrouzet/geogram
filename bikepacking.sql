@@ -61,7 +61,7 @@ CREATE TABLE `connectors` (
   `constatus` int(2) NOT NULL DEFAULT 0,
   PRIMARY KEY (`conid`),
   UNIQUE KEY `conrouteid` (`conrouteid`,`conuserid`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,9 +158,11 @@ CREATE TABLE `rlogs` (
   `logcomment` text DEFAULT NULL,
   `logphoto` int(11) NOT NULL DEFAULT 0,
   `logtime` timestamp NOT NULL DEFAULT current_timestamp(),
+  `loginsertime` timestamp NOT NULL DEFAULT current_timestamp(),
+  `logupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`logid`),
-  UNIQUE KEY `logroute` (`logroute`,`loguser`,`logphoto`)
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  UNIQUE KEY `logroute` (`logroute`,`loguser`,`loglatitude`,`loglongitude`,`logphoto`)
+) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,27 +200,6 @@ CREATE TABLE `routes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user_tokens`
---
-
-DROP TABLE IF EXISTS `user_tokens`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_tokens` (
-  `token_id` int(11) NOT NULL AUTO_INCREMENT,
-  `userid` bigint(20) NOT NULL,
-  `token` varchar(255) NOT NULL,
-  `device_info` text DEFAULT NULL,
-  `last_used` timestamp NOT NULL DEFAULT current_timestamp(),
-  `expires_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`token_id`),
-  KEY `userid` (`userid`),
-  CONSTRAINT `user_tokens_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `users`
 --
 
@@ -230,14 +211,13 @@ CREATE TABLE `users` (
   `username` varchar(50) DEFAULT NULL,
   `userinitials` varchar(2) DEFAULT NULL,
   `usercolor` varchar(7) DEFAULT NULL,
-  `userpsw` varchar(255) DEFAULT NULL,
   `useremail` varchar(255) DEFAULT NULL,
   `usercreation` timestamp NOT NULL DEFAULT current_timestamp(),
   `userupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `userroute` bigint(20) DEFAULT NULL,
   `userphoto` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -249,4 +229,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-01 20:07:28
+-- Dump completed on 2024-11-04 17:15:16
