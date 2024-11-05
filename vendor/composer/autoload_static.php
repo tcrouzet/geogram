@@ -130,14 +130,13 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         ),
         'PsrDiscovery\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src',
-            1 => __DIR__ . '/..' . '/psr-discovery/cache-implementations/src',
-            2 => __DIR__ . '/..' . '/psr-discovery/container-implementations/src',
-            3 => __DIR__ . '/..' . '/psr-discovery/discovery/src',
-            4 => __DIR__ . '/..' . '/psr-discovery/event-dispatcher-implementations/src',
-            5 => __DIR__ . '/..' . '/psr-discovery/http-client-implementations/src',
-            6 => __DIR__ . '/..' . '/psr-discovery/http-factory-implementations/src',
-            7 => __DIR__ . '/..' . '/psr-discovery/log-implementations/src',
+            0 => __DIR__ . '/..' . '/psr-discovery/cache-implementations/src',
+            1 => __DIR__ . '/..' . '/psr-discovery/container-implementations/src',
+            2 => __DIR__ . '/..' . '/psr-discovery/discovery/src',
+            3 => __DIR__ . '/..' . '/psr-discovery/event-dispatcher-implementations/src',
+            4 => __DIR__ . '/..' . '/psr-discovery/http-client-implementations/src',
+            5 => __DIR__ . '/..' . '/psr-discovery/http-factory-implementations/src',
+            6 => __DIR__ . '/..' . '/psr-discovery/log-implementations/src',
         ),
         'Phpfastcache\\Tests\\' => 
         array (

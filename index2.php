@@ -4,6 +4,7 @@ set_time_limit(60);
 
 require_once './vendor/autoload.php';
 require_once './app/config/config.php';
+require_once './app/config/telegram.php';
 
 use App\Services\RouteService;
 
@@ -38,29 +39,15 @@ $route = null;
 $pagename = "";
 $OnMap = true;
 
-
 //dump($group);
 
-// if($group=="help"){
-//     require("admin/help.php");
-//     html_footer();
 // }elseif($group=="news_fr"){
 //     require("admin/news.php");
-//     html_footer();
-// }elseif($group=="contact"){
-//     require("admin/contact.php");
 //     html_footer();
 // }elseif($group=="archives"){
 //     $archives="archives";
 //     require("admin/une.php");
 //     html_footer();
-// }elseif($group=="login"){
-//     require("admin/login.php");
-// }elseif($group=="test"){
-//     require("admin/test.php");
-// }elseif($group=="routes"){
-//     require("admin/routes.php");
-// }else
 
 if (!empty($route_slug) && !in_array($route_slug, FORBIDDEN_SLUG)) {
     $route_O = new RouteService(); 
@@ -83,6 +70,10 @@ if($route_slug=="login"){
     require("app/views/routes.php");
 }elseif($route_slug=="user"){
     require("app/views/user.php");
+}elseif($route_slug=="help"){
+    require("app/views/help.php");
+}elseif($route_slug=="contact"){
+    require("app/views/contact.php");
 }else{
     require("app/views/map.php");
 }

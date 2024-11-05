@@ -150,10 +150,29 @@ class UserService
                 return ['status' => 'error', 'message' => 'Update fail'];
             }
     
-        }
-    
+        }    
         return ['status' => 'error', 'message' => 'Unknown user'];
+    }
+
+    public function updaTelegramUser($telegram){
+        lecho("Update telegram user");
     
+        if ($this->userid) {
+
+            $telegram_id = intval($telegram["id"]);
+            $telegram["photo_url"];
+    
+    
+            $stmt = $this->db->prepare("UPDATE users SET usertelegram = ? WHERE userid = ?");
+            $stmt->bind_param("si", $telegram_id, $this->userid);
+            if ($stmt->execute()){
+                $this->user['usertelegram'] = $telegram_id; 
+                return ['status' => 'success', 'user' => $this->user];
+            }else{
+                return ['status' => 'error', 'message' => 'Update Telegram fail'];
+            }
+        }
+        return ['status' => 'error', 'message' => 'Unknown user'];    
     }
 
     public function userphoto(){

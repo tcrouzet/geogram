@@ -1,9 +1,20 @@
 <?php
 require_once '../../vendor/autoload.php';
 require_once '../../app/config/config.php';
+require_once '../../app/config/telegram.php';
 
 use App\Services\Telegram\TelegramService;
 use App\Utils\Logger;
+
+set_time_limit(60);
+
+if (DEBUG) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    error_reporting(0);
+}
 
 $logger = Logger::getInstance();
 $telegramService = new TelegramService();

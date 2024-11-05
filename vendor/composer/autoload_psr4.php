@@ -18,7 +18,7 @@ return array(
     'Psr\\EventDispatcher\\' => array($vendorDir . '/psr/event-dispatcher/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
-    'PsrDiscovery\\' => array($baseDir . '/src', $vendorDir . '/psr-discovery/cache-implementations/src', $vendorDir . '/psr-discovery/container-implementations/src', $vendorDir . '/psr-discovery/discovery/src', $vendorDir . '/psr-discovery/event-dispatcher-implementations/src', $vendorDir . '/psr-discovery/http-client-implementations/src', $vendorDir . '/psr-discovery/http-factory-implementations/src', $vendorDir . '/psr-discovery/log-implementations/src'),
+    'PsrDiscovery\\' => array($vendorDir . '/psr-discovery/cache-implementations/src', $vendorDir . '/psr-discovery/container-implementations/src', $vendorDir . '/psr-discovery/discovery/src', $vendorDir . '/psr-discovery/event-dispatcher-implementations/src', $vendorDir . '/psr-discovery/http-client-implementations/src', $vendorDir . '/psr-discovery/http-factory-implementations/src', $vendorDir . '/psr-discovery/log-implementations/src'),
     'Phpfastcache\\Tests\\' => array($vendorDir . '/phpfastcache/phpfastcache/tests/lib'),
     'Phpfastcache\\' => array($vendorDir . '/phpfastcache/phpfastcache/lib/Phpfastcache'),
     'InstagramScraper\\' => array($vendorDir . '/raiym/instagram-php-scraper/src/InstagramScraper'),

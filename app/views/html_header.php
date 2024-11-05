@@ -36,7 +36,7 @@ function version(){
     <meta name="description" content="<?= e(DESCRIPTION) ?>">
     <meta name="author" content="<?= e(AUTHOR) ?>">
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Geogram">
     <link rel="manifest" href="/manifest.json">

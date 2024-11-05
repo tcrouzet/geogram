@@ -23,6 +23,9 @@
                 <div x-show="menuOpen" @click.outside="menuOpen = false" class="dropdown-menu">
                     <a href="#" @click.prevent="userpage">Profil</a>
                     <a href="#" @click.prevent="newroute">Routes</a>
+                    <a href="#" @click.prevent="help">Help</a>
+                    <a href="#" @click.prevent="contact">Contact</a>
+                    <a href="#" @click.prevent="donate">Donate</a>
                     <a href="#" @click.prevent="logout">Logout</a>
                 </div>
             </div>
@@ -58,10 +61,8 @@ document.addEventListener('alpine:init', () => {
             } else {
                 this.user = this.getUserFromLocalStorage();
             }
-            console.log("Initializing header end");
+            console.log("Initializing header ended");
 
-
-            console.log("initialize");
             this.isLoggedIn = this.user !== null && this.user !== undefined;
             if(this.isLoggedIn) {
                 console.log("logged");
@@ -167,6 +168,17 @@ document.addEventListener('alpine:init', () => {
             window.location.href = `/routes`;
         },
 
+        help() {
+            window.location.href = `/help`;
+        },
+
+        contact() {
+            window.location.href = `/contact`;
+        },
+
+        donate() {
+            window.location.href = `https://www.paypal.com/donate/?business=MCZTJGYPGXXCW&no_recurring=0&currency_code=EUR`;
+        },
 
     }));
 });

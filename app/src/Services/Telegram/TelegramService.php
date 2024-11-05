@@ -4,23 +4,20 @@ namespace App\Services\Telegram;
 
 use App\Services\Database;
 use App\Services\FilesManager;
-use App\Utils\Logger;
 
 class TelegramService 
 {
     private $telegram;
     private $fileManager;
     private $db;
-    private $logger;
+    private $user = null;
     
-    public function __construct() 
+    public function __construct($user = null) 
     {
         $this->telegram = new \Telegram(TELEGRAM_BOT_TOKEN);
         $this->fileManager = new FilesManager();
         $this->db = Database::getInstance()->getConnection();
-        $this->logger = Logger::getInstance();
-        
-        set_time_limit(60);
+        $this->user = $user;
     }
 
     public function handleUpdate($update) 
@@ -37,4 +34,40 @@ class TelegramService
         // }
     }
 
+    public function getUserChannels() 
+    {
+        try {
+            $adminChannels = [];
+            // D'abord obtenir les chats où le bot est membre
+            $updates = $this->telegram->getUpdates();
+            if ($updates['ok']) {
+                foreach ($updates['result'] as $update) {
+                    if (isset($update['my_chat_member'])) {
+                        $chat = $update['my_chat_member']['chat'];
+                        if ($chat['type'] === 'channel') {
+                            // Vérifier si l'utilisateur est admin
+                            $member = $this->telegram->getChatMember([
+                                'chat_id' => $chat['id'],
+                                'user_id' => $this->user->userid
+                            ]);
+                            
+                            if ($member['ok'] && 
+                                in_array($member['result']['status'], ['creator', 'administrator'])) {
+                                $adminChannels[] = [
+                                    'id' => $chat['id'],
+                                    'title' => $chat['title'],
+                                    'type' => $chat['type']
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return ['status' => 'success', 'channels' => $adminChannels];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+    
 }

@@ -69,6 +69,16 @@
                                     <img :src="photoPreview || route.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
                                 </div>
 
+                                <template x-if="telegramChannels">
+                                    <br/><label>Telegram channels</label>
+                                    <select x-model="telegramChannels">
+                                        <option value="">Select a channel...</option>
+                                        <template x-for="channel in telegramChannels" :key="channel.id">
+                                            <option :value="channel.id" x-text="channel.title"></option>
+                                        </template>
+                                    </select>
+                                </template>
+
                                 <div class="divider">ACTIONS</div>
                                 <div id="actions">
                                     <button @click="route_actions(route.routeid,'purgeroute',$el.textContent)">Delete all logs</button>
@@ -120,7 +130,11 @@ document.addEventListener('alpine:init', () => {
         userid: null,
         loading: false,
         reservedNames: <?= json_encode(FORBIDDEN_SLUG) ?>,
-
+        // Telegram
+        telegramConnected: false,
+        telegramChannels: [],
+        selectedChannel: '',
+        selectingChannelForRoute: null,
 
         init(){
             console.log("Init routes");
@@ -131,6 +145,10 @@ document.addEventListener('alpine:init', () => {
                 this.isOnRoute = Alpine.store('headerActions').isOnRoute;
                 this.username = this.user.username;
                 this.userid = this.user.userid;
+                if(this.user.usertelegram){
+                    this.telegramConnected = true;
+                    this.loadTelegramChannels();
+                }
                 this.loadRoutes();
             }
         },
@@ -453,6 +471,74 @@ document.addEventListener('alpine:init', () => {
                 console.error('Could not copy text:', err);
             });
         },
+
+
+        loadTelegramChannels() {
+            console.log("loadTelegram");
+            if(!this.telegramConnected)
+                return false;
+            fetch('/api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    view: "getUserChannels"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    this.telegramChannels = data.channels;
+                }
+            });
+        },
+
+        linkChannelToRoute(routeId) {
+            if (!this.selectedChannel) return;
+            
+            fetch('/api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Bearer ${this.user.usertoken}`
+                },
+                body: new URLSearchParams({
+                    view: "linkTelegramChannel",
+                    routeid: routeId,
+                    channel_id: this.selectedChannel
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    this.selectingChannelForRoute = null;
+                    this.loadRoutes(); // Recharger les routes pour mettre à jour les infos
+                }
+            });
+        },
+
+        unlinkChannel(routeId) {
+            if (confirm('Are you sure you want to unlink this channel?')) {
+                fetch('/api/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': `Bearer ${this.user.usertoken}`
+                    },
+                    body: new URLSearchParams({
+                        view: "unlinkTelegramChannel",
+                        routeid: routeId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        this.loadRoutes();
+                    }
+                });
+            }
+        }
 
     }));
 });

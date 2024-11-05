@@ -38,6 +38,26 @@
                 </div>
                 <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
+                <div class="divider">TELEGRAM</div>
+                <div id="telegram-section">
+                    <template x-if="!telegramConnected">
+                    <div>
+                        <script 
+                            async 
+                            src="https://telegram.org/js/telegram-widget.js?22"
+                            data-telegram-login="<?= TELEGRAM_BOT ?>"
+                            data-size="large"
+                            data-auth-url="<?= TELEGRAM_AUTH ?>"
+                            data-request-access="write"
+                        ></script>
+                    </div>
+                    </template>
+                    <template x-if="telegramConnected">
+                        <div>
+                            <button @click="disconnectTelegram">Disconnect Telegram</button>
+                        </div>
+                    </template>
+                </div>
 
             </div>  
         </template>
@@ -46,6 +66,7 @@
 
 </div>
 
+<!-- <script async src="https://telegram.org/js/telegram-widget.js?22"></script> -->
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('userComponent', () => ({
@@ -65,6 +86,8 @@ document.addEventListener('alpine:init', () => {
         photoPreview: null,
         selectedPhoto: null,
         actionError: '',
+        //telegram
+        telegramConnected: false,
 
         init(){
             console.log("userInit");
@@ -75,7 +98,12 @@ document.addEventListener('alpine:init', () => {
                 this.user = Alpine.store('headerActions').user;
                 this.email = this.user.useremail;
                 this.username = this.user.username;
+                if(this.user.usertelegram){
+                    console.log("Telegram connected");
+                    this.telegramConnected = true;
+                }
             }
+            console.log("userInit ended");
         },
 
         checkUsername() {
@@ -87,56 +115,6 @@ document.addEventListener('alpine:init', () => {
                 this.usernameError = '';
             }
         },
-
-        // Fonction pour gérer la connexion via le formulaire
-        // loginWithForm() {
-        //     if (this.emailError || this.passwordError) {
-        //         alert('Please correct the errors before submitting.');
-        //         return;
-        //     }
-
-        //     this.validateEmail(this.email);
-        //     this.checkPasswordLength(this.password)
-
-        //     if (this.emailError!='' || this.passwordError!=''){
-        //         console.log("loginWithForm Bug");
-        //         return;
-        //     }
-        //     console.log("loginWithForm OK");
-
-        //     const formData = new URLSearchParams();
-        //     formData.append('view', 'login');
-        //     formData.append('email', this.email);
-        //     formData.append('password', this.password);
-
-        //     fetch('/api/', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/x-www-form-urlencoded'
-        //         },
-        //         body: formData.toString()
-        //     })
-        //     .then(response => {
-        //         if (!response.ok) {
-        //             throw new Error('Network response was not ok ' + response.statusText);
-        //         }
-        //         return response.json();
-        //     })
-        //     .then(data => {
-        //         //console.log(data);
-        //         if (data.status === 'success') {
-        //             // Utilisateur connecté
-        //             this.connected(data.userdata)
-        //         } else if (data.status === 'not_found') {
-        //             if (confirm(data.message)) {
-        //                 this.createUser();
-        //             }
-        //         } else {
-        //             this.passwordError = data.message;
-        //         }
-        //     })
-        //     .catch(error => console.error('Error:', error));
-        // },
 
         updateUser() {
             // Envoyer une requête pour mettre à jour la route
@@ -255,6 +233,19 @@ document.addEventListener('alpine:init', () => {
             Alpine.store('headerActions').init();
         },
 
+        disconnectTelegram() {
+            if (confirm('Are you sure you want to disconnect Telegram?')) {
+                fetch('/api/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        view: "telegramDisconnect"
+                    })
+                });
+            }
+        },
 
     }));
 });

@@ -11,8 +11,10 @@ class AuthService
 {
     private Auth0 $auth0;
     private $userService;
+    private $error = false;
+    private $user = null;
     
-    public function __construct() 
+    public function __construct($user=null) 
     {
         $config = require ROOT_PATH . '/app/config/auth0.php';
 
@@ -30,7 +32,8 @@ class AuthService
         ]);
                 
         $this->auth0 = new Auth0($configuration);
-        $this->userService = new UserService();
+        $this->user = $user;
+        $this->userService = new UserService($user);
     }
 
     public function loginWithSocial($provider) 
@@ -97,4 +100,26 @@ class AuthService
         return true;
     }
 
+    public function handleTelegram()
+    {
+        lecho("Telegram Auth Data:", $_GET);
+        try {            
+            $this->userService->updaTelegramUser($_GET);
+            flushBuffer();
+            header('Location: /user?telegram=success');
+            exit;
+            
+        } catch (\Exception $e) {
+            $this->error = $e->getMessage();
+            lecho("Telegram Auth Error:", $e->getMessage());
+            flushBuffer();
+            header('Location: /user?telegram=error');
+            exit;
+        }
+    }
+
+    public function getError() {
+        return $this->error;
+    }
+    
 }

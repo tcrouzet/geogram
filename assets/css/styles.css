@@ -170,6 +170,11 @@ main {
     text-decoration: underline;
 }
 
+#splash ol img {
+    margin-left: -1rem;
+    width: -webkit-fill-available;
+}
+
 /* header */
 
 header {
@@ -228,7 +233,7 @@ header {
     flex-direction: column;
 }
 .dropdown-menu a {
-    padding: 8px;
+    padding: 0.4rem 0.4rem;
     text-decoration: none;
     color: black;
     cursor: pointer;

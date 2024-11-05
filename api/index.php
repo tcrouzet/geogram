@@ -7,6 +7,7 @@ use App\Services\UserService;
 use App\Services\MapService;
 use App\Services\RouteService;
 use App\Services\AuthService;
+use App\Services\telegram\TelegramService;
 
 $logger = \App\Utils\Logger::getInstance();
 
@@ -51,6 +52,9 @@ try {
     
     // Routes protégées (nécessitent un token valide)
     $protectedRoutes = [
+        'telegram' => [AuthService::class, 'handleTelegram'],
+        'getUserChannels' => [TelegramService::class, 'getUserChannels'],
+
         'sendgeolocation' => [MapService::class, 'sendgeolocation'],
         'logphoto' => [MapService::class, 'logphoto'],
         'submitComment' => [MapService::class, 'submitComment'],
@@ -65,6 +69,7 @@ try {
 
         'updateuser' => [UserService::class, 'updateuser'],
         'userphoto' => [UserService::class, 'userphoto'],
+        'userAction' => [UserService::class, 'userAction'],
         'userAction' => [UserService::class, 'userAction'],
     ];
 
