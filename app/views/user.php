@@ -38,7 +38,7 @@
                 </div>
                 <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
-                <div class="divider">TELEGRAM</div>
+                <div class="divider">TELEGRAM (optional)</div>
                 <div id="telegram-section">
                     <template x-if="!telegramConnected">
                     <div>

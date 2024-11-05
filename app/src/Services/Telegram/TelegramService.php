@@ -8,20 +8,20 @@ use App\Services\FilesManager;
 class TelegramService 
 {
     private $telegram;
-    private $fileManager;
-    private $db;
     private $user = null;
-    
+    private $db;
+    private $error = false;
+
     public function __construct($user = null) 
     {
-        $this->telegram = new \Telegram(TELEGRAM_BOT_TOKEN);
-        $this->fileManager = new FilesManager();
+        $this->telegram = new \Telegram(TELEGRAM_BOT_TOKEN, false);
         $this->db = Database::getInstance()->getConnection();
         $this->user = $user;
     }
 
     public function handleUpdate($update) 
     {
+        $this->isNewChannel();
         // Gérer les différents types de messages
         // if (isset($update["callback_query"])) {
         //     $this->handleCallback($update["callback_query"]);
@@ -34,40 +34,36 @@ class TelegramService
         // }
     }
 
-    public function getUserChannels() 
+    public function isNewChannel()
     {
-        try {
-            $adminChannels = [];
-            // D'abord obtenir les chats où le bot est membre
-            $updates = $this->telegram->getUpdates();
-            if ($updates['ok']) {
-                foreach ($updates['result'] as $update) {
-                    if (isset($update['my_chat_member'])) {
-                        $chat = $update['my_chat_member']['chat'];
-                        if ($chat['type'] === 'channel') {
-                            // Vérifier si l'utilisateur est admin
-                            $member = $this->telegram->getChatMember([
-                                'chat_id' => $chat['id'],
-                                'user_id' => $this->user->userid
-                            ]);
-                            
-                            if ($member['ok'] && 
-                                in_array($member['result']['status'], ['creator', 'administrator'])) {
-                                $adminChannels[] = [
-                                    'id' => $chat['id'],
-                                    'title' => $chat['title'],
-                                    'type' => $chat['type']
-                                ];
-                            }
-                        }
-                    }
+        if (isset($update["my_chat_member"])) {
+            $chat = $update["my_chat_member"]["chat"];
+            $user = $update["my_chat_member"]["from"];
+            
+            if ($chat['type'] === 'channel') {
+
+                $insertQuery = "INSERT INTO telegram (routename, routeinitials, routeslug, routeuserid) VALUES (?, ?, ?, ?)";
+                $insertStmt = $this->db->prepare($insertQuery);
+                $insertStmt->bind_param("sssi", $routename, $initials, $slug, $userid);
+                
+                if ($insertStmt->execute()) {
+    
+                // Sauvegarder le channel et l'admin
+                // $this->saveChannel([
+                //     'id' => $chat['id'],
+                //     'title' => $chat['title'],
+                //     'type' => 'channel',
+                //     'user_telegram_id' => $user['id'],  // ID Telegram de l'admin
+                //     'status' => $update["my_chat_member"]["new_chat_member"]["status"]
+                // ]);
                 }
             }
-            
-            return ['status' => 'success', 'channels' => $adminChannels];
-        } catch (\Exception $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
+    public function getError() {
+        return $this->error;
+    }
+
     
 }

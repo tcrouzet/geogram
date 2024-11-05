@@ -175,6 +175,32 @@ class UserService
         return ['status' => 'error', 'message' => 'Unknown user'];    
     }
 
+    public function getUserChannels()
+    {
+        if($this->user["usertelegram"]){
+            $query = "SELECT * FROM telegram WHERE user_telegram_id = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("i", $this->user["usertelegram"]);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $channels = [];
+            while ($row = $result->fetch_assoc()) {
+                $channels[] = [
+                    'id' => $row['channel_id'],
+                    'title' => $row['channel_title']
+                ];
+            }
+
+            if (!empty($channels)) {
+                return ['status' => 'success', 'channels' => $channels];
+            }
+    
+        }
+        return ['status' => 'error', 'message' => 'No telegram channels'];
+    }
+
+
     public function userphoto(){
         lecho("userphoto");
         

@@ -1,20 +1,22 @@
 <?php
 require_once '../vendor/autoload.php';
 require_once '../app/config/config.php';
+require_once '../app/config/telegram.php';
 
 use App\Controllers\AuthController;
 use App\Services\UserService;
 use App\Services\MapService;
 use App\Services\RouteService;
 use App\Services\AuthService;
-use App\Services\telegram\TelegramService;
+use App\Services\Telegram\TelegramService;
 
 $logger = \App\Utils\Logger::getInstance();
 
 // Configuration des erreurs
 set_time_limit(60);
 
-//lecho($_POST);
+microtime();
+lecho($_POST);
 
 if (DEBUG) {
     ini_set('display_errors', 1);
@@ -53,7 +55,6 @@ try {
     // Routes protégées (nécessitent un token valide)
     $protectedRoutes = [
         'telegram' => [AuthService::class, 'handleTelegram'],
-        'getUserChannels' => [TelegramService::class, 'getUserChannels'],
 
         'sendgeolocation' => [MapService::class, 'sendgeolocation'],
         'logphoto' => [MapService::class, 'logphoto'],
@@ -71,6 +72,8 @@ try {
         'userphoto' => [UserService::class, 'userphoto'],
         'userAction' => [UserService::class, 'userAction'],
         'userAction' => [UserService::class, 'userAction'],
+        'getUserChannels' => [UserService::class, 'getUserChannels'],
+
     ];
 
     if (isset($publicRoutes[$view])) {

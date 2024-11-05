@@ -62,21 +62,23 @@
                                     </button>
                                 </div>
             
-                                <br/><label>Route image (JPEG only):</label>
+                                <br/><br/><label>Route image (JPEG only):</label>
                                 <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
                                 <div x-show="photoError" class="error-message" x-text="photoError"></div>
                                 <div class="input-group" x-show="photoPreview || route.photopath">
                                     <img :src="photoPreview || route.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
                                 </div>
 
-                                <template x-if="telegramChannels">
-                                    <br/><label>Telegram channels</label>
-                                    <select x-model="telegramChannels">
-                                        <option value="">Select a channel...</option>
-                                        <template x-for="channel in telegramChannels" :key="channel.id">
-                                            <option :value="channel.id" x-text="channel.title"></option>
-                                        </template>
-                                    </select>
+                                <template x-if="telegramChannels && telegramChannels.length > 0">
+                                    <div>
+                                        <br/><label>Telegram channels</label>
+                                        <select x-model="selectedChannel" @change="updateRoute(route)" :value="route.routetelegram">
+                                            <option value="">Select a channel...</option>
+                                            <template x-for="channel in telegramChannels" :key="channel.id">
+                                                <option :value="channel.id" x-text="channel.title" :selected="channel.id === route.routetelegram"></option>
+                                            </template>
+                                        </select>
+                                    </div>
                                 </template>
 
                                 <div class="divider">ACTIONS</div>
@@ -134,7 +136,6 @@ document.addEventListener('alpine:init', () => {
         telegramConnected: false,
         telegramChannels: [],
         selectedChannel: '',
-        selectingChannelForRoute: null,
 
         init(){
             console.log("Init routes");
@@ -146,6 +147,7 @@ document.addEventListener('alpine:init', () => {
                 this.username = this.user.username;
                 this.userid = this.user.userid;
                 if(this.user.usertelegram){
+                    console.log("usertelegram");
                     this.telegramConnected = true;
                     this.loadTelegramChannels();
                 }
@@ -165,7 +167,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: formData.toString()
             })
@@ -252,7 +253,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "updateroute",
@@ -260,7 +260,8 @@ document.addEventListener('alpine:init', () => {
                     routeid: route.routeid,
                     routename: route.routename,
                     routerem: route.routerem,
-                    routestatus: route.routestatus
+                    routestatus: route.routestatus,
+                    telegram: this.selectedChannel
                 })
             })
             // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -286,7 +287,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "routeconnect",
@@ -321,7 +321,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "routeAction",
@@ -366,9 +365,6 @@ document.addEventListener('alpine:init', () => {
 
                 fetch('/api/', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${this.user.usertoken}`
-                    },
                     body: formData
                 })
                 // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -394,7 +390,6 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-
         handlePhotoUpload(routeid) {
             return (event) => {
                 const file = event.target.files[0];
@@ -418,9 +413,6 @@ document.addEventListener('alpine:init', () => {
 
                 fetch('/api/', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${this.user.usertoken}`
-                    },
                     body: formData
                 })
                 // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -472,7 +464,6 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-
         loadTelegramChannels() {
             console.log("loadTelegram");
             if(!this.telegramConnected)
@@ -488,8 +479,10 @@ document.addEventListener('alpine:init', () => {
             })
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 if (data.status === 'success') {
                     this.telegramChannels = data.channels;
+                    console.log(this.telegramChannels);
                 }
             });
         },
@@ -501,7 +494,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "linkTelegramChannel",
@@ -524,7 +516,6 @@ document.addEventListener('alpine:init', () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': `Bearer ${this.user.usertoken}`
                     },
                     body: new URLSearchParams({
                         view: "unlinkTelegramChannel",

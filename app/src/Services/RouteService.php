@@ -7,14 +7,11 @@ use App\Services\UserService;
 use App\Services\Gpx\GpxService;
 use App\Services\Gpx\GpxTools;
 use App\Utils\Tools;
-//use App\Controllers\AuthController;
-
 
 class RouteService 
 {
     private $db;
     private $fileManager;
-    //private $auth;
     private $error = false;
     private $userService;
     
@@ -23,7 +20,6 @@ class RouteService
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
         $this->userService = new UserService();
-        //$this->auth = new AuthController();
     }
 
     public function getError() {
@@ -229,8 +225,8 @@ class RouteService
     }
     
     public function updateroute(){
+        lecho("updateroute");
     
-        $userid = $_POST['userid'] ?? '';    
         $routeid = $_POST['routeid'] ?? '';
         if(empty($routeid)){
             return ['status' => 'error', 'message' => 'Empty routename'];
@@ -240,6 +236,9 @@ class RouteService
         if(empty($routename)){
             return ['status' => 'error', 'message' => 'Empty routename'];
         }
+
+        $telegram = $_POST['telegram'] ?? '';
+        lecho("telegram",$telegram);
     
         $routestatus = $_POST['routestatus'] ?? '';
         $routerem = $_POST['routerem'] ?? '';
@@ -252,8 +251,8 @@ class RouteService
     
         if ($result && $result->num_rows > 0) {
     
-            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ? WHERE routeid = ?");
-            $stmt->bind_param("sssi", $routename, $routerem, $routestatus, $routeid);
+            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ? WHERE routeid = ?");
+            $stmt->bind_param("sssii", $routename, $routerem, $routestatus, $telegram, $routeid);
             if ($stmt->execute())
                return ['status' => 'success', 'message' => 'Update fail'];
             else
