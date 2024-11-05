@@ -19,7 +19,11 @@
 	# Block files in root starting with _
 	RewriteRule ^_([^/]+)$ - [F]
 
-	# Route API calls to api/v1/index.php
+	# Route Telegram endpoints
+	RewriteRule ^api/telegram/webhook\.php$ api/telegram/webhook.php [QSA,L]
+	RewriteRule ^api/telegram(/.*)?$ api/telegram/index.php [QSA,L]
+
+	# Route API calls
     RewriteRule ^api/(.*)$ api/index.php [QSA,L]
 
 	# Do not rewrite URL if index.php

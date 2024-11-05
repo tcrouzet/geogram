@@ -1,4 +1,4 @@
-namespace App\Controllers;
+<!-- namespace App\Controllers;
 
 use App\Services\Database;
 use App\Services\FilesManager;
@@ -211,4 +211,4 @@ class AuthControllerMaison {
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-}
+} -->

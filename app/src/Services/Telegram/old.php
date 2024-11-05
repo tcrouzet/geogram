@@ -1,7 +1,7 @@
 <?php
 
-//https://geo.zefal.com/telegram.php
-//exit("not running");
+//https://geo.zefal.com/api/telegram/
+exit("not running");
 
 define("DEBUG",false);
 
@@ -304,5 +304,3 @@ if(isset($message["document"]) && is_admin($chat_obj, $userid)){
 }
 
 lexit("Unknown");
-
-?>
