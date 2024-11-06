@@ -34,7 +34,7 @@
 
                 <div class="divider">ACTIONS</div>
                 <div id="actions">
-                    <button @click="user_actions(user.userid,'purgeuser',$el.textContent)">Delete all logs</button>
+                    <button @click="user_actions(user.userid,'purgeuser',$el.textContent)">Delete all my logs</button>
                 </div>
                 <div x-show="actionError" class="error-message" x-text="actionError"></div>
 

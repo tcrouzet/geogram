@@ -242,6 +242,7 @@ class RouteService
     
         $routestatus = $_POST['routestatus'] ?? '';
         $routerem = $_POST['routerem'] ?? '';
+        $routemode = $_POST['routemode'] ?? '';
     
         $query = "SELECT * FROM routes WHERE routeid=?;";
         $stmt = $this->db->prepare($query);
@@ -251,8 +252,8 @@ class RouteService
     
         if ($result && $result->num_rows > 0) {
     
-            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ? WHERE routeid = ?");
-            $stmt->bind_param("sssii", $routename, $routerem, $routestatus, $telegram, $routeid);
+            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ?, routemode = ? WHERE routeid = ?");
+            $stmt->bind_param("sssiii", $routename, $routerem, $routestatus, $telegram, $routemode, $routeid);
             if ($stmt->execute())
                return ['status' => 'success', 'message' => 'Update fail'];
             else
@@ -334,9 +335,7 @@ class RouteService
 
     public function routephoto(){
         lecho("Route Photo Upload");
-    
-        $userid = $_POST['userid'] ?? '';
-    
+        
         if (!isset($_FILES['photofile']) || $_FILES['photofile']['error'] !== UPLOAD_ERR_OK) {
             return ['status' => 'error', 'message' => 'Bad photo file'];
         }

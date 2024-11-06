@@ -46,7 +46,7 @@
                                 <label>Status</label>
                                 <select x-model="route.routestatus" @change="updateRoute(route)">
                                     <option value="2">Private</option>
-                                    <option value="1">Open for spectators</option>
+                                    <option value="1">Open for logged in</option>
                                     <option value="0">Open for all</option>
                                 </select>
                                 <div x-show="route.routestatus > 0">
@@ -61,8 +61,9 @@
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
+
             
-                                <br/><br/><label>Route image (JPEG only):</label>
+                                <label>Route image (JPEG only):</label>
                                 <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
                                 <div x-show="photoError" class="error-message" x-text="photoError"></div>
                                 <div class="input-group" x-show="photoPreview || route.photopath">
@@ -70,13 +71,22 @@
                                 </div>
 
                                 <template x-if="telegramChannels && telegramChannels.length > 0">
+
                                     <div>
-                                        <br/><label>Telegram channels</label>
+                                        <div class="divider">TELEGRAM</div>
+                                        <label>Telegram channels</label>
                                         <select x-model="selectedChannel" @change="updateRoute(route)" :value="route.routetelegram">
                                             <option value="">Select a channel...</option>
                                             <template x-for="channel in telegramChannels" :key="channel.id">
                                                 <option :value="channel.id" x-text="channel.title" :selected="channel.id === route.routetelegram"></option>
                                             </template>
+                                        </select>
+
+                                        <label>Mode</label>
+                                        <select x-model="route.routemode" @change="updateRoute(route)">
+                                            <option value="2">Nothing deleted</option>
+                                            <option value="1">Locations deleted</option>
+                                            <option value="0">All messages deleted</option>
                                         </select>
                                     </div>
                                 </template>
@@ -261,7 +271,8 @@ document.addEventListener('alpine:init', () => {
                     routename: route.routename,
                     routerem: route.routerem,
                     routestatus: route.routestatus,
-                    telegram: this.selectedChannel
+                    telegram: this.selectedChannel,
+                    routemode: route.routemode
                 })
             })
             // .then(response => response.text()) // Récupérer le texte brut pour le débogage

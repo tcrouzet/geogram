@@ -144,7 +144,9 @@ class Logger
             }
             $msg .= " ";
         }
-        $this->logBuffer[] = trim($msg) . "\n";
+        $msg = trim($msg);
+        if(!empty($msg))
+            $this->logBuffer[] = $msg . "\n";
     }
     
     public function flushBuffer(): void 
@@ -160,7 +162,8 @@ class Logger
     }    
     
 
-    public function lexit(): never {
+    public function lexit($msg=''): never {
+        if($msg) $this->log($msg);
         $endTime = microtime(true);
         $executionTime = $endTime - $this->startTime;
         $mydate = trim(date("d.m.y H:i", time())) . " (" . number_format($executionTime, 4) . ")";

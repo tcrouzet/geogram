@@ -3,9 +3,11 @@
 namespace App\Services\Telegram;
 
 use App\Services\Database;
+use App\Services\MapService;
 use App\Services\FilesManager;
 use App\Services\Telegram\TelegramCallback;
 use App\Services\Telegram\TelegramTools;
+use App\Utils\Tools;
 
 
 class TelegramService 
@@ -21,7 +23,9 @@ class TelegramService
     private $chatid;
     private $title;
     private $channel;
-    private $userid;
+    private $userid;    //Telegram userid
+    private $username;  //Telegram username
+    private $user;      //Geogram user
 
     public function __construct($update) 
     {
@@ -31,7 +35,6 @@ class TelegramService
     }
 
     public function handleUpdate() {
-        if ($this->isNewChannel()) return;
         if (!$this->init()) return;
         if ($this->isCallback()) return;
 
@@ -41,6 +44,11 @@ class TelegramService
             lecho($this->error);
             return;
         }
+
+        if ($this->location()) return;
+        if ($this->text()) return;
+        if ($this->photo()) return;
+
     }
 
     private function init(){
@@ -58,17 +66,37 @@ class TelegramService
         }
 
         $this->userid = TelegramTools::get_userid($this->message);
+        if( !$this->user = $this->getUser( round($this->userid) )){
+            $this->error = "The chat $this->userid not in Geogram users";
+            lecho($this->error);
+            return false;
+        }
 
-        //Migrate
+        $this->username = TelegramTools::get_username($this->message); 
+        if(empty($this->username)){
+            $this->error = "no username";
+            lecho($this->error);
+            return false;
+        }
+
+        // New Channel
+        if ($this->isNewChannel()) return;
+
+        // Migrate
         if( isset($this->message["migrate_to_chat_id"]) ){
-            $this->migrate($this->message);
+            $this->migrate();
         }
         
-        //chatid
+        //Channel
         $this->chatid = $this->message["chat"]["id"];
         $this->channel = $this->getChannel( round($this->chatid) );
         if(!$this->channel){
             $this->error = "Unknown channel $this->chatid $this->title";
+            lecho($this->error);
+            return false;
+        }
+        if(!isset($this->channel["routeid"])){
+            $this->error = "Unknown route $this->chatid $this->title Need a connexion";
             lecho($this->error);
             return false;
         }
@@ -83,6 +111,127 @@ class TelegramService
         }
 
         return true;
+    }
+
+    private function text(){
+        if( isset($this->message["text"])){
+            $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) WHERE logroute = ? AND loguser = ? AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("siiii", $this->message["text"], $this->user["routeid"], $this->user["userid"], $this->user["routeid"], $this->user["userid"]);
+            if (!$stmt->execute()){
+                $this->error = "Error sql 2 - no log for the user";
+                lecho($this->error);
+            }
+            TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
+            lecho("text");
+            return true;
+        }
+        return false;
+    }
+
+    private function photo(){
+
+        if( isset($this->message["photo"])){
+            lecho("photo");
+
+            if (!$lastLog = $this->getLastLog($this->user["routeid"], $this->user["userid"])) {
+                TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
+                lecho("No last log");
+                return false;    
+            }    
+
+            $result = false;
+    
+            $max_index = max(array_keys($this->message["photo"]));
+            $file_id = $this->message["photo"][$max_index]["file_id"];
+            $file = $this->telegram->getFile($file_id);
+        
+            if($file["ok"]){
+                lecho("photo OK");
+
+                $fileManager = new FilesManager();
+
+                $photoI = 1;
+                $target = $fileManager->user_route_photo($this->user["userid"], $this->user["routeid"], strtotime($lastLog['logtime']), $photoI);
+                while(file_exists($target)){
+                    $photoI++;
+                    $target = $fileManager->user_route_photo($this->user["userid"], $this->user["routeid"], strtotime($lastLog['logtime']), $photoI);
+                }
+                lecho($target);
+
+                $tempFile = tempnam(sys_get_temp_dir(), 'img_') . '.jpg';
+                $this->telegram->downloadFile($file['result']['file_path'], $tempFile);
+        
+                if(file_exists($tempFile)){
+                    lecho("Photo OK 2");
+                    if(Tools::resizeImage($tempFile, $target, 1200)){
+
+                        $query = "UPDATE rlogs SET logphoto = ? WHERE logid = ?";
+                        $stmt = $this->db->prepare($query);
+                        $stmt->bind_param("ii", $photoI, $lastLog['logid']);                
+                        if (!$stmt->execute()) {
+                            $this->error = "Error sql 2 - no log for the user";
+                            lecho($this->error);
+                            return false;
+                        }
+                        TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],2);
+                        TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!");
+                        lecho("photo");
+                        return true;
+                    }
+                }
+            }
+            TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
+            if($result)
+                TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
+            lecho("Photo");
+            return true;
+        }
+        return false;
+    }
+
+    private function location(){
+        if(isset($this->message["location"])){
+
+            lecho("Location find ",$this->userid);
+
+            //No more than one location/10minutes except for the admin and test purpose
+            if ( $this->isAdmin() && $this->channel['routerealtime']==0 ){
+                $query = "SELECT EXISTS(SELECT 1 FROM rlogs WHERE loguser = ? AND logtime > (UNIX_TIMESTAMP() - 600))";
+                $stmt_lastuser = $this->db->prepare($query);
+                $stmt_lastuser->bind_param("i", $this->user["userid"]);
+                $stmt_lastuser->execute();
+                $result = $stmt_lastuser->get_result()->fetch_row();
+                if ($result && $result[0]) {
+                    //Posted location during last 10 minutes
+                    if($this->channel['routerealtime']==0){
+                        $this->telegram->deleteMessage(array('chat_id' => $this->chatid,'message_id' => $this->message_id));
+                        TelegramTools::ShortLivedMessage($this->telegram, $this->chatid,"$this->username, you are too fast. Next localisation will be possible in 10 minutes.");
+                    }
+                    lecho("Too fast");
+                    return true;
+                }
+            }
+
+            $latitude = $this->message["location"]["latitude"];
+            $longitude = $this->message["location"]["longitude"];
+
+            $map = new MapService($this->user);
+            //lecho($this->user);
+            $map->newlog($this->user["userid"], $this->user["routeid"], $latitude, $longitude);
+
+            if(isset($this->message["location"]["live_period"]) && $this->channel['routerealtime']==1){
+                //Real time
+            }else{
+                //Normal
+                TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],2);
+                TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your are on the map!");
+            }
+            lecho("End location");
+            return true;
+        }
+        return false;
     }
 
     private function isCallback(){
@@ -115,14 +264,14 @@ class TelegramService
     }
 
     private function newChannel($chatId, $userId, $title, $status){
-        $insertQuery = "INSERT INTO telegram (channel_id, channel_user, channel_title, channel_status) VALUES (?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO telegram (channel_id, channel_admin, channel_title, channel_status) VALUES (?, ?, ?, ?)";
         $insertStmt = $this->db->prepare($insertQuery);
         $insertStmt->bind_param("iiss", $chatId, $userId, $title, $status);
         return $insertStmt->execute();
     }
 
     private function getChannel($chatId){
-        $query = "SELECT * FROM telegram WHERE channel_id = ?";
+        $query = "SELECT * FROM telegram t LEFT JOIN routes r ON t.channel_id = r.routetelegram WHERE t.channel_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $chatId);    
         $stmt->execute();
@@ -148,7 +297,7 @@ class TelegramService
         $old_chatid = $this->update["migrate_from_chat_id"];
         $new_chatid = $this->update['chat']['id'];
 
-        $channel = $this->getChannel(round($old_chatid));
+        $channel = $this->getChannel( round($old_chatid) );
         if(!$channel){
             //Unknown old_chatid
             return $this->newChannel( round($new_chatid), round($this->userid), $this->title, "migrate" );
@@ -157,7 +306,44 @@ class TelegramService
             return $this->updateChannel( round($old_chatid), round($new_chatid ) );
         }
     }
-    
+
+    private function getUser($userid){
+        $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.usertelegram = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $userid);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return false;
+    }
+
+    private function getLastLog($chatid, $userid) {
+        $query = "SELECT * FROM rlogs 
+                WHERE logroute = ? AND loguser = ? 
+                ORDER BY logupdate DESC 
+                LIMIT 1";
+                
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ii", $chatid, $userid);
+        
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                return $result->fetch_assoc();
+            }
+        }
+        return false;
+    }
+
+    private function isAdmin(){
+        if($this->channel["channel_admin"] == $this->userid){
+            return true;
+        }
+        return false;
+    }
+
     public function getError() {
         return $this->error;
     }

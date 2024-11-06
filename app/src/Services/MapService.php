@@ -194,12 +194,12 @@ class MapService
         }
         $photosource = Tools::photo64decode($photofile);
         
-        $target = $this->fileManager->user_route_photo($this->userid, $this->routeid, $timestamp);
+        $target = $this->fileManager->user_route_photo($this->userid, $this->routeid, $timestamp, 1);
         //lecho($target);
     
         if($target){
             if(Tools::resizeImage($photosource, $target, 1200)){
-                if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, $timestamp, $timestamp)){
+                if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, 1, $timestamp)){
                     return $this->get_userMarkers($this->userid, $this->routeid);
                 }
             }

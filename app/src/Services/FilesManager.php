@@ -171,17 +171,17 @@ class FilesManager {
         }
     }
 
-    public function user_route_photo($userid, $routeid, $timestamp) {
+    public function user_route_photo($userid, $routeid, $timestamp, $logphoto) {
         $dir = $this->user_route_dir($userid, $routeid);
         if($dir)
-            return  $dir . "$timestamp.webp";
+            return  $dir . "$timestamp" . "_" . "$logphoto" . ".webp";
         else
             return false;
     }
 
     public function user_route_photo_web($log) {
         if($log['logphoto']){
-            $photo = $this->user_route_photo($log['loguser'],$log['logroute'],$log['logphoto']);
+            $photo = $this->user_route_photo($log['loguser'], $log['logroute'], strtotime($log['logtime']), $log['logphoto']);
             return $this->relativize($photo,$this->datadir);
         }else{
             return false;

@@ -177,8 +177,9 @@ class UserService
 
     public function getUserChannels()
     {
+        lecho("getUserChannels");
         if($this->user["usertelegram"]){
-            $query = "SELECT * FROM telegram WHERE channel_user = ?";
+            $query = "SELECT * FROM telegram WHERE channel_admin = ?";
             $stmt = $this->db->prepare($query);
             $stmt->bind_param("i", $this->user["usertelegram"]);
             $stmt->execute();
@@ -191,6 +192,7 @@ class UserService
                     'title' => $row['channel_title']
                 ];
             }
+            lecho("channels", $channels);
 
             if (!empty($channels)) {
                 return ['status' => 'success', 'channels' => $channels];

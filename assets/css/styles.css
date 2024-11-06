@@ -118,7 +118,6 @@ main {
 #splash .input-field {
     width: 90%;
     padding: 10px;
-    margin-bottom: 1rem;
     border-radius: 5px;
     border: 1px solid #ccc;
 }
@@ -136,6 +135,7 @@ main {
 #splash label{
     clear:both;
     display: block;
+    margin-top: 1rem;
 }
 
 .input-group {
@@ -173,6 +173,19 @@ main {
 #splash ol img {
     margin-left: -1rem;
     width: -webkit-fill-available;
+}
+
+#telegram-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+#telegram-login-widget {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
 }
 
 /* header */
