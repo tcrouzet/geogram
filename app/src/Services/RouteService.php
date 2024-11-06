@@ -66,12 +66,23 @@ class RouteService
         }
     }
 
-    public function get_route_by_slug($slug)
-    {
-    
+    public function get_route_by_slug($slug){
         $query="SELECT * FROM `routes` WHERE routeslug = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("s", $slug);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if($result && $result->num_rows > 0){
+            return $this->supercharge($result->fetch_assoc());
+        }else{
+            return false;
+        }
+    }
+
+    public function get_route_by_link($link){
+        $query="SELECT * FROM `routes` WHERE routepublisherlink = ? OR 	routeviewerlink = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ss", $link, $link);
         $stmt->execute();
         $result = $stmt->get_result();
         if($result && $result->num_rows > 0){

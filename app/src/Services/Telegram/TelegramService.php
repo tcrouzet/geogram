@@ -61,21 +61,32 @@ class TelegramService
         $this->title = TelegramTools::get_chatitle($this->message);
         if ( empty($this->title) ){
             $this->error = "Empty chat_title";
-            lecho($this->error);
+            return false;
+        }
+
+        //Channel
+        $this->chatid = $this->message["chat"]["id"];
+        $this->channel = $this->getChannel( round($this->chatid) );
+        if(!$this->channel){
+            $this->error = "Unknown channel $this->chatid $this->title";
+            return false;
+        }
+        if(!isset($this->channel["routeid"])){
+            $this->error = "Unknown route $this->chatid $this->title Need a connexion";
             return false;
         }
 
         $this->userid = TelegramTools::get_userid($this->message);
         if( !$this->user = $this->getUser( round($this->userid) )){
-            $this->error = "The chat $this->userid not in Geogram users";
-            lecho($this->error);
+            $this->error = "The chat user $this->userid not in Geogram";
+            $link = BASE_URL . "/login/?link=" . $this->channel["routepublisherlink"]. "&telegram=" . $this->chatid;
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "If you want to publish on Geogram you must follow this link: $link",10);
             return false;
         }
 
         $this->username = TelegramTools::get_username($this->message); 
         if(empty($this->username)){
             $this->error = "no username";
-            lecho($this->error);
             return false;
         }
 
@@ -85,20 +96,6 @@ class TelegramService
         // Migrate
         if( isset($this->message["migrate_to_chat_id"]) ){
             $this->migrate();
-        }
-        
-        //Channel
-        $this->chatid = $this->message["chat"]["id"];
-        $this->channel = $this->getChannel( round($this->chatid) );
-        if(!$this->channel){
-            $this->error = "Unknown channel $this->chatid $this->title";
-            lecho($this->error);
-            return false;
-        }
-        if(!isset($this->channel["routeid"])){
-            $this->error = "Unknown route $this->chatid $this->title Need a connexion";
-            lecho($this->error);
-            return false;
         }
 
         $this->message_id = $this->message["message_id"];

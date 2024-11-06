@@ -18,7 +18,7 @@ class TelegramCallback
     }
 
     public function handleCallback(){
-
+        //callback_manager($this->cq);
     }
 
     public function getError() {

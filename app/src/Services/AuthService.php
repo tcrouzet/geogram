@@ -41,7 +41,18 @@ class AuthService
         lecho("AuthService loginSocial");
         try {
             $this->auth0->clear();
-            $url = $this->auth0->login(null, ['connection' => $provider, 'scope' => 'openid profile email']);
+
+            // Créer un state avec les paramètres
+            $state = [
+                'link' => $_GET['link'] ?? null,
+                'telegram' => $_GET['telegram'] ?? null
+            ];
+
+            $url = $this->auth0->login(null, [
+                'connection' => $provider,
+                'scope' => 'openid profile email',
+                'state' => base64_encode(json_encode($state))
+            ]);
             return ['status' => 'redirect', 'url' => $url];
         } catch (\Exception $e) {
             return ['status' => 'error', 'message' => $e->getMessage()];
@@ -55,6 +66,13 @@ class AuthService
             $this->auth0->exchange();
             $userInfo = $this->auth0->getUser();
             lecho($userInfo);
+
+            if (isset($_GET['state'])) {
+                $params = json_decode(base64_decode($_GET['state']), true);
+                $userInfo['link'] = $params['link'] ?? null;
+                $userInfo['telegram'] = $params['telegram'] ?? null;
+            }
+
             $user = $this->userService->findOrCreateUser($userInfo);
             lecho($user);
 

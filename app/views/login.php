@@ -42,15 +42,23 @@ document.addEventListener('alpine:init', () => {
     
         init(){
             console.log("loginInit");
-            this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
+            this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;        
         },
 
         login(provider) {
             this.loading = true;
+
+            // Récupérer les paramètres d'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const link = urlParams.get('link');
+            const telegram = urlParams.get('telegram');
+
             const formData = new FormData();
             console.log("loginSocial");
             formData.append('view', 'loginSocial');
             formData.append('provider', provider);
+            if (link) formData.append('link', link);
+            if (telegram) formData.append('telegram', telegram);
             
             fetch('/api/', {
                 method: 'POST',

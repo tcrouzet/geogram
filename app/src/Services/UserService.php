@@ -28,13 +28,12 @@ class UserService
     }
 
     public function findOrCreateUser($userInfo){
-
-        if($userInfo["email"] && $user = $this->get_user($userInfo["email"])){
+        if($userInfo["email"] && $user = $this->get_user($userInfo["email"])){               
+            $user = $this->updateInvitUser($userInfo, $user);
             return ['status' => "success", 'user' => $user];
         }else{
             return $this->createUser($userInfo);
         }
-
     }
 
     public function createUser($userInfo){
@@ -52,9 +51,10 @@ class UserService
             $username = $userInfo["name"];
         }
 
+        $userroute = TESTROUTE; // Connected to testroute by default    
+
         $userinitials = Tools::initial($username);
-        $usercolor = Tools::getDarkColorCode(rand(0,10000));    
-        $userroute = TESTROUTE; // Connected to testroute by default
+        $usercolor = Tools::getDarkColorCode(rand(0,10000));
     
         $insertQuery = "INSERT INTO users (username, userinitials, usercolor, useremail, userroute) VALUES (?, ?, ?, ?, ?)";
         $insertStmt = $this->db->prepare($insertQuery);
@@ -64,7 +64,7 @@ class UserService
     
             $userid = $this->db->insert_id;
     
-            $this->connect($userid,$userroute,2);
+            $this->connect($userid,TESTROUTE,2);
 
             if( !empty($userInfo["picture"]) ){
                 $source = stripslashes($userInfo["picture"]);
@@ -75,16 +75,34 @@ class UserService
             }
 
             $user = $this->get_user($userid);
-
+            $user = $this->updateInvitUser($userInfo, $user);
             return ['status' => "success", 'user' => $user];
-
-            
         }
         return [
             'status' => "error",
             'message' => "Can't insert in database"
         ];
 
+    }
+
+    public function updateInvitUser($userInfo, $user){
+        $telegram = $userInfo['telegram'] ?? '';
+        $link = $userInfo['link'] ?? '';
+
+        if($telegram){
+            if($this->updaTelegramIdUser($telegram, $user["userid"]))
+                $user['usertelegram'] = $telegram;
+        }
+
+        if($link){
+            $Route_O = new RouteService();
+            $route = $Route_O->get_route_by_link($link);
+            $user['userroute'] = $route["routeid"];
+            if($user['userroute'] != TESTROUTE)
+                $this->connect($user["userid"], $user['userroute'], 2);
+        }
+
+        return $user;
     }
 
     public function get_user($param) {
@@ -164,7 +182,7 @@ class UserService
     
     
             $stmt = $this->db->prepare("UPDATE users SET usertelegram = ? WHERE userid = ?");
-            $stmt->bind_param("si", $telegram_id, $this->userid);
+            $stmt->bind_param("ii", $telegram_id, $this->userid);
             if ($stmt->execute()){
                 $this->user['usertelegram'] = $telegram_id; 
                 return ['status' => 'success', 'user' => $this->user];
@@ -173,6 +191,22 @@ class UserService
             }
         }
         return ['status' => 'error', 'message' => 'Unknown user'];    
+    }
+
+    public function updaTelegramIdUser($telegramId,$userId){
+        lecho("Update telegramId user");
+    
+        if ($userId && $telegramId) {
+
+            $telegram_id = intval($telegramId);    
+    
+            $stmt = $this->db->prepare("UPDATE users SET usertelegram = ? WHERE userid = ?");
+            $stmt->bind_param("ii", $telegram_id, $userId);
+            if ($stmt->execute()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getUserChannels()
