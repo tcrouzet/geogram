@@ -418,16 +418,6 @@ function get_username($from){
     return trim($username);
 }
 
-function get_userid($from){
-    return $from["id"];
-}
-
-function get_chatitle($message){
-    if(@$message["chat"] && @$message["chat"]["title"])
-        return format_chatitle($message["chat"]["title"]);
-    else
-        return "NoTitle";
-}
 
 function todelete($chat_obj,$message_id,$level=1){
     global $telegram;

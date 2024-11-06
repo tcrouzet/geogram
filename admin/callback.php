@@ -1041,20 +1041,6 @@ function get_chat($chatid){
     }
 }
 
-function NewChatID($update){
-    global $fileManager;
-
-    lecho("NewChatID");
-    $old_chatid = $update["migrate_from_chat_id"];
-    $new_chatid = $update['chat']['id'];
-    if(get_chat($old_chatid)){
-        update_chatid($old_chatid,$new_chatid);
-        $fileManager->rename_chat_dir($old_chatid,$new_chatid);
-        lexit("NewChatID");
-    }else{
-        lexit("Old chatid not existing");
-    }
-}
 
 function ReplyManager($chatid, $message_id, $reply, $case_descripion){
     global $telegram;

@@ -4,7 +4,6 @@ require_once '../../app/config/config.php';
 require_once '../../app/config/telegram.php';
 
 use App\Services\Telegram\TelegramService;
-use App\Utils\Logger;
 
 set_time_limit(60);
 
@@ -16,18 +15,17 @@ if (DEBUG) {
     error_reporting(0);
 }
 
-$logger = Logger::getInstance();
-$telegramService = new TelegramService();
-
 // Récupérer l'update
 $content = file_get_contents("php://input");
 $update = json_decode($content, true);
 
-$logger->log($update);
+lexit($update);
 
 if (!isset($update["update_id"]) || $update["update_id"] <= 0) {
-    $logger->lexit("Invalid update_id");
+    lexit("Invalid update_id");
+}else{
+    // Traiter l'update
+    $telegramService = new TelegramService($update);
+    $telegramService->handleUpdate();
+    lexit();
 }
-
-// Traiter l'update
-$telegramService->handleUpdate($update);

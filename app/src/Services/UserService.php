@@ -178,7 +178,7 @@ class UserService
     public function getUserChannels()
     {
         if($this->user["usertelegram"]){
-            $query = "SELECT * FROM telegram WHERE user_telegram_id = ?";
+            $query = "SELECT * FROM telegram WHERE channel_user = ?";
             $stmt = $this->db->prepare($query);
             $stmt->bind_param("i", $this->user["usertelegram"]);
             $stmt->execute();
