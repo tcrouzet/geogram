@@ -50,14 +50,14 @@
                                     <option value="0">Open for all</option>
                                 </select>
                                 <div x-show="route.routestatus > 0">
-                                    <a :href="`/login/${route.routepublisherlink}`" x-text="'Invitation link for publishers'"></a>
-                                    <button class="copy-button" @click="copyToClipboard(`/login/${route.routepublisherlink}`)">
+                                    <a :href="`${route.publishpath}`" x-text="'Invitation link for publishers'"></a>
+                                    <button class="copy-button" @click="copyToClipboard(`${route.publishpath}`)">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
                                 <div x-show="route.routestatus > 1">
-                                    <a :href="`/login/${route.routeviewerlink}`" x-text="'Invitation link for viewers'"></a>
-                                    <button class="copy-button" @click="copyToClipboard(`/login/${route.routeviewerlink}`)">
+                                    <a :href="`${route.invitpath}`" x-text="'Invitation link for viewers'"></a>
+                                    <button class="copy-button" @click="copyToClipboard(`${route.invitpath}`)">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>

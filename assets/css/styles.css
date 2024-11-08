@@ -207,17 +207,19 @@ header {
     height: 100%;
 }
 #geogram img{
-    width: 10rem;
+    width: 9rem;
     height: auto;
 }
 
 #signin{
-    width: 5rem;
-    text-align: right;
     padding-right: 0.2rem;
-    padding-top: 0.2rem;
-    /* width: fit-content;
-    height: fit-content; */
+    padding-top: 0rem;
+    cursor: pointer;
+}
+
+#signin .markerS{
+    width: 34px;
+    height: 34px;
 }
 
 .icon-button{
@@ -244,6 +246,7 @@ header {
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 .dropdown-menu a {
     padding: 0.4rem 0.4rem;
@@ -266,7 +269,7 @@ header {
 #routename{
     flex-grow: 1;
     text-align: left;
-    margin-left: 1rem;
+    margin-left: 0.5rem;
     overflow: hidden;
 }
 
@@ -324,11 +327,37 @@ header {
     transition: background-color 0.3s;
     margin: 0 2rem;
 }
-
+#mapfooter .disabled-bt {
+    opacity: 0.5;
+    color: #ccc;
+    cursor: not-allowed;
+}
 
 div.geoPopup {text-align: center;max-width: 8rem;padding:0}
 div.geoPopup button{margin: 0.2rem;}
 div.geoPopup img{max-width:inherit;height: auto;}
+.cross{
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    cursor: pointer;
+    background-color: #ff4444;
+    color: white;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%; display: flex; align-items: center; 
+    justify-content: center;
+    font-size: 1rem;
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
 
 .leaflet-popup {
     padding: 0 !important;
@@ -349,10 +378,11 @@ div.geoPopup img{max-width:inherit;height: auto;}
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: black;
+    background-color: var(--color-background);
     color: white;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1rem;
+    background-size: cover;
 }
 
 .status-icon {

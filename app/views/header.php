@@ -1,7 +1,7 @@
 <!-- Section Top -->
 <header x-data="headerComponent()">
 
-    <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo.svg?1" alt="Geogram"></a></div>
+    <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo.svg" alt="Geogram"></a></div>
 
     <div id="routename">
         <template x-if="route && route.routename">
@@ -14,7 +14,7 @@
         <template x-if="isLoggedIn">
             <div class="user-menu">
                 <button @click="menuOpen = !menuOpen" class="icon-button">
-                    <div class="marker" :style="userIconStyle">
+                    <div class="marker markerS" :style="userIconStyle">
                         <template x-if="!user.userphoto">
                             <span x-text="user.userinitials"></span>
                         </template>
@@ -32,9 +32,7 @@
         </template>
 
         <template x-if="!isLoggedIn">
-            <div class="user-sign">
-                <a href="#" @click.prevent="login">Connect</a>
-            </div>
+            <img src="/assets/img/sign-in.svg?1" @click="login" class="marker markerS" alt="Sign in">
         </template>
     </div>
 </header>
@@ -131,8 +129,8 @@ document.addEventListener('alpine:init', () => {
 
         get userIconStyle() {
             console.log("iconStyle");
-            $style = this.user.userphoto ? `background-image: url('/userdata/users/${this.user.userid}/photo.jpeg'); width: 34px; height: 34px; border: 2px solid white; background-size: cover;`
-                : `background-color: ${this.user.usercolor}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;`;
+            $style = this.user.userphoto ? `background-image: url('/userdata/users/${this.user.userid}/photo.jpeg');`
+                : `background-color: ${this.user.usercolor};`;
             return $style;
         },
 

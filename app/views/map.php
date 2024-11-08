@@ -6,11 +6,19 @@
 
         <template x-if="!route">
             <div id="splash" class="loginwidth">
-                <p>No route selected or available.</p>
+                <h1>Share your adventures</h1>
+                <p>When you bike or hike, you can send your location, pictures and messages to your friends.</p>
+                <h1>Geogram Test Route</h1>
+                <p>Even without <a href="/login">log in</a>, you can see the <a href="/testroute">Test Route</a> where all <a href="/login">log in</a> users can test Geogram.</p>
+                <h1>Create your own routes</h1>
+                <p>Once <a href="/login">log in</a>, you can create a public or private route. Then you can invite spectators or adventurers to join the route.</p>
+                <p style="text-align: center;"><br><a href="/help">More informations…</a></p>
+
             </div>
         </template>
         <template x-if="route && route.routestatus > 1 && !(isLoggedIn && routeid == userroute)">
             <div id="splash">
+                <h1>Access denied</h1>
                 <p>This route is for invited and logged-in users only.</p>
             </div>
         </template>
@@ -31,15 +39,15 @@
                                 <button @click="action_fitgpx()" class="small-bt">
                                     <i class="fas fa-map-marked-alt"></i>
                                 </button>
-                                <button @click="action_gallery()" class="small-bt">
+                                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
                                     <i class="fas fa-images"></i>
                                 </button>
                             </div>
                             <div class="big-line">
-                                <button @click="action_localise()" class="big-bt">
+                                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
                                     <i class="fas fa-map-marker-alt"></i>
                                 </button>
-                                <button @click="action_photo()" class="big-bt">
+                                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
                                     <i class="fas fa-camera"></i>
                                 </button>
                             </div>
@@ -110,7 +118,6 @@ document.addEventListener('alpine:init', () => {
         userid: 0,
         userroute: 0,
         routeid: 0,
-        // usertoken: '',
         logs: [],
         map: [],
         cursors: Alpine.raw([]),
@@ -124,6 +131,7 @@ document.addEventListener('alpine:init', () => {
         showCommentModal: false,
         commentText: '',
         currentLogId: null,
+        canPost: false,
 
         async init() {
             console.log("Init map");
@@ -151,6 +159,7 @@ document.addEventListener('alpine:init', () => {
                 this.userid = this.user.userid;
                 this.userroute = this.user.userroute;
                 this.routeid = this.route.routeid;
+                this.canPost = this.isPostPossible();
             }
         },
 
@@ -175,7 +184,7 @@ document.addEventListener('alpine:init', () => {
                 // attribution: '',
                 maxZoom: 18,
             }).addTo(this.map);
-            this.action_testlocalise();
+            //this.action_testlocalise();
             this.showPopup("Loading map…");
             this.loadMapData();
             this.$watch('logs', (newLogs) => {
@@ -206,7 +215,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.usertoken}`
                 },
                 body: formData.toString()
             })
@@ -244,7 +252,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.usertoken}`
                 },
                 body: formData.toString()
             })
@@ -376,9 +383,6 @@ document.addEventListener('alpine:init', () => {
             fetch('/api/', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'Authorization': `Bearer ${this.usertoken}`
-                }
             })
             .then(response => response.json())
             .then(data => {
@@ -474,15 +478,19 @@ document.addEventListener('alpine:init', () => {
         },
 
         async action_localise(){
-            this.action_map();
-            try {
-                const bestPosition = await this.get_localisation();
-                if(bestPosition){
-                    this.bestPosition = bestPosition;
-                    this.sendgeolocation();
+            if(this.canPost){
+                this.action_map();
+                try {
+                    const bestPosition = await this.get_localisation();
+                    if(bestPosition){
+                        this.bestPosition = bestPosition;
+                        this.sendgeolocation();
+                    }
+                } catch (error) {
+                    console.log('Error or cancelled:', error);
                 }
-            } catch (error) {
-                console.log('Error or cancelled:', error);
+            }else{
+                this.showAccessMessage();
             }
         },
 
@@ -540,9 +548,7 @@ document.addEventListener('alpine:init', () => {
             fetch('/api/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.usertoken}`
-                },
+                    'Content-Type': 'application/x-www-form-urlencoded',                },
                 body: new URLSearchParams({
                     view: "sendgeolocation",
                     userid: this.userid,
@@ -597,13 +603,32 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        showPopup(message) {
+        showPopup(message, validate=false) {
             let popup = document.getElementById('geoPopup');
             if (!popup) {
+                let overlay;
+                
+                // Créer et ajouter l'overlay
+                if(validate) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'popupOverlay';
+                    overlay.className = 'overlay';
+                    // Fermer quand on clique sur l'overlay
+                    overlay.addEventListener('click', () => {
+                        overlay.remove();
+                        popup.remove();
+                    });
+                }
+                
                 popup = document.createElement('div');
                 popup.id = 'geoPopup';
                 popup.className = 'geo-popup';
-                popup.innerHTML = `<p>${message}</p>`;
+                popup.innerHTML = `<div style="position: relative;">`;
+                if(validate) {
+                    // Utiliser une fonction au lieu d'un onclick inline
+                    popup.innerHTML += `<span class="cross">×</span>`;
+                }
+                popup.innerHTML += `<p>${message}</p></div>`;
                 popup.style.position = 'fixed';
                 popup.style.top = '50%';
                 popup.style.left = '50%';
@@ -612,6 +637,22 @@ document.addEventListener('alpine:init', () => {
                 popup.style.padding = '20px';
                 popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
                 popup.style.zIndex = '1000';
+
+                if(validate) {
+                    // Ajouter le gestionnaire d'événement pour la croix
+                    const cross = popup.querySelector('.cross');
+                    cross.addEventListener('click', () => {
+                        popup.remove();
+                        overlay.remove();
+                    });
+
+                    // Empêcher la propagation du clic sur le popup
+                    popup.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                    document.body.appendChild(overlay);
+                }
+
                 document.body.appendChild(popup);
             }
         },
@@ -662,7 +703,6 @@ document.addEventListener('alpine:init', () => {
             // }, 100); // Délai de 100ms
         },
 
-
         action_fitgpx() {
             console.log("fitgpx");
 
@@ -687,7 +727,6 @@ document.addEventListener('alpine:init', () => {
             this.viewMode = "list";
         },
 
-
         action_testlocalise() {
             const clickHandler = (e) => {
                 console.log("testGeolocalise");
@@ -708,24 +747,31 @@ document.addEventListener('alpine:init', () => {
                 
                 // Réactiver l'écoute pour le prochain clic
                 this.map.once('click', clickHandler);
-            };
-            
+            }            
             this.map.once('click', clickHandler);
         },
 
         action_photo() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.capture = 'environment';
-            this.handleImageSelection(input);
+            if(this.canPost){
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.capture = 'environment';
+                this.handleImageSelection(input);
+            }else{
+                this.showAccessMessage();
+            }
         },
 
         action_gallery() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            this.handleImageSelection(input);
+            if(this.canPost){
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                this.handleImageSelection(input);
+            }else{
+                this.showAccessMessage();
+            }
         },
 
         handleImageSelection(input) {
@@ -766,7 +812,6 @@ document.addEventListener('alpine:init', () => {
             };
             input.click();
         },
-
 
         async getExifData(file) {
             return new Promise((resolve, reject) => {
@@ -809,7 +854,6 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-
         uploadImage(file, gpsData) {
             try {
 
@@ -836,9 +880,6 @@ document.addEventListener('alpine:init', () => {
 
                     fetch('/api/', {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${this.user.usertoken}`
-                        },
                         body: formData
                     })
                     // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -897,7 +938,36 @@ document.addEventListener('alpine:init', () => {
                     userMarker.openPopup();
                 }
             }
-        }
+        },
+
+        isPostPossible() {
+            if (!this.isLoggedIn) return false;
+
+            if(this.user.userroute != this.route.routeid){
+                //Not connected to the route
+                return false;
+            }
+            
+            // Créateur peut toujours poster
+            if (this.user.constatus === 3) return true;
+
+            // Route publique, tout utilisateur connecté peut poster
+            if(this.route.routestatus === 0) return true;
+
+            // Route visible ou privée, seuls les invités peuvent publier
+            if(this.route.routestatus > 0 && this.user.constatus == 2) return true;
+
+            return false;
+        },
+
+        showAccessMessage() {
+            if (!this.isLoggedIn) {
+                this.showPopup('You need to <a href="/login">log in</a> to use this feature', true);
+            } else {
+                this.showPopup('You need to be invited to post on this route', true);
+            }
+        },
+        
 
     }));
 });

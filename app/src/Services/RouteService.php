@@ -95,7 +95,25 @@ class RouteService
     private function supercharge($route): array
     {
         $route['photopath'] = $this->fileManager->route_photo_web($route);
+        $route['invitpath'] = $this->make_invitation_link($route);
+        $route['publishpath'] = $this->make_publish_link($route);
         return $route;
+    }
+
+    private function make_invitation_link($route){
+        $link = BASE_URL . "/login?link=" . $route["routeviewerlink"];
+        if($route["routetelegram"]){
+            $link .= "&telegram=" . $route["routetelegram"];
+        }
+        return $link;
+    }
+
+    private function make_publish_link($route){
+        $link = BASE_URL . "/login?link=" . $route["routepublisherlink"];
+        if($route["routetelegram"]){
+            $link .= "&telegram=" . $route["routetelegram"];
+        }
+        return $link;
     }
 
     function routeAction(){
