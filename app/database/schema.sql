@@ -61,7 +61,7 @@ CREATE TABLE `connectors` (
   `constatus` int(2) NOT NULL DEFAULT 0,
   PRIMARY KEY (`conid`),
   UNIQUE KEY `conrouteid` (`conrouteid`,`conuserid`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,13 +156,14 @@ CREATE TABLE `rlogs` (
   `logkm` int(11) DEFAULT NULL,
   `logdev` int(11) DEFAULT NULL,
   `logcomment` text DEFAULT NULL,
-  `logphoto` int(11) NOT NULL DEFAULT 0,
+  `logphoto` tinyint(1) NOT NULL DEFAULT 0,
+  `logweather` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`logweather`)),
   `logtime` timestamp NOT NULL DEFAULT current_timestamp(),
   `loginsertime` timestamp NOT NULL DEFAULT current_timestamp(),
   `logupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`logid`),
-  UNIQUE KEY `logroute` (`logroute`,`loguser`,`loglatitude`,`loglongitude`,`logphoto`)
-) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  UNIQUE KEY `logroute` (`logroute`,`loguser`,`loglatitude`,`loglongitude`,`logphoto`,`logtime`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2099 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +184,7 @@ CREATE TABLE `routes` (
   `routeslug` varchar(100) DEFAULT NULL,
   `routestatus` tinyint(1) NOT NULL DEFAULT 2,
   `start` int(11) DEFAULT 0,
-  `stop` int(11) DEFAULT 0,
+  `routeclosed` tinyint(1) DEFAULT 0,
   `gpx` tinyint(1) NOT NULL DEFAULT 0,
   `total_km` int(11) NOT NULL DEFAULT 0,
   `total_dev` int(11) NOT NULL DEFAULT 0,
@@ -192,11 +193,30 @@ CREATE TABLE `routes` (
   `routephoto` tinyint(1) NOT NULL DEFAULT 0,
   `routetime` timestamp NOT NULL DEFAULT current_timestamp(),
   `routeupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `mode` tinyint(4) NOT NULL DEFAULT 0,
-  `real_time` tinyint(4) NOT NULL DEFAULT 0,
+  `routemode` tinyint(1) NOT NULL DEFAULT 0,
+  `routerealtime` tinyint(1) NOT NULL DEFAULT 0,
+  `routetelegram` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`routeid`),
   UNIQUE KEY `routename` (`routename`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `telegram`
+--
+
+DROP TABLE IF EXISTS `telegram`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `telegram` (
+  `channel_id` bigint(20) NOT NULL,
+  `channel_title` varchar(50) DEFAULT NULL,
+  `channel_admin` bigint(20) NOT NULL,
+  `channel_status` varchar(20) DEFAULT NULL,
+  `channel_updated` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`channel_id`),
+  UNIQUE KEY `channel_id` (`channel_id`,`channel_admin`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,8 +236,9 @@ CREATE TABLE `users` (
   `userupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `userroute` bigint(20) DEFAULT NULL,
   `userphoto` tinyint(1) NOT NULL DEFAULT 0,
+  `usertelegram` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -229,4 +250,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-04 17:15:16
+-- Dump completed on 2024-11-09  8:50:31
