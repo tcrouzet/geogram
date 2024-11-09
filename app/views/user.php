@@ -1,70 +1,65 @@
-<div id="page">
+<?php include 'header.php'; ?>
 
-    <?php include 'header.php'; ?>
+<main x-data="userComponent()" >
 
-    <!-- Section Content -->
-    <main x-data="userComponent()" >
+    <template x-if="!isLoggedIn">
 
-        <template x-if="!isLoggedIn">
+        <div id="splash">
 
-            <div id="splash">
+            <h1>Welcome</h1>
+            <p>Connect to Geogram.</p>
 
-                <h1>Welcome</h1>
-                <p>Connect to Geogram.</p>
+        </div>
+    </template>
 
+    <template x-if="isLoggedIn">
+        <div id="splash">
+
+            <label>Email</label>
+            <input type="email" placeholder="Email" class="input-field" x-model="user.useremail" disabled>
+
+            <label>User name</label>
+            <input type="text" placeholder="User name" class="input-field" x-model="user.username" required  minlength="2" maxlength="30" @change="updateUser">
+            <div x-show="usernameError" class="error-message" x-text="usernameError"></div>
+
+            <label>Profile Image (JPEG only)</label>
+            <input type="file" @change="userPhotoUpload()" accept="image/jpeg" class="input-field">
+            <div x-show="photoError" class="error-message" x-text="photoError"></div>
+            <div class="input-group" x-show="photoPreview || user.photopath">
+                <img :src="photoPreview || user.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
             </div>
-        </template>
 
-        <template x-if="isLoggedIn">
-            <div id="splash">
+            <div class="divider">ACTIONS</div>
+            <div id="actions">
+                <button @click="user_actions(user.userid,'purgeuser',$el.textContent)">Delete all my logs</button>
+            </div>
+            <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
-                <label>Email</label>
-                <input type="email" placeholder="Email" class="input-field" x-model="user.useremail" disabled>
-
-                <label>User name</label>
-                <input type="text" placeholder="User name" class="input-field" x-model="user.username" required  minlength="2" maxlength="30" @change="updateUser">
-                <div x-show="usernameError" class="error-message" x-text="usernameError"></div>
-
-                <label>Profile Image (JPEG only)</label>
-                <input type="file" @change="userPhotoUpload()" accept="image/jpeg" class="input-field">
-                <div x-show="photoError" class="error-message" x-text="photoError"></div>
-                <div class="input-group" x-show="photoPreview || user.photopath">
-                    <img :src="photoPreview || user.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
+            <div class="divider">TELEGRAM (optional)</div>
+            <div id="telegram-section">
+                <template x-if="!telegramConnected">
+                <div>
+                    <script 
+                        async 
+                        src="https://telegram.org/js/telegram-widget.js?22"
+                        data-telegram-login="<?= TELEGRAM_BOT ?>"
+                        data-size="large"
+                        data-auth-url="<?= TELEGRAM_AUTH ?>"
+                        data-request-access="write"
+                    ></script>
                 </div>
-
-                <div class="divider">ACTIONS</div>
-                <div id="actions">
-                    <button @click="user_actions(user.userid,'purgeuser',$el.textContent)">Delete all my logs</button>
-                </div>
-                <div x-show="actionError" class="error-message" x-text="actionError"></div>
-
-                <div class="divider">TELEGRAM (optional)</div>
-                <div id="telegram-section">
-                    <template x-if="!telegramConnected">
+                </template>
+                <template x-if="telegramConnected">
                     <div>
-                        <script 
-                            async 
-                            src="https://telegram.org/js/telegram-widget.js?22"
-                            data-telegram-login="<?= TELEGRAM_BOT ?>"
-                            data-size="large"
-                            data-auth-url="<?= TELEGRAM_AUTH ?>"
-                            data-request-access="write"
-                        ></script>
+                        <button @click="disconnectTelegram">Disconnect Telegram</button>
                     </div>
-                    </template>
-                    <template x-if="telegramConnected">
-                        <div>
-                            <button @click="disconnectTelegram">Disconnect Telegram</button>
-                        </div>
-                    </template>
-                </div>
+                </template>
+            </div>
 
-            </div>  
-        </template>
+        </div>  
+    </template>
 
-    </main>
-
-</div>
+</main>
 
 <!-- <script async src="https://telegram.org/js/telegram-widget.js?22"></script> -->
 <script>

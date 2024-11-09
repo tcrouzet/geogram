@@ -1,37 +1,37 @@
-<div id="page">
+<?php include 'header.php'; ?>
 
-    <?php include 'header.php'; ?>
+<!-- Section Content -->
+<main x-data="loginComponent()" >
 
-    <!-- Section Content -->
-    <main x-data="loginComponent()" >
+    <div x-show="loading" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
 
-        <template x-if="!isLoggedIn">
+    <template x-if="!isLoggedIn">
 
-            <div id="login" class="loginwidth">
+        <div id="login">
 
-                <h1>Welcome</h1>
-                <p style="text-align: center;">Connect to Geogram.</p>
+            <h1>Welcome</h1>
+            <p style="text-align: center;">Connect to Geogram.</p>
 
-                <button class="btn btn-google" @click="login('google-oauth2')" x-bind:disabled="loading">
-                    Continue with Google
-                </button>
-        
-                <button class="btn btn-mail" @click="login('Username-Password-Authentication')" x-bind:disabled="loading">
-                    Continue with email
-                </button>
+            <button class="btn btn-google" @click="login('google-oauth2')" x-bind:disabled="loading">
+                Continue with Google
+            </button>
+    
+            <button class="btn btn-mail" @click="login('Username-Password-Authentication')" x-bind:disabled="loading">
+                Continue with email
+            </button>
 
-            </div>
-        </template>
+        </div>
+    </template>
 
-        <template x-if="isLoggedIn">
-            <div id="login" class="userwidth">
-                You are logged
-            </div>
-        </template>
+    <template x-if="isLoggedIn">
+        <div id="login">
+            You are logged
+        </div>
+    </template>
 
-    </main>
-
-</div>
+</main>
 
 <script>
 document.addEventListener('alpine:init', () => {

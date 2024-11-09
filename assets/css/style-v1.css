@@ -2,11 +2,8 @@
     --color: #007bff;
     --color-background: #FDFDFD;
     --color-G: #4ECDC4;
-    --color-G-light: #F2FBFA;
     --coloe-e: #FF6B6B;
-    --color-light-gray: #ccc;
     --button-border-radius: 9999px;
-    --footer-height: 6rem;
 }
 
 a:link,a:visited,a:hover,a:active {color: inherit;text-decoration: none}
@@ -14,18 +11,32 @@ a:link,a:visited,a:hover,a:active {color: inherit;text-decoration: none}
 body, html {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
-    height: 100vh;
+    /* height: 100vh; */
+    height: 100%;
     background-color: var(--color-background);
-    overflow: hidden;
 }
 
-main {
-    position: absolute;
-    top: 2.8rem;
-    bottom: 0;
-    left: 0;
-    right: 0;
+#page {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
     overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+main {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+#globalcontainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    /* height: 100%;
+    overflow: hidden; */
+
 }
 
 /* Login/user */
@@ -33,13 +44,9 @@ main {
 .loginwidth{max-width: 20rem;}
 .userwidth{max-width: 40rem;}
 
-#login {
-    height: 100%;
-    max-width: 20rem;
-    display: flex;
-    flex-direction: column;
+#login{
     margin: auto;
-    padding: 20vh 1rem 30vh 1rem;
+
 }
 #login h1 {
     margin-bottom: 1.5rem;
@@ -88,53 +95,16 @@ main {
     background-image: url('/assets/img/logo-mail.svg');
 }
 
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid var(--color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 /* SPLASH */
 
-#splash {
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-#splash > * {
+#splash{
     max-width: 40rem;
-    margin-left: auto;
-    margin-right: auto;
     padding: 0 1rem;
-    box-sizing: border-box;
+    margin: 0 auto;
 }
 
 #splash .divider {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
     display: flex;
     align-items: center;
     text-align: center;
@@ -142,7 +112,7 @@ main {
 #splash .divider::before, .divider::after {
     content: "";
     flex: 1;
-    border-bottom: 1px solid var(--color-light-gray);
+    border-bottom: 1px solid #ccc;
 }
 #splash .divider:not(:empty)::before {
     margin-right: .5em;
@@ -151,16 +121,14 @@ main {
     margin-left: .5em;
 }
 #splash .input-field {
-    width: 97%;
-    padding: 0.5rem;
+    width: 90%;
+    padding: 10px;
     border-radius: 5px;
-    border: 1px solid var(--color-light-gray);
-    display: block;
-    background-color: transparent;
+    border: 1px solid #ccc;
 }
 #splash .btn-submit {
     background-color: var(--color);
-    color: var(--color-background);
+    color: white;
     border: none;
     margin-top: 1rem;
 }
@@ -192,6 +160,8 @@ main {
 
 #splash ul{
     list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 #splash a:link,
@@ -229,14 +199,10 @@ main {
 header {
     display: flex;
     align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     width: 100%;
     height: 2.8rem;
-    padding: 0;
-    z-index: 1000;
+    padding: 0
 }
 #geogram{
     display: block;
@@ -325,22 +291,17 @@ header {
     flex-direction: column;
     flex-grow: 1;
     width: 100%;
-    margin-bottom: var(--footer-height);
 }
+
 #mapfooter {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: var(--footer-height);
+    height: 6rem;
     width: 100%;
+    position: sticky;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
 }
-
 #mapfooter .small-line {
     display: flex;
     justify-content: space-around;
@@ -349,7 +310,7 @@ header {
     margin-bottom: 0.4rem;
   }
 #mapfooter .small-bt {
-    background-color: transparent;
+    background-color: var(--color-background);
     color: var(--color-G);
     border: none;
     padding: 0;
@@ -364,7 +325,7 @@ header {
     justify-content: center;
 }
 #mapfooter .big-bt {
-    background-color: transparent;
+    background-color: var(--color-background);
     color: var(--coloe-e);
     border: none;
     padding: 0;
@@ -534,7 +495,6 @@ textarea {
     max-width: 50rem;
     overflow-y: auto;
     flex: 1;
-    margin-bottom: var(--footer-height);
 }
 
 .list-header {
@@ -585,9 +545,6 @@ textarea {
 }
 /* ROUTE */
 
-.editRoute{
-    background-color: var(--color-G-light)   ;
-}
 .copy-button {
     background: none;
     border: none;
@@ -632,6 +589,8 @@ td.dplus{width:6rem}
 #containerText{
     width:100%;
     max-width: 60ch;margin:0 auto;padding:0rem 0 2rem 0}
+
+form{display: inline-block;width:100%}
 
 img.txt{width:100%;max-width: 60ch;height: auto;}
 img.weather{width: 2rem;height: 2rem;margin-left: 0.3rem;vertical-align: middle;}

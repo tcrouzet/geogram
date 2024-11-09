@@ -1,141 +1,126 @@
-<div id="page">
+<?php include 'header.php'; ?>
 
-    <?php include 'header.php'; ?>
+<main x-data="mapComponent()">
 
-    <main x-data="mapComponent()">
+    <div x-show="component === 'splash'" id="splash">
+        <h1>Share your adventures</h1>
+        <p>When you bike or hike, you can send your location, pictures and messages to your friends.</p>
+        <h1>Geogram Test Route</h1>
+        <p>Even without <a href="/login">log in</a>, you can see the <a href="/testroute">Test Route</a> where all <a href="/login">log in</a> users can test Geogram.</p>
+        <h1>Create your own routes</h1>
+        <p>Once <a href="/login">log in</a>, you can create a public or private route. Then you can invite spectators or adventurers to join the route.</p>
+        <p style="text-align: center;"><br><a href="/help">More informations…</a></p>
 
-        <template x-if="!route">
-            <div id="splash" class="loginwidth">
-                <h1>Share your adventures</h1>
-                <p>When you bike or hike, you can send your location, pictures and messages to your friends.</p>
-                <h1>Geogram Test Route</h1>
-                <p>Even without <a href="/login">log in</a>, you can see the <a href="/testroute">Test Route</a> where all <a href="/login">log in</a> users can test Geogram.</p>
-                <h1>Create your own routes</h1>
-                <p>Once <a href="/login">log in</a>, you can create a public or private route. Then you can invite spectators or adventurers to join the route.</p>
-                <p style="text-align: center;"><br><a href="/help">More informations…</a></p>
+    </div>
 
+    <div x-show="component === 'error'" id="splash">
+        <h1>Access denied</h1>
+        <p>This route is for invited and logged in users only.</p>
+    </div>
+
+    <div x-show="component === 'map'" id="mapcontainer">
+        <div id="map"></div>
+        <div id="mapfooter">
+            <div class="small-line">
+                <button @click="action_list()" class="small-bt">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button @click="action_fitall()" class="small-bt">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+                <button @click="action_fitgpx()" class="small-bt">
+                    <i class="fas fa-compress"></i>
+                </button>
+                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
+                    <i class="fas fa-images"></i>
+                </button>
+                <button @click="action_reload()" class="small-bt">
+                    <i class="fas fa-rotate"></i>
+                </button>
             </div>
-        </template>
-        <template x-if="route && route.routestatus > 1 && !(isLoggedIn && routeid == userroute)">
-            <div id="splash">
-                <h1>Access denied</h1>
-                <p>This route is for invited and logged-in users only.</p>
-            </div>
-        </template>
-        <template x-if="route && route.routestatus < 2 || (isLoggedIn && routeid == userroute)">
-            <div id="globalcontainer">
-
-                <template x-if="viewMode === 'map'">
-                    <div id="mapcontainer">
-                        <div id="map" x-init="initializeMap()"></div>
-                        <div id="mapfooter">
-                            <div class="small-line">
-                                <button @click="action_list()" class="small-bt">
-                                    <i class="fas fa-list"></i>
-                                </button>
-                                <button @click="action_fitall()" class="small-bt">
-                                    <i class="fas fa-expand-arrows-alt"></i>
-                                </button>
-                                <button @click="action_fitgpx()" class="small-bt">
-                                    <i class="fas fa-compress"></i>
-                                </button>
-                                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
-                                    <i class="fas fa-images"></i>
-                                </button>
-                                <button @click="action_reload()" class="small-bt">
-                                    <i class="fas fa-rotate"></i>
-                                </button>
-                            </div>
-                            <div class="big-line">
-                                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </button>
-                                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                                    <i class="fas fa-camera"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <template x-if="viewMode === 'list'">
-                    <div id="listcontainer">
-                        <div id="list">
-                            <div class="list-header">
-                                <span x-text="`${logs.length} adventurers`"></span>
-                                <div class="stats">
-                                    <span>km</span>
-                                    <span>m+</span>
-                                </div>
-                            </div>
-                            <div class="list-content">
-                                <template x-for="entry in logs" :key="entry.logid">
-                                    <div class="list-row">
-                                        <div class="user-col">
-                                            <span class="expand">+</span>
-                                            <span x-text="entry.username"></span>
-                                        </div>
-                                        <div class="stats">
-                                            <span x-text="entry.logkm_km"></span>
-                                            <span x-text="entry.logdev"></span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                        <div id="mapfooter">
-                        <div class="small-line">
-                                <button @click="action_map()" class="small-bt">
-                                    <i class="fas fa-map"></i>
-                                </button>
-                                <button @click="action_fitall()" class="small-bt">
-                                    <i class="fas fa-expand-arrows-alt"></i>
-                                </button>
-                                <button @click="action_fitgpx()" class="small-bt">
-                                    <i class="fas fa-compress"></i>
-                                </button>
-                                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
-                                    <i class="fas fa-images"></i>
-                                </button>
-                                <button @click="action_reload()" class="small-bt">
-                                    <i class="fas fa-rotate"></i>
-                                </button>
-                            </div>
-                            <div class="big-line">
-                                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </button>
-                                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                                    <i class="fas fa-camera"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-            </div>
-
-        </template>
-
-        <!-- Ajouter dans votre template -->
-        <div x-show="showCommentModal" class="modal-overlay" style="display: none;">
-            <div class="modal-content">
-                <textarea x-model="commentText" placeholder="Your comment..." rows="4"></textarea>
-                <div class="modal-buttons">
-                    <button @click="submitComment()">Send</button>
-                    <button @click="showCommentModal = false">Cansel</button>
-                </div>
+            <div class="big-line">
+                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
+                    <i class="fas fa-map-marker-alt"></i>
+                </button>
+                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
+                    <i class="fas fa-camera"></i>
+                </button>
             </div>
         </div>
+    </div>
 
-    </main>
+    <div x-show="component === 'list'" id="listcontainer">
+        <div id="list">
+            <div class="list-header">
+                <span x-text="`${logs.length} adventurers`"></span>
+                <div class="stats">
+                    <span>km</span>
+                    <span>m+</span>
+                </div>
+            </div>
+            <div class="list-content">
+                <template x-for="entry in logs" :key="entry.logid">
+                    <div class="list-row">
+                        <div class="user-col">
+                            <span class="expand">+</span>
+                            <span x-text="entry.username"></span>
+                        </div>
+                        <div class="stats">
+                            <span x-text="entry.logkm_km"></span>
+                            <span x-text="entry.logdev"></span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <div id="mapfooter">
+        <div class="small-line">
+                <button @click="action_map()" class="small-bt">
+                    <i class="fas fa-map"></i>
+                </button>
+                <button @click="action_fitall()" class="small-bt">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+                <button @click="action_fitgpx()" class="small-bt">
+                    <i class="fas fa-compress"></i>
+                </button>
+                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
+                    <i class="fas fa-images"></i>
+                </button>
+                <button @click="action_reload()" class="small-bt">
+                    <i class="fas fa-rotate"></i>
+                </button>
+            </div>
+            <div class="big-line">
+                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
+                    <i class="fas fa-map-marker-alt"></i>
+                </button>
+                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
-</div>
+    <div x-show="showCommentModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <textarea x-model="commentText" placeholder="Your comment..." rows="4"></textarea>
+            <div class="modal-buttons">
+                <button @click="submitComment()">Send</button>
+                <button @click="showCommentModal = false">Cansel</button>
+            </div>
+        </div>
+    </div>
+
+</main>
 
 <script>
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('mapComponent', () => ({
-        viewMode: 'map',
+        //Display
+        component: 'splash',
+        //Datas
         route: null,
         user: null,
         isLoggedIn: false,
@@ -187,6 +172,17 @@ document.addEventListener('alpine:init', () => {
                 this.canPost = this.isPostPossible();
             }
 
+            if (!this.route) {
+                this.component = 'splash';
+            } else if (this.route.routestatus > 1 && !(this.isLoggedIn && this.routeid == this.userroute)) {
+                this.component = 'error';
+            } else {
+                this.component = 'map';
+                await new Promise(resolve => setTimeout(resolve, 100));
+                await this.initializeMap();
+            }
+            console.log("Component:" + this.component);
+
             window.addEventListener('error', (event) => {
                 if (event.message && (
                     event.message.includes('_latLngToNewLayerPoint')
@@ -195,11 +191,18 @@ document.addEventListener('alpine:init', () => {
                     window.location.reload();
                 }
             });
+            console.log("Init Map ended");
+        },
+
+        checkMap(value) {
+            console.log("checkMap");
+            if (value === 'map') {
+                this.initializeMap();
+            }
         },
 
         initializeMap() {
             console.log('Initializing Map...');
-
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
             // for debug
@@ -223,7 +226,7 @@ document.addEventListener('alpine:init', () => {
             this.loadMapData();
             this.$watch('logs', (newLogs) => {
                 console.log("New logs");
-                if(this.viewMode === 'map'){
+                if(this.component === 'map'){
                     this.updateMarkers(newLogs);
                     this.action_fitall();
                     if(this.newPhoto){
@@ -753,12 +756,12 @@ document.addEventListener('alpine:init', () => {
 
         action_map() {
             console.log("map");
-            this.viewMode = "map";
+            this.component = "map";
         },
 
         action_list() {
             console.log("list");
-            this.viewMode = "list";
+            this.component = "list";
         },
 
         action_reload(){
@@ -1008,7 +1011,6 @@ document.addEventListener('alpine:init', () => {
                 this.showPopup('You need to be invited to post on this route', true);
             }
         },
-        
 
     }));
 });

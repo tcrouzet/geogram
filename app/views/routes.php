@@ -1,135 +1,130 @@
-<div id="page">
+<?php include 'header.php'; ?>
 
-    <?php include 'header.php'; ?>
+<main x-data="routesComponent()" >
 
-    <!-- Section Content -->
-    <main x-data="routesComponent()" >
+    <template x-if="!isLoggedIn">
 
-        <template x-if="!isLoggedIn">
+        <div id="splash">
 
-            <div id="splash">
+            <h1>Sorry</h1>
+            <p>You have to be logged.</p>
 
-                <h1>Sorry</h1>
-                <p>You have to be logged.</p>
+        </div>
+    </template>
 
-            </div>
-        </template>
-
-        <template x-if="isLoggedIn">
-            <div id="splash">
+    <template x-if="isLoggedIn">
+        <div id="splash">
 
 
-                <div class="divider">ROUTE CONNECTOR</div>
+            <div class="divider">ROUTE CONNECTOR</div>
 
-                <p>You can connect to a route you created, a route you were invited to or a public route. Only one route at a time.</p>
+            <p>You can connect to a route you created, a route you were invited to or a public route. Only one route at a time.</p>
 
-                <ul>
-                    <template x-for="route in routes" :key="route.routeid">
-                        <li>
-                            <a :href="`/${route.routeslug}`" x-text="route.routename"></a>
-                            <span x-show="route.routeid === user.userroute">(connected)</span>
-                            <button x-show="route.routeid != user.userroute" @click="toggleConnect(route.routeid)">Connect</button>
-                            <button x-show="route.constatus === 3" @click="toggleEdit(route.routeid)">Edit</button>
+            <ul>
+                <template x-for="route in routes" :key="route.routeid">
+                    <li>
+                        <a :href="`/${route.routeslug}`" x-text="route.routename"></a>
+                        <span x-show="route.routeid === user.userroute">(connected)</span>
+                        <button x-show="route.routeid != user.userroute" @click="toggleConnect(route.routeid)">Connect</button>
+                        <button x-show="route.constatus === 3" @click="toggleEdit(route.routeid)">Edit</button>
+                        
+                        <div x-show="route.routeid === editingRouteId" class="editRoute">
+                            <!-- Bloc d'édition -->
+                            <label>Name</label>
+                            <input type="text" class="input-field" x-model="route.routename" required minlength="3" maxlength="30" @change="updateRoute(route)">
+
+                            <label>Description</label>
+                            <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
+
+                            <label>
+                                <input type="checkbox" x-model="route.routeclosed" @change="updateRoute(route)" :checked="route.routeclosed === 1"> Route closed
+                            </label>
+                                                    
+                            <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label>
+                            <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
+                            <div x-show="gpxError" class="error-message" x-text="gpxError"></div>
                             
-                            <div x-show="route.routeid === editingRouteId">
-                                <!-- Bloc d'édition -->
-                                <label>Name</label>
-                                <input type="text" class="input-field" x-model="route.routename" required minlength="3" maxlength="30" @change="updateRoute(route)">
+                            <label>Status</label>
+                            <select x-model="route.routestatus" @change="updateRoute(route)">
+                                <option value="2">Private</option>
+                                <option value="1">Open for logged in</option>
+                                <option value="0">Open for all</option>
+                            </select>
+                            <div x-show="route.routestatus > 0">
+                                <a :href="`${route.publishpath}`" x-text="'Invitation link for publishers'"></a>
+                                <button class="copy-button" @click="copyToClipboard(`${route.publishpath}`)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div x-show="route.routestatus > 1">
+                                <a :href="`${route.invitpath}`" x-text="'Invitation link for viewers'"></a>
+                                <button class="copy-button" @click="copyToClipboard(`${route.invitpath}`)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
 
-                                <label>Description</label>
-                                <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
+                            <label>Route image (JPEG only):</label>
+                            <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
+                            <div x-show="photoError" class="error-message" x-text="photoError"></div>
+                            <div class="input-group" x-show="photoPreview || route.photopath">
+                                <img :src="photoPreview || route.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
+                            </div>
 
-                                <label>
-                                    <input type="checkbox" x-model="route.routeclosed" @change="updateRoute(route)" :checked="route.routeclosed === 1"> Route closed
-                                </label>
-                                                        
-                                <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label>
-                                <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
-                                <div x-show="gpxError" class="error-message" x-text="gpxError"></div>
-                                
-                                <label>Status</label>
-                                <select x-model="route.routestatus" @change="updateRoute(route)">
-                                    <option value="2">Private</option>
-                                    <option value="1">Open for logged in</option>
-                                    <option value="0">Open for all</option>
-                                </select>
-                                <div x-show="route.routestatus > 0">
-                                    <a :href="`${route.publishpath}`" x-text="'Invitation link for publishers'"></a>
-                                    <button class="copy-button" @click="copyToClipboard(`${route.publishpath}`)">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <div x-show="route.routestatus > 1">
-                                    <a :href="`${route.invitpath}`" x-text="'Invitation link for viewers'"></a>
-                                    <button class="copy-button" @click="copyToClipboard(`${route.invitpath}`)">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-
-                                <label>Route image (JPEG only):</label>
-                                <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
-                                <div x-show="photoError" class="error-message" x-text="photoError"></div>
-                                <div class="input-group" x-show="photoPreview || route.photopath">
-                                    <img :src="photoPreview || route.photopath" alt="Image Preview" class="image-preview" style="max-width: 200px; max-height: 200px;">
-                                </div>
-
-                                <template x-if="telegramChannels && telegramChannels.length > 0">
-                                    <div>
-                                        <div class="divider">TELEGRAM</div>
-                                        <label>Telegram channels</label>
-                                        <div x-effect="$el.value = route.routetelegram">
-                                            <select @change="updateRoute(route)">
-                                                <option value="">Select a channel...</option>
-                                                <template x-for="channel in telegramChannels" :key="channel.id">
-                                                    <option 
-                                                        :value="channel.id" 
-                                                        x-text="channel.title"
-                                                        :selected="channel.id === route.routetelegram">
-                                                    </option>
-                                                </template>
-                                            </select>
-                                        </div>
-
-                                        <label>Mode</label>
-                                        <select x-model="route.routemode" @change="updateRoute(route)">
-                                            <option value="2">Nothing deleted</option>
-                                            <option value="1">Locations deleted</option>
-                                            <option value="0">All messages deleted</option>
+                            <template x-if="telegramChannels && telegramChannels.length > 0">
+                                <div>
+                                    <div class="divider">TELEGRAM</div>
+                                    <label>Telegram channels</label>
+                                    <div x-effect="$el.value = route.routetelegram">
+                                        <select @change="updateRoute(route)">
+                                            <option value="">Select a channel...</option>
+                                            <template x-for="channel in telegramChannels" :key="channel.id">
+                                                <option 
+                                                    :value="channel.id" 
+                                                    x-text="channel.title"
+                                                    :selected="channel.id === route.routetelegram">
+                                                </option>
+                                            </template>
                                         </select>
                                     </div>
-                                </template>
 
-                                <div class="divider">ACTIONS</div>
-                                <div id="actions">
-                                    <button @click="route_actions(route.routeid,'purgeroute',$el.textContent)">Delete logs</button>
-                                    <button @click="route_actions(route.routeid,'purgephotos',$el.textContent)">Delete logs & photos</button>
+                                    <label>Mode</label>
+                                    <select x-model="route.routemode" @change="updateRoute(route)">
+                                        <option value="2">Nothing deleted</option>
+                                        <option value="1">Locations deleted</option>
+                                        <option value="0">All messages deleted</option>
+                                    </select>
                                 </div>
-                                <div x-show="actionError" class="error-message" x-text="actionError"></div>
+                            </template>
 
-                                <div class="divider"></div>
-
+                            <div class="divider">ACTIONS</div>
+                            <div id="actions">
+                                <button @click="route_actions(route.routeid,'purgeroute',$el.textContent)">Delete logs</button>
+                                <button @click="route_actions(route.routeid,'purgephotos',$el.textContent)">Delete logs & photos</button>
                             </div>
-                        </li>
-                    </template>
-                </ul>
-    
-                <div class="divider">ROUTE PLANNER</div>
+                            <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
-                <div class="input-group">
-                    <input type="text" placeholder="Route name" class="input-field" x-model="routename" required minlength="3" maxlength="30" @keyup="checkRoutename">
-                </div>
-                <div x-show="routenameError" class="error-message" x-text="routenameError"></div>
+                            <div class="divider"></div>
 
-                <button class="btn btn-submit" type="submit" @click="newRouteForm()" x-bind:disabled="loading">
-                    New route
-                </button>
+                        </div>
+                    </li>
+                </template>
+            </ul>
 
-            </div>  
-        </template>
+            <div class="divider">ROUTE PLANNER</div>
 
-    </main>
+            <div class="input-group">
+                <input type="text" placeholder="Route name" class="input-field" x-model="routename" required minlength="3" maxlength="30" @keyup="checkRoutename">
+            </div>
+            <div x-show="routenameError" class="error-message" x-text="routenameError"></div>
 
-</div>
+            <button class="btn btn-submit" type="submit" @click="newRouteForm()" x-bind:disabled="loading">
+                New route
+            </button>
+
+        </div>  
+    </template>
+
+</main>
 
 <script>
 document.addEventListener('alpine:init', () => {
@@ -297,6 +292,7 @@ document.addEventListener('alpine:init', () => {
             .then(data => {
                 if (data.status === 'success') {
                     console.log('Route updated successfully');
+                    this.toggleConnect(route.routeid);
                 } else {
                     console.error('Error updating route:', data.message);
                 }
