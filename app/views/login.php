@@ -17,7 +17,7 @@
                 </button>
         
                 <button class="btn btn-mail" @click="login('Username-Password-Authentication')" x-bind:disabled="loading">
-                    Continue with your mail
+                    Continue with email
                 </button>
 
             </div>

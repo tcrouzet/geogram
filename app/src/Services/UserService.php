@@ -79,6 +79,7 @@ class UserService
         $telegram = $userInfo['telegram'] ?? '';
         $link = $userInfo['link'] ?? '';
         $picture = $userInfo['picture'] ?? '';
+        $routeid = $userInfo['routeid'] ?? '';
 
         if($telegram){
             $this->set_user_telegram($userid, $telegram);
@@ -93,6 +94,11 @@ class UserService
                 $this->connect($userid, $route['routeid'], $status);
                 $this->set_user_route($userid, $route['routeid']);
             }
+        }
+
+        if($routeid){
+            $this->connect($userid, $routeid, 2);
+            $this->set_user_route($userid, $routeid);
         }
 
         if($picture){
@@ -142,9 +148,43 @@ class UserService
         }
     }
 
+    public function get_user_by_telegramid($userID) {
+        lecho("get_user_by_telegramid");
+        $query = "SELECT * FROM users u
+            LEFT JOIN routes r ON u.userroute = r.routeid 
+            LEFT JOIN connectors c ON u.userid = c.conuserid 
+            WHERE u.usertelegram = ?";
+    
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $userID);    
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return false;
+        }
+    }
+
+    public function get_user_by_route($routeid) {
+        lecho("get_user_by_route", $routeid);
+        $query = "SELECT * FROM users WHERE userroute = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $routeid);    
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return false;
+        }
+    }
+
     public function connect($userid,$routeid,$status=2){
         lecho("connect",$userid,$routeid);
-        $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)";
+        $insertQuery = "INSERT IGNORE INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)";
         $insertStmt = $this->db->prepare($insertQuery);
         $insertStmt->bind_param("iii", $routeid, $userid, $status);
         return $insertStmt->execute();

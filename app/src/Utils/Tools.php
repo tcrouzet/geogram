@@ -6,14 +6,18 @@ class Tools
 {
 
     public static function MyDateFormat($timestampInput, $route, $justhour=false){
+
+        return self::timestamp_to_date($timestampInput, $route["routeunit"], $justhour, $route["routetimediff"]);
+    }
+
+    public static function timestamp_to_date($timestampInput, $unit=0, $justhour=false, $timediff=0){
         if (is_numeric($timestampInput) && (int)$timestampInput == $timestampInput && $timestampInput > 0) {
             $timestamp = $timestampInput;
         } else {
-            // Convertir la chaîne de date en timestamp Unix
             $timestamp = strtotime($timestampInput);
         }
     
-        if($route["routeunit"]==1){
+        if($unit==1){
             //Emperial
             $format="g:ia";
         }else{
@@ -22,12 +26,12 @@ class Tools
     
         if(!$justhour) $format.=" Y/n/j";
         
-        return date( $format, self::timezone($timestamp, self::TimeDiff($route)) );    
+        return date( $format, self::timezone($timestamp, $timediff) );    
     }
-    
-    public static function TimeDiff($route){
+
+    public static function TimeDiff($routetimediff){
         //Heure d'été, décallage heure d'été et heure Paris
-        return $route["routetimediff"]-1;
+        return $routetimediff-1;
     }
     
     public static function meters_to_distance($meters,$route,$display=1){
@@ -66,14 +70,7 @@ class Tools
         $data = base64_decode($base64_string);
     
         // Enregistrement du fichier
-        $tmpFilename = tempnam(sys_get_temp_dir(), 'photo_');
-    
-        if (file_put_contents($tmpFilename, $data) === false) {
-            return false;
-        }
-    
-        return $tmpFilename;
-    
+        return TempFiles::getInstance()->createTempFile('photo_', $data);    
     }
 
     public static function resizeImage($sourcefile, $targetfile, $maxSize) {
@@ -90,8 +87,8 @@ class Tools
         // Calculer le ratio de redimensionnement
         $ratio = min($maxSize / $width, $maxSize / $height);
         if($ratio>1) $ratio = 1;
-        $newWidth = $width * $ratio;
-        $newHeight = $height * $ratio;
+        $newWidth = intval($width * $ratio);
+        $newHeight = intval($height * $ratio);
     
         // Créer une nouvelle image avec la taille calculée
         $newImage = imagecreatetruecolor($newWidth, $newHeight);
@@ -131,10 +128,7 @@ class Tools
         // Libérer la mémoire
         imagedestroy($newImage);
         imagedestroy($sourceImage);
-
-        if( !preg_match('@^http?://@i', $sourcefile))
-            unlink($sourcefile);
-    
+        TempFiles::getInstance()->cleanup();
         return true;
     }
     

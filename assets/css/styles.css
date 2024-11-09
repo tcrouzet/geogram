@@ -128,8 +128,9 @@ main {
     margin-top: 1rem;
 }
 #splash .error-message{
-    margin-top: -1rem;
+    margin-top: 0.2rem;
     margin-bottom: 1rem;
+    color: var(--coloe-e);
 }
 
 #splash label{
@@ -312,6 +313,7 @@ header {
     font-size: 1.2rem;
     cursor: pointer;
     transition: background-color 0.3s;
+    width: 1rem;
 }
 #mapfooter .big-line {
     display: flex;
@@ -477,10 +479,17 @@ textarea {
 
 /* LIST */
 
+#listcontainer {
+    align-items: flex-start;
+    overflow-y: auto;
+}
+
 #list {
     height: 100%;
     margin: auto;
     max-width: 50rem;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .list-header {

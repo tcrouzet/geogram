@@ -37,10 +37,13 @@
                                     <i class="fas fa-expand-arrows-alt"></i>
                                 </button>
                                 <button @click="action_fitgpx()" class="small-bt">
-                                    <i class="fas fa-map-marked-alt"></i>
+                                    <i class="fas fa-compress"></i>
                                 </button>
                                 <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
                                     <i class="fas fa-images"></i>
+                                </button>
+                                <button @click="action_reload()" class="small-bt">
+                                    <i class="fas fa-rotate"></i>
                                 </button>
                             </div>
                             <div class="big-line">
@@ -81,9 +84,31 @@
                             </div>
                         </div>
                         <div id="mapfooter">
-                            <button @click="action_map()">Map</button>
-                            <button @click="action_localise()">Ping</button>
-                            <button @click="action_message()">Message</button>
+                        <div class="small-line">
+                                <button @click="action_map()" class="small-bt">
+                                    <i class="fas fa-map"></i>
+                                </button>
+                                <button @click="action_fitall()" class="small-bt">
+                                    <i class="fas fa-expand-arrows-alt"></i>
+                                </button>
+                                <button @click="action_fitgpx()" class="small-bt">
+                                    <i class="fas fa-compress"></i>
+                                </button>
+                                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
+                                    <i class="fas fa-images"></i>
+                                </button>
+                                <button @click="action_reload()" class="small-bt">
+                                    <i class="fas fa-rotate"></i>
+                                </button>
+                            </div>
+                            <div class="big-line">
+                                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </button>
+                                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -161,6 +186,15 @@ document.addEventListener('alpine:init', () => {
                 this.routeid = this.route.routeid;
                 this.canPost = this.isPostPossible();
             }
+
+            window.addEventListener('error', (event) => {
+                if (event.message && (
+                    event.message.includes('_latLngToNewLayerPoint')
+                )) {
+                    alert('Leaflet error detected, reloading...');
+                    window.location.reload();
+                }
+            });
         },
 
         initializeMap() {
@@ -727,6 +761,10 @@ document.addEventListener('alpine:init', () => {
             this.viewMode = "list";
         },
 
+        action_reload(){
+            window.location.reload();
+        },
+
         action_testlocalise() {
             const clickHandler = (e) => {
                 console.log("testGeolocalise");
@@ -798,6 +836,7 @@ document.addEventListener('alpine:init', () => {
                             // Si pas d'EXIF, utiliser la géolocalisation actuelle
                             return this.get_localisation()
                                 .then(position => {
+                                    console.log("position OK");
                                     this.uploadImage(file, position);
                                 })
                                 .catch(geoError => {
@@ -942,6 +981,8 @@ document.addEventListener('alpine:init', () => {
 
         isPostPossible() {
             if (!this.isLoggedIn) return false;
+
+            if(this.route.routeclosed) return false;
 
             if(this.user.userroute != this.route.routeid){
                 //Not connected to the route

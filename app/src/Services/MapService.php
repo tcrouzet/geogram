@@ -120,9 +120,15 @@ class MapService
         return ['status' => 'error', 'message' => 'Newlog error'];
     }
     
-    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null){    
+    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $weather = null){    
         lecho("NewLog");
-    
+
+        $route = $this->route->get_route_by_id($routeid);
+        if($route["routeclosed"]) {
+            $this->error = "Route closed";
+            return false;
+        }
+
         $nearest = new GpxNearest($routeid);
         $point = $nearest->user($latitude, $longitude);
         // lecho($point);
@@ -138,16 +144,18 @@ class MapService
             $dev = 0;
         }
     
+        $weatherJson = json_encode($weather);
+
         // Conversion en date au format ISO 8601 (YYYY-MM-DD HH:MM:SS)
         if($timestamp){
-            $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiddiiisii", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $timestamp);
+            $insertStmt->bind_param("iiddiiisisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $timestamp);
         }else{
             // lecho("No timestamp");
-            $insertQuery = "INSERT  IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiddiiisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo);
+            $insertStmt->bind_param("iiddiiisis", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson);
         }
         
         if ($insertStmt->execute() &&  $insertStmt->affected_rows > 0) {

@@ -65,7 +65,11 @@ require("app/views/html_header.php");
 if($route_slug=="login"){
     require("app/views/login.php");
 }elseif($route_slug=="test"){
-    require("app/views/test.php");
+    if (in_array($_SERVER['REMOTE_ADDR'], ADMIN_IPS)) {
+        require("app/views/test.php");
+    } else {
+        require("app/views/map.php");
+    }
 }elseif($route_slug=="routes"){
     require("app/views/routes.php");
 }elseif($route_slug=="user"){

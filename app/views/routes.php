@@ -38,7 +38,11 @@
 
                                 <label>Description</label>
                                 <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
-                                
+
+                                <label>
+                                    <input type="checkbox" x-model="route.routeclosed" @change="updateRoute(route)" :checked="route.routeclosed === 1"> Route closed
+                                </label>
+                                                        
                                 <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label>
                                 <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
                                 <div x-show="gpxError" class="error-message" x-text="gpxError"></div>
@@ -62,7 +66,6 @@
                                     </button>
                                 </div>
 
-            
                                 <label>Route image (JPEG only):</label>
                                 <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
                                 <div x-show="photoError" class="error-message" x-text="photoError"></div>
@@ -71,16 +74,21 @@
                                 </div>
 
                                 <template x-if="telegramChannels && telegramChannels.length > 0">
-
                                     <div>
                                         <div class="divider">TELEGRAM</div>
                                         <label>Telegram channels</label>
-                                        <select x-model="selectedChannel" @change="updateRoute(route)" :value="route.routetelegram">
-                                            <option value="">Select a channel...</option>
-                                            <template x-for="channel in telegramChannels" :key="channel.id">
-                                                <option :value="channel.id" x-text="channel.title" :selected="channel.id === route.routetelegram"></option>
-                                            </template>
-                                        </select>
+                                        <div x-effect="$el.value = route.routetelegram">
+                                            <select @change="updateRoute(route)">
+                                                <option value="">Select a channel...</option>
+                                                <template x-for="channel in telegramChannels" :key="channel.id">
+                                                    <option 
+                                                        :value="channel.id" 
+                                                        x-text="channel.title"
+                                                        :selected="channel.id === route.routetelegram">
+                                                    </option>
+                                                </template>
+                                            </select>
+                                        </div>
 
                                         <label>Mode</label>
                                         <select x-model="route.routemode" @change="updateRoute(route)">
@@ -93,7 +101,8 @@
 
                                 <div class="divider">ACTIONS</div>
                                 <div id="actions">
-                                    <button @click="route_actions(route.routeid,'purgeroute',$el.textContent)">Delete all logs</button>
+                                    <button @click="route_actions(route.routeid,'purgeroute',$el.textContent)">Delete logs</button>
+                                    <button @click="route_actions(route.routeid,'purgephotos',$el.textContent)">Delete logs & photos</button>
                                 </div>
                                 <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
@@ -145,7 +154,6 @@ document.addEventListener('alpine:init', () => {
         // Telegram
         telegramConnected: false,
         telegramChannels: [],
-        selectedChannel: '',
 
         init(){
             console.log("Init routes");
@@ -232,7 +240,6 @@ document.addEventListener('alpine:init', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${this.user.usertoken}`
                 },
                 body: new URLSearchParams({
                     view: "newRoute",
@@ -240,6 +247,11 @@ document.addEventListener('alpine:init', () => {
                     routename: this.routename
                 })
             })
+            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
+            // .then(text => {
+            //     console.log('Response Text:', text); // Affiche la réponse brute
+            //     return JSON.parse(text); // Convertir en JSON si nécessaire
+            // })
             .then(response => response.json())
             .then(data => {
                 //console.log(data);
@@ -271,8 +283,9 @@ document.addEventListener('alpine:init', () => {
                     routename: route.routename,
                     routerem: route.routerem,
                     routestatus: route.routestatus,
-                    telegram: this.selectedChannel,
-                    routemode: route.routemode
+                    telegram: route.routetelegram,
+                    routemode: route.routemode,
+                    routeclosed: route.routeclosed,
                 })
             })
             // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -497,50 +510,6 @@ document.addEventListener('alpine:init', () => {
                 }
             });
         },
-
-        linkChannelToRoute(routeId) {
-            if (!this.selectedChannel) return;
-            
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    view: "linkTelegramChannel",
-                    routeid: routeId,
-                    channel_id: this.selectedChannel
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    this.selectingChannelForRoute = null;
-                    this.loadRoutes(); // Recharger les routes pour mettre à jour les infos
-                }
-            });
-        },
-
-        unlinkChannel(routeId) {
-            if (confirm('Are you sure you want to unlink this channel?')) {
-                fetch('/api/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        view: "unlinkTelegramChannel",
-                        routeid: routeId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        this.loadRoutes();
-                    }
-                });
-            }
-        }
 
     }));
 });

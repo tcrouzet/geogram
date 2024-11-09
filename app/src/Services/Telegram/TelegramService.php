@@ -193,9 +193,15 @@ class TelegramService
 
             lecho("Location find ",$this->userid);
 
-            //No more than one location/10minutes except for the admin and test purpose
-            if ( $this->isAdmin() && $this->channel['routerealtime']==0 ){
-                $query = "SELECT EXISTS(SELECT 1 FROM rlogs WHERE loguser = ? AND logtime > (UNIX_TIMESTAMP() - 600))";
+            //No more than one location/10minutes except for real time
+            if ( $this->isAdmin() || $this->channel['routerealtime']==0 ){
+                // $query = "SELECT EXISTS(SELECT 1 FROM rlogs WHERE loguser = ? AND logtime > (UNIX_TIMESTAMP() - 600))";
+                $query = "SELECT EXISTS(
+                    SELECT 1 
+                    FROM rlogs 
+                    WHERE loguser = ? 
+                    AND logtime > DATE_SUB(NOW(), INTERVAL 10 MINUTE)
+                )";
                 $stmt_lastuser = $this->db->prepare($query);
                 $stmt_lastuser->bind_param("i", $this->user["userid"]);
                 $stmt_lastuser->execute();

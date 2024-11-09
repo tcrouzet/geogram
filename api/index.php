@@ -8,15 +8,13 @@ use App\Services\UserService;
 use App\Services\MapService;
 use App\Services\RouteService;
 use App\Services\AuthService;
-use App\Services\Telegram\TelegramService;
-
-$logger = \App\Utils\Logger::getInstance();
+//use App\Services\Telegram\TelegramService;
 
 // Configuration des erreurs
 set_time_limit(60);
 
 microtime();
-lecho($_POST);
+//lecho($_POST);
 
 if (DEBUG) {
     ini_set('display_errors', 1);

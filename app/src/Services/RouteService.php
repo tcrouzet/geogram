@@ -48,12 +48,9 @@ class RouteService
         );
         
         return $superchargedRoutes;
-    
     }
 
-    public function get_route_by_id($routeid)
-    {
-    
+    public function get_route_by_id($routeid){
         $query="SELECT * FROM `routes` WHERE routeid = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $routeid);
@@ -79,6 +76,19 @@ class RouteService
         }
     }
 
+    public function get_route_by_telegram($chatID){
+        $query="SELECT * FROM `routes` WHERE routetelegram = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("s", $chatID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if($result && $result->num_rows > 0){
+            return $this->supercharge($result->fetch_assoc());
+        }else{
+            return false;
+        }
+    }
+
     public function get_route_by_link($link){
         $query="SELECT * FROM `routes` WHERE routepublisherlink = ? OR 	routeviewerlink = ?";
         $stmt = $this->db->prepare($query);
@@ -92,8 +102,7 @@ class RouteService
         }
     }
 
-    private function supercharge($route): array
-    {
+    private function supercharge($route): array {
         $route['photopath'] = $this->fileManager->route_photo_web($route);
         $route['invitpath'] = $this->make_invitation_link($route);
         $route['publishpath'] = $this->make_publish_link($route);
@@ -128,6 +137,8 @@ class RouteService
     
         if($action == "purgeroute"){
             $message = $this->delete_all_logs($routeid);
+        }else if($action == "purgephotos"){
+            $message = $this->delete_logs_and_photos($routeid);
         }else{
             return ['status' => 'error', 'message' => "Unknown action: $action"];        
         }
@@ -147,6 +158,20 @@ class RouteService
             return false;
     }
 
+    public function delete_logs_and_photos($routeid){
+        $stmt = $this->db->prepare("SELECT * FROM rlogs WHERE logroute = ? AND logphoto >0");
+        $stmt->bind_param("i", $routeid);
+        $stmt->execute();
+        if( $result = $stmt->get_result()){
+            $logs = $result->fetch_all(MYSQLI_ASSOC);
+            foreach($logs as $log){
+                $this->fileManager->purgeUserRouteData($log['loguser'], $routeid);
+            }
+            return $this->delete_all_logs($routeid);
+        }
+        return false;
+    }
+
     public function newRoute(){
     
         $userid = $_POST['userid'] ?? '';
@@ -156,7 +181,7 @@ class RouteService
         }
     
         $slug = Tools::slugify($routename);
-        $initials = initial($routename);
+        $initials = Tools::initial($routename);
     
         $query = "SELECT * FROM routes WHERE routename=? OR routeslug=?;";
         $stmt = $this->db->prepare($query);
@@ -179,7 +204,7 @@ class RouteService
                 $routepublisherlink = $this->generateInvitation($routeid, 2);
                 $this->updateRouteInvitation($routeid, $routeviewerlink, $routepublisherlink);
             
-                $this->connect($userid,$routeid);
+                $this->connect($userid,$routeid,3);
                 $route = [
                     'routeid' => $routeid,
                     'routename' => $routename,
@@ -272,6 +297,7 @@ class RouteService
         $routestatus = $_POST['routestatus'] ?? '';
         $routerem = $_POST['routerem'] ?? '';
         $routemode = $_POST['routemode'] ?? '';
+        $routeclosed = $_POST['routeclosed'] === 'true' ? 1 : 0;
     
         $query = "SELECT * FROM routes WHERE routeid=?;";
         $stmt = $this->db->prepare($query);
@@ -281,8 +307,8 @@ class RouteService
     
         if ($result && $result->num_rows > 0) {
     
-            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ?, routemode = ? WHERE routeid = ?");
-            $stmt->bind_param("sssiii", $routename, $routerem, $routestatus, $telegram, $routemode, $routeid);
+            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ?, routemode = ?, routeclosed = ? WHERE routeid = ?");
+            $stmt->bind_param("sssiiii", $routename, $routerem, $routestatus, $telegram, $routemode, $routeclosed, $routeid);
             if ($stmt->execute())
                return ['status' => 'success', 'message' => 'Update fail'];
             else
