@@ -24,7 +24,6 @@
                 </button>
             </div>
 
-
         <template x-if="!isOpen">
             <p>This story is protected</p>
         </template>
@@ -43,8 +42,8 @@
                                 <img :src="log.photolog" class="log-photo" alt="Adventure photo">
                             </template>
                             
-                            <template x-if="log.logcomment">
-                                <p class="log-comment" x-text="log.logcomment"></p>
+                            <template x-if="log.comment_formated">
+                                <p class="log-comment" x-html="log.comment_formated"></p>
                             </template>
 
                             <div class="log-stats">
@@ -91,21 +90,15 @@ document.addEventListener('alpine:init', () => {
                 userstory: this.userstory,
             });
             if (data.status == 'success') {
-                this.logs = data.logs;
+                this.logs = this.sortData(data.logs, this.sortField, this.sortDirection);
                 this.storyUser = data.user;
                 this.storyUserName = data.user.fusername;
             }
         },
 
-        sortBy(field) {
-            if (this.sortField === field) {
-                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-            } else {
-                this.sortField = field;
-                this.sortDirection = 'desc';
-            }
-            
-            this.logs = [...this.logs].sort((a, b) => {
+        // Nouvelle fonction helper pour le tri
+        sortData(data, field, direction) {
+            return [...data].sort((a, b) => {
                 let aVal, bVal;
                 
                 if (field === 'logkm') {
@@ -119,10 +112,20 @@ document.addEventListener('alpine:init', () => {
                     bVal = b[field];
                 }
                 
-                return this.sortDirection === 'asc' 
+                return direction === 'asc' 
                     ? aVal - bVal 
                     : bVal - aVal;
             });
+        },
+
+        sortBy(field) {
+            if (this.sortField === field) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortField = field;
+                this.sortDirection = 'desc';
+            }
+            this.logs = this.sortData(this.logs, this.sortField, this.sortDirection);
         },
 
     }));

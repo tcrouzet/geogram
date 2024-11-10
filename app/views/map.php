@@ -239,76 +239,30 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        loadMapData() {
-            console.log("loadMapData");
-            const formData = new URLSearchParams();
-            formData.append('view', 'loadMapData');
-            formData.append('userid', this.userid);
-            formData.append('userroute', this.userroute);
-            formData.append('routeid', this.route.routeid);
-            formData.append('routestatus', this.route.routestatus);
-
-            // console.log(formData.toString());
-
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString()
-            })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if(data.status == 'error'){
-                    alert("Error:" + data.message);
-                }else if (data.status == 'success') {
-                    this.geoJSON = data.geojson;
-                    this.updateGPX();
-                    this.mapMode = true;
-                    this.logs = data.logs;
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        async loadMapData() {
+            const data = await apiService.call('loadMapData', {
+                userroute: this.userroute,
+                routeid: this.route.routeid,
+                userstory: this.userstory,
+                routestatus: this.route.routestatus
+            });
+            if (data.status == 'success') {
+                this.geoJSON = data.geojson;
+                this.updateGPX();
+                this.mapMode = true;
+                this.logs = data.logs;
+            }
         },
 
-        userMarkers(userid){
-            console.log("userMarkers");
-            const formData = new URLSearchParams();
-            formData.append('view', 'userMarkers');
-            formData.append('userid', this.userid);
-            formData.append('loguser', userid);
-            formData.append('routeid', this.route.routeid);
-
-            // console.log(formData.toString());
-
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString()
-            })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
-            .then(response => response.json())
-            .then(data => {
-                if(data.status == 'error'){
-                    alert("Error:" + data.message);
-                }else if (data.status == 'success') {
-                    this.mapMode = false;
-                    this.logs = data.logs;
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        async userMarkers(userid){
+            const data = await apiService.call('userMarkers', {
+                routeid: this.route.routeid,
+                loguser: userid
+            });
+            if (data.status == 'success') {
+                this.mapMode = false;
+                this.logs = data.logs;
+            }
         },
 
         updateMarkers(logs) {
@@ -692,55 +646,41 @@ document.addEventListener('alpine:init', () => {
 
         action_fitall() {
             console.log("fitall");
-            
-            // Attendre un court instant avant d'effectuer l'opération
-            // setTimeout(() => {
-            //     try {
+            let bounds = null;
 
-                    let bounds = null;
+            // Inclure les limites des marqueurs
+            if (this.cursors.length > 0) {
+                const markerBounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
+                bounds = markerBounds;
+            }
 
-                    // Inclure les limites des marqueurs
-                    if (this.cursors.length > 0) {
-                        const markerBounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
-                        bounds = markerBounds;
-                    }
+            // Inclure les limites du GeoJSON si disponible
+            if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
+                const geoJsonBounds = this.geoJsonLayer.getBounds();
+                if (bounds) {
+                    bounds.extend(geoJsonBounds);
+                } else {
+                    bounds = geoJsonBounds;
+                }
+            }
 
-                    // Inclure les limites du GeoJSON si disponible
-                    if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
-                        const geoJsonBounds = this.geoJsonLayer.getBounds();
-                        if (bounds) {
-                            bounds.extend(geoJsonBounds);
-                        } else {
-                            bounds = geoJsonBounds;
-                        }
-                    }
-
-                    // Ajuster la carte aux nouvelles limites combinées
-                    if (bounds && bounds.isValid()) {
-                        this.map.fitBounds(bounds, { 
-                            padding: [50, 50], 
-                            maxZoom: 18,
-                            animate: false
-                        });
-                    }
-                // } catch (error) {
-                //     console.error('Error in fitall:', error);
-                // }
-            // }, 100); // Délai de 100ms
+            // Ajuster la carte aux nouvelles limites combinées
+            if (bounds && bounds.isValid()) {
+                this.map.fitBounds(bounds, { 
+                    padding: [50, 50], 
+                    maxZoom: 18,
+                    animate: false
+                });
+            }
+            this.action_map();
         },
 
         action_fitgpx() {
             console.log("fitgpx");
-
-            // setTimeout(() => {
-            //     try {
-                    if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
-                        this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
-                    }
-            //     } catch (error) {
-            //         console.error('Error in figpx:', error);
-            //     }
-            // }, 100);
+            if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
+                this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
+            }
+            this.action_map();
         },
 
         action_map() {
@@ -969,15 +909,6 @@ document.addEventListener('alpine:init', () => {
                     userMarker.openPopup();
                 }
             }
-        },
-
-        isRouteActive() {
-            const now = new Date();
-            if (this.route.routestop) {
-                const stopDate = new Date(this.route.routestop);
-                return stopDate > now;
-            }
-            return true;  // Si pas de date de fin, la route est active
         },
 
         showAccessMessage() {

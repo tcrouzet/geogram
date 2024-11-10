@@ -46,37 +46,33 @@ class MapService
     public function get_map_data($routeid){
 
         $route = $this->route->get_route_by_id($routeid);
-
-        if(!empty($route["link"]) && $route["stop"]==0){
-
-            // $start = time()-86400*7;
-            // $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? AND timestamp> ? GROUP BY userid) ORDER BY km DESC,username ASC;";
-            // $stmt = $mysqli->prepare($query);
-            // $stmt->bind_param("iii", $route['chatid'], $route['chatid'], $start);
-
-        }elseif ($route["start"]>0){
-
-            // $query = "SELECT * FROM logs WHERE chatid=? AND (userid, timestamp) IN (SELECT userid, MAX(timestamp) FROM logs WHERE chatid=? GROUP BY userid) ORDER BY km DESC,username ASC;";
-            // $stmt = $mysqli->prepare($query);
-            // $stmt->bind_param("ii", $route['chatid'], $route['chatid']);
-
-        }else{
-
-            $query = "SELECT *
-                FROM rlogs
-                INNER JOIN users ON rlogs.loguser = users.userid
-                WHERE rlogs.logroute = ?
-                AND (rlogs.loguser, rlogs.logtime) IN (
-                    SELECT loguser, MAX(logtime)
-                    FROM rlogs
-                    WHERE logroute = ?
-                    GROUP BY loguser
-                )
-                ORDER BY rlogs.logtime ASC;";
-
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("ii", $routeid, $routeid);
+        if(!$route){
+            return ['status' => 'error', 'message' => 'Unknown route'];
         }
+
+        $query = "SELECT *
+            FROM rlogs
+            INNER JOIN users ON rlogs.loguser = users.userid
+            WHERE rlogs.logroute = ?
+            AND (rlogs.loguser, rlogs.logtime) IN (
+                SELECT loguser, MAX(logtime)
+                FROM rlogs
+                WHERE logroute = ?
+                AND (? IS NULL OR logtime >= ?)
+                AND (? IS NULL OR logtime <= ?)
+                GROUP BY loguser
+            )
+            ORDER BY rlogs.logtime ASC;";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("iissss", 
+            $routeid, 
+            $routeid, 
+            $route["routestart"], 
+            $route["routestart"],
+            $route["routestop"], 
+            $route["routestop"]
+        );
 
         return $this->format_map_data($stmt, $route); 
     }
@@ -96,15 +92,13 @@ class MapService
                 $row['username_formatted'] = $row['username'] . "<br/>" . Tools::MyDateFormat($row['logtime'],$route) . "<br/>" . Tools::meters_to_distance($row["logkm"], $route);
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
                 $row['photolog'] = $this->fileManager->user_route_photo_web($row);
-                lecho($row['photopath']);
+                $row['comment_formated'] = Tools::formatMessage($row['logcomment']);
             }
 
             //lecho($logs);
             return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson];
-        }else{
-            return ['status' => 'error', 'message' => 'Map format fail'];
         }
-
+        return ['status' => 'error', 'message' => 'Map format fail'];
     }
 
     public function sendgeolocation(){
@@ -262,16 +256,31 @@ class MapService
 
         if($userstory && $routeid){
             $user = (new UserService())->get_user($userstory);
-            $query = "SELECT * FROM rlogs WHERE logroute = ? AND loguser = ? ORDER BY logtime ASC";
+            $route = (new RouteService())->get_route_by_id($routeid);
+
+            $query = "SELECT * FROM rlogs 
+                WHERE logroute = ? 
+                AND loguser = ? 
+                AND (? IS NULL OR logtime >= ?)
+                AND (? IS NULL OR logtime <= ?)
+                ORDER BY logtime ASC";
+
             $stmt = $this->db->prepare($query);
-            $stmt->bind_param("ii", $routeid, $userstory);
+            $stmt->bind_param("iissss", 
+                $routeid, 
+                $userstory, 
+                $route["routestart"], 
+                $route["routestart"],
+                $route["routestop"], 
+                $route["routestop"]
+            );
+
             $data = $this->format_map_data($stmt, $this->route->get_route_by_id($routeid));
             $data['user'] = $user;
+            $data['route'] = $route;
             return $data; 
         }
-
         return ['status' => 'error', 'message' => 'Unknown story'];
     }
     
-
 }

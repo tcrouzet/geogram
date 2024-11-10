@@ -87,6 +87,15 @@ const initService = {
         return data;
     },
 
+    isRouteActive() {
+        const now = new Date();
+        if (this.route.routestop) {
+            const stopDate = new Date(this.route.routestop);
+            return stopDate > now;
+        }
+        return true;  // Si pas de date de fin, la route est active
+    },
+
     isPostPossible() {
         if (!this.isLoggedIn) return false;
 

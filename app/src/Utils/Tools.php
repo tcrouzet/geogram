@@ -203,4 +203,21 @@ class Tools
         // Rejoindre les mots
         return implode(' ', $words);
     }
+
+    public static function formatMessage($message) {
+        // Expression régulière pour détecter les URLs
+        $pattern = '/(https?:\/\/[^\s<]+[^<.,:;"\')\]\s])/i';
+        
+        // Remplacer les URLs par une icône avec lien
+        $formattedMessage = preg_replace_callback($pattern, function($matches) {
+            $url = $matches[0];
+            // Icône Font Awesome avec lien
+            return sprintf(
+                '<a href="%s" target="_blank" rel="noopener noreferrer"><i class="fas fa-link"></i></a>',
+                htmlspecialchars($url)
+            );
+        }, $message);
+        
+        return $formattedMessage;
+    }
 }
