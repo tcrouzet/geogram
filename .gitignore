@@ -1,5 +1,6 @@
 .DS_Store
 .well-known
+.vscode
 @eaDir/
 admin/secret.php
 admin/telegram.md
