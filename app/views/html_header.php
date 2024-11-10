@@ -74,7 +74,7 @@ function version(){
     <?php endif; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="/assets/js/apiService.js"></script>
+    <script src="/assets/js/apiService.js?<?= version() ?>"></script>
 
     <link rel='stylesheet' id='style-css' href='assets/css/styles.css?<?= version() ?>' type='text/css' media='screen' />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

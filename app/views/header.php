@@ -1,40 +1,45 @@
 <!-- Section Top -->
 <header x-data="headerComponent()">
 
-    <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo.svg" alt="Geogram"></a></div>
+    <div class="header-top">
 
-    <div id="routename">
-        <template x-if="route && route.routename">
-            <span x-text="route.routename"></span>
-        </template>
-    </div>
+        <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo.svg" alt="Geogram"></a></div>
 
-    <div  id="signin">
+        <div  id="signin">
 
-        <template x-if="isLoggedIn">
-            <div class="user-menu">
-                <button @click="menuOpen = !menuOpen" class="icon-button">
-                    <div class="marker markerS" :style="userIconStyle">
-                        <template x-if="!user.userphoto">
-                            <span x-text="user.userinitials"></span>
-                        </template>
+            <template x-if="isLoggedIn">
+                <div class="user-menu">
+                    <button @click="menuOpen = !menuOpen" class="icon-button">
+                        <div class="marker markerS" :style="userIconStyle">
+                            <template x-if="!user.userphoto">
+                                <span x-text="user.userinitials"></span>
+                            </template>
+                        </div>
+                    </button>
+                    <div x-show="menuOpen" @click.outside="menuOpen = false" class="dropdown-menu">
+                        <a href="#" @click.prevent="userpage">Profil</a>
+                        <a href="#" @click.prevent="newroute">Routes</a>
+                        <a href="#" @click.prevent="help">Help</a>
+                        <a href="#" @click.prevent="contact">Contact</a>
+                        <a href="#" @click.prevent="donate">Donate</a>
+                        <a href="#" @click.prevent="logout">Logout</a>
                     </div>
-                </button>
-                <div x-show="menuOpen" @click.outside="menuOpen = false" class="dropdown-menu">
-                    <a href="#" @click.prevent="userpage">Profil</a>
-                    <a href="#" @click.prevent="newroute">Routes</a>
-                    <a href="#" @click.prevent="help">Help</a>
-                    <a href="#" @click.prevent="contact">Contact</a>
-                    <a href="#" @click.prevent="donate">Donate</a>
-                    <a href="#" @click.prevent="logout">Logout</a>
                 </div>
-            </div>
-        </template>
+            </template>
 
-        <template x-if="!isLoggedIn">
-            <img src="/assets/img/sign-in.svg?1" @click="login" class="marker markerS" alt="Sign in">
-        </template>
+            <template x-if="!isLoggedIn">
+                <img src="/assets/img/sign-in.svg?1" @click="login" class="marker markerS" alt="Sign in">
+            </template>
+        </div>
+
     </div>
+
+    <template x-if="route && route.routename">
+        <div id="routename">
+            <a :href="`/${route.routeslug}`" x-text="route.routename"></a>
+        </div>
+    </template>
+
 </header>
  
 
@@ -47,7 +52,7 @@ document.addEventListener('alpine:init', () => {
         menuOpen: false,
         isLoggedIn: false,
         isOnRoute: false,
-        userstory: <?= json_encode($userid) ?>,
+        storyUser: <?= json_encode($userid) ?>,
 
         async init(reset=false) {
             console.log("***Initializing header");
@@ -89,7 +94,7 @@ document.addEventListener('alpine:init', () => {
                 route: this.route,
                 isLoggedIn: this.isLoggedIn,
                 isOnRoute: this.isOnRoute,
-                userstory: this.userstory,
+                storyUser: this.storyUser,
                 ended: ended,
             });
         },

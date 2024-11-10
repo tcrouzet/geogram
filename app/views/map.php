@@ -20,111 +20,149 @@
 
     <div x-show="component === 'map'" id="mapcontainer">
         <div id="map"></div>
-        <div id="mapfooter">
-            <div class="small-line">
-                <button @click="action_list()" class="small-bt">
-                    <i class="fas fa-list"></i>
-                </button>
-                <button @click="action_fitall()" class="small-bt">
-                    <i class="fas fa-expand-arrows-alt"></i>
-                </button>
-                <button @click="action_fitgpx()" class="small-bt">
-                    <i class="fas fa-compress"></i>
-                </button>
-                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
-                    <i class="fas fa-images"></i>
-                </button>
-                <button @click="action_reload()" class="small-bt">
-                    <i class="fas fa-rotate"></i>
-                </button>
-            </div>
-            <div class="big-line">
-                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                    <i class="fas fa-map-marker-alt"></i>
-                </button>
-                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                    <i class="fas fa-camera"></i>
-                </button>
-            </div>
-        </div>
+        <div x-html="getMapFooter('map')"></div>
     </div>
 
-    <div x-show="component === 'list'" id="listcontainer">
+    <div  x-show="component === 'story'" id="storycontenair" class="longcontenair">
+        <div id="story" class="long">
 
-        <div id="list">
-
-            <div class="list-header">
-                <div class="sortable-col" @click="sortBy('username')">
-                    <span x-text="`${logs.length} adventurers`"></span>
-                    <i class="fas" :class="{
-                        'fa-sort': sortField !== 'username',
-                        'fa-sort-up': sortField === 'username' && sortDirection === 'asc',
-                        'fa-sort-down': sortField === 'username' && sortDirection === 'desc'
-                    }"></i>
+            <template x-if="slogs.length === 0">
+                <div class="empty-message">
+                    <h1>No story yet</h1>
+                    <p>Adventurers need to geolocalise…</p>
                 </div>
-                <div class="stats">
-                    <div class="sortable-col" @click="sortBy('logkm')">
-                        <span>km</span>
-                        <i class="fas" :class="{
-                            'fa-sort': sortField !== 'logkm',
-                            'fa-sort-up': sortField === 'logkm' && sortDirection === 'asc',
-                            'fa-sort-down': sortField === 'logkm' && sortDirection === 'desc'
-                        }"></i>
+            </template>
+
+            <template x-if="slogs.length > 0">
+                <div>
+                    <h1 x-text="Story'"></h1>
+
+                    <div class="sort-controls">
+                        <button @click="StorySortBy('logtime')" class="sort-btn">
+                            Date
+                            <i class="fas" :class="{
+                                'fa-sort': sortField !== 'logtime',
+                                'fa-sort-up': sortField === 'logtime' && sortDirection === 'asc',
+                                'fa-sort-down': sortField === 'logtime' && sortDirection === 'desc'
+                            }"></i>
+                        </button>
+                        
+                        <button @click="StorySortBy('logkm')" class="sort-btn">
+                            Distance
+                            <i class="fas" :class="{
+                                'fa-sort': sortField !== 'logkm',
+                                'fa-sort-up': sortField === 'logkm' && sortDirection === 'asc',
+                                'fa-sort-down': sortField === 'logkm' && sortDirection === 'desc'
+                            }"></i>
+                        </button>
+
+                        <button @click="storyPhotoOnly = !storyPhotoOnly" class="sort-btn">
+                            <i class="fas fa-camera" :class="{ 'active': storyPhotoOnly }"></i>
+                        </button>
                     </div>
-                    <div class="sortable-col" @click="sortBy('logdev')">
-                        <span>m+</span>
-                        <i class="fas" :class="{
-                            'fa-sort': sortField !== 'logdev',
-                            'fa-sort-up': sortField === 'logdev' && sortDirection === 'asc',
-                            'fa-sort-down': sortField === 'logdev' && sortDirection === 'desc'
-                        }"></i>
+
+                    <div class="story-logs">
+                        <template x-for="log in slogs.filter(log => {
+                            if (!storyPhotoOnly && storyUser === '') return true;    
+                            if (storyPhotoOnly && log.logphoto <= 0) return false;                        
+                            if (storyUser && log.loguser !== storyUser) return false;
+                            return true;})" :key="log.logid">
+
+                            <div class="log-entry">
+                                <div class="log-header">
+                                    <template x-if="!storyUser">
+                                        <span class="log-author" x-text="log.username_formated"></span>
+                                    </template>
+                                    <span class="log-date" x-text="log.date_formated"></span>
+                                </div>
+
+                                <div class="log-content">
+                                    <template x-if="log.photolog">
+                                        <img :src="log.photolog" class="log-photo" alt="Adventure photo">
+                                    </template>
+                                    
+                                    <template x-if="log.comment_formated">
+                                        <p class="log-comment" x-html="log.comment_formated"></p>
+                                    </template>
+
+                                    <div class="log-stats">
+                                        <span class="map-link" @click.stop="showUserOnMap(log)">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </span>
+                                        <span x-text="log.logkm_km + 'km'"></span>
+                                        <span x-text="log.logdev + 'm+'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
-            </div>
+            </template>
+        </div>
+        <div x-html="getMapFooter('story')"></div>
+    </div>
 
-            <div class="list-content">
-                <template x-for="entry in logs" :key="entry.logid">
-                    <div class="list-row" @click="showUserOnMap(entry)">
-                        <div class="user-col">
-                            <span class="expand" @click.stop="expandUser(entry)">+</span>
-                            <span x-text="entry.username"></span>
+    <div x-show="component === 'list'" id="listcontainer" class="longcontenair">
+        <div id="list" class="long">
+
+            <template x-if="logs.length === 0">
+                <div class="empty-message">
+                    <h1>No list yet</h1>
+                    <p>Adventurers need to geolocalise…</p>
+                </div>
+            </template>
+
+            <template x-if="logs.length > 0">
+                <div>
+                    <div class="list-header">
+                        <div class="sortable-col" @click="sortBy('username')">
+                            <span x-text="`${logs.length} adventurers`"></span>
+                            <i class="fas" :class="{
+                                'fa-sort': sortField !== 'username',
+                                'fa-sort-up': sortField === 'username' && sortDirection === 'asc',
+                                'fa-sort-down': sortField === 'username' && sortDirection === 'desc'
+                            }"></i>
                         </div>
                         <div class="stats">
-                            <span x-text="entry.logkm_km"></span>
-                            <span x-text="entry.logdev"></span>
+                            <div class="sortable-col" @click="sortBy('logkm')">
+                                <span>km</span>
+                                <i class="fas" :class="{
+                                    'fa-sort': sortField !== 'logkm',
+                                    'fa-sort-up': sortField === 'logkm' && sortDirection === 'asc',
+                                    'fa-sort-down': sortField === 'logkm' && sortDirection === 'desc'
+                                }"></i>
+                            </div>
+                            <div class="sortable-col" @click="sortBy('logdev')">
+                                <span>m+</span>
+                                <i class="fas" :class="{
+                                    'fa-sort': sortField !== 'logdev',
+                                    'fa-sort-up': sortField === 'logdev' && sortDirection === 'asc',
+                                    'fa-sort-down': sortField === 'logdev' && sortDirection === 'desc'
+                                }"></i>
+                            </div>
                         </div>
                     </div>
-                </template>
-            </div>
+
+                    <div class="list-content">
+                        <template x-for="entry in logs" :key="entry.logid">
+                            <div class="list-row" @click="showUserOnMap(entry)">
+                                <div class="user-col">
+                                    <span class="expand" @click.stop="expandUser(entry)">+</span>
+                                    <span x-text="entry.username"></span>
+                                </div>
+                                <div class="stats">
+                                    <span x-text="entry.logkm_km"></span>
+                                    <span x-text="entry.logdev"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
         </div>
- 
-        <div id="mapfooter">
-            <div class="small-line">
-                <button @click="action_map()" class="small-bt">
-                    <i class="fas fa-map"></i>
-                </button>
-                <button @click="action_fitall()" class="small-bt">
-                    <i class="fas fa-expand-arrows-alt"></i>
-                </button>
-                <button @click="action_fitgpx()" class="small-bt">
-                    <i class="fas fa-compress"></i>
-                </button>
-                <button @click="action_gallery()" class="small-bt" :class="{ 'disabled-bt': !canPost }">
-                    <i class="fas fa-images"></i>
-                </button>
-                <button @click="action_reload()" class="small-bt">
-                    <i class="fas fa-rotate"></i>
-                </button>
-            </div>
-            <div class="big-line">
-                <button @click="action_localise()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                    <i class="fas fa-map-marker-alt"></i>
-                </button>
-                <button @click="action_photo()" class="big-bt" :class="{ 'disabled-bt': !canPost }">
-                    <i class="fas fa-camera"></i>
-                </button>
-            </div>
-        </div>
+
+        <div x-html="getMapFooter('list')"></div>
+
     </div>
 
     <div x-show="showCommentModal" class="modal-overlay" style="display: none;">
@@ -162,14 +200,22 @@ document.addEventListener('alpine:init', () => {
         mapMode: true,
         uploading: false,
         newPhoto: false,
+        // Actions
+        canPost: false,
         // Comments
         showCommentModal: false,
         commentText: '',
         currentLogId: null,
-        canPost: false,
         //List
         sortField: 'username',
         sortDirection: 'asc',
+        //Story
+        storyUser: null,
+        storyName: '',
+        sortField: 'logtime',
+        sortDirection: 'desc',
+        slogs: false,
+        storyPhotoOnly: false,
 
         async init() {
             await initService.initComponent(this);
@@ -206,17 +252,6 @@ document.addEventListener('alpine:init', () => {
         initializeMap() {
             console.log('Initializing Map...');
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
-
-            // for debug
-            // this.map.on('movestart move moveend zoomstart zoom zoomend drag dragend', (e) => {
-            //     console.log('Map event:', e.type);
-            // });
-            // this.map.on('viewreset', (e) => {
-            //     console.log('View reset event');
-            // });
-            // this.map.on('tileerror', (e) => {
-            //     console.log('Tile error:', e);
-            // });
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
@@ -278,7 +313,7 @@ document.addEventListener('alpine:init', () => {
             // Ajout de nouveaux marqueurs à la carte
             logs.forEach((entry, index) => {
 
-                if (entry.loglatitude && entry.loglongitude && entry.username_formatted){
+                if (entry.loglatitude && entry.loglongitude && entry.username_formated){
 
                     // Vérification de la présence d'une image pour cet utilisateur
                     const statusIcon = entry.logphoto ? 
@@ -330,7 +365,7 @@ document.addEventListener('alpine:init', () => {
  
             const popupContent = this.mapMode ? 
                 `<div class="geoPopup">
-                    <h3>${entry.username_formatted}</h3>
+                    <h3>${entry.username_formated}</h3>
                     ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
                     ${entry.logcomment ? `<p class="commentText">${entry.logcomment}</p>` : ''}
                     <div class="popup-actions">
@@ -339,7 +374,7 @@ document.addEventListener('alpine:init', () => {
                     </div>
                 </div>` :
                 `<div class="geoPopup">
-                    <h3>${entry.username_formatted}</h3>
+                    <h3>${entry.username_formated}</h3>
                     ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
                     ${entry.logcomment ? `<p class="commentText">${entry.logcomment}</p>` : ''}
                     <div class="popup-actions">
@@ -458,6 +493,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async action_localise(){
+            console.log("Localise " + this.canPost);
             if(this.canPost){
                 this.action_map();
                 try {
@@ -963,8 +999,111 @@ document.addEventListener('alpine:init', () => {
         },
 
         expandUser(entry){
-            window.location.href = "/" + this.route.routeslug + "/story/" + entry.userid;
-        }
+            this.storyUser = entry.userid;
+            console.log(this.storyName)
+            this.storyName = entry.username_formated;
+            this.storyPhotoOnly = false;
+            this.action_story();
+        },
+
+        getMapFooter(mode) {
+            // Définir quels boutons de mode afficher
+            const modeButtons = {
+                'map': `
+                    <button @click="action_list()" class="small-bt">
+                        <i class="fas fa-list"></i>
+                    </button>
+                    <button @click="action_story()" class="small-bt">
+                        <i class="fas fa-book"></i>
+                    </button>
+                `,
+                'list': `
+                    <button @click="action_map()" class="small-bt">
+                        <i class="fas fa-map"></i>
+                    </button>
+                    <button @click="action_story()" class="small-bt">
+                        <i class="fas fa-book"></i>
+                    </button>
+                `,
+                'story': `
+                    <button @click="action_map()" class="small-bt">
+                        <i class="fas fa-map"></i>
+                    </button>
+                    <button @click="action_list()" class="small-bt">
+                        <i class="fas fa-list"></i>
+                    </button>
+                `
+            };
+
+            return `
+                <div id="mapfooter">
+                    <div class="small-line">
+                        ${modeButtons[mode]}
+                        <button @click="action_fitall()" class="small-bt">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                        <button @click="action_fitgpx()" class="small-bt">
+                            <i class="fas fa-compress"></i>
+                        </button>
+                        <button @click="action_gallery()" class="small-bt" ${!this.canPost ? 'disabled-bt' : ''}">
+                            <i class="fas fa-images"></i>
+                        </button>
+                    </div>
+                    <div class="big-line">
+                        <button @click="action_localise()" class="big-bt" ${!this.canPost ? 'disabled-bt' : ''}">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </button>
+                        <button @click="action_photo()" class="big-bt" ${!this.canPost ? 'disabled-bt' : ''}">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            //<button @click="action_reload()" class="small-bt"><i class="fas fa-rotate"></i></button>
+        },
+
+        async action_story(){
+            if(!this.slogs){
+                const data = await apiService.call('story', {
+                    routeid: this.route.routeid,
+                });
+                if (data.status == 'success') {
+                    this.slogs = this.sortData(data.logs, this.sortField, this.sortDirection);
+                }
+            }
+            this.component = "story";
+        },
+
+        sortData(data, field, direction) {
+            return [...data].sort((a, b) => {
+                let aVal, bVal;
+                
+                if (field === 'logkm') {
+                    aVal = parseFloat(a.logkm);
+                    bVal = parseFloat(b.logkm);
+                } else if (field === 'logtime') {
+                    aVal = new Date(a.logtime).getTime();
+                    bVal = new Date(b.logtime).getTime();
+                } else {
+                    aVal = a[field];
+                    bVal = b[field];
+                }
+                
+                return direction === 'asc' 
+                    ? aVal - bVal 
+                    : bVal - aVal;
+            });
+        },
+
+        StorySortBy(field) {
+            if (this.sortField === field) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortField = field;
+                this.sortDirection = 'desc';
+            }
+            this.slogs = this.sortData(this.slogs, this.sortField, this.sortDirection);
+        },
 
     }));
 });

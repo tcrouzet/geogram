@@ -87,9 +87,13 @@ class MapService
             $geojson = $this->fileManager->route_geojson_web($route);
 
             foreach ($logs as &$row) {
-                //lecho("Routetime", $row["logtime"]);
+                //lecho($row['username']);
                 $row['logkm_km'] = Tools::meters_to_distance($row["logkm"], $route, false);
-                $row['username_formatted'] = $row['username'] . "<br/>" . Tools::MyDateFormat($row['logtime'],$route) . "<br/>" . Tools::meters_to_distance($row["logkm"], $route);
+                if($row['username'])
+                    $row['username_formated'] = Tools::normalizeName($row['username']);
+                else
+                    $row['username']='Unknown';
+                $row['date_formated'] = Tools::MyDateFormat($row['logtime'],$route);
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
                 $row['photolog'] = $this->fileManager->user_route_photo_web($row);
                 $row['comment_formated'] = Tools::formatMessage($row['logcomment']);
@@ -249,34 +253,29 @@ class MapService
         return ['status' => 'error', 'message' => 'Comment error'];
     }
 
-    public function userStory(){
-        lecho("User Story");
-        $userstory = $_POST['userstory'] ?? '';
+    public function story(){
+        lecho("story");
         $routeid =  $_POST['routeid'] ?? '';
 
-        if($userstory && $routeid){
-            $user = (new UserService())->get_user($userstory);
-            $route = (new RouteService())->get_route_by_id($routeid);
+        if($routeid){
 
-            $query = "SELECT * FROM rlogs 
-                WHERE logroute = ? 
-                AND loguser = ? 
+            $route = (new RouteService())->get_route_by_id($routeid);
+            $query = "SELECT *
+                FROM rlogs
+                INNER JOIN users ON rlogs.loguser = users.userid
+                WHERE rlogs.logroute = ?
                 AND (? IS NULL OR logtime >= ?)
                 AND (? IS NULL OR logtime <= ?)
-                ORDER BY logtime ASC";
-
+                ORDER BY rlogs.logtime ASC;";
             $stmt = $this->db->prepare($query);
-            $stmt->bind_param("iissss", 
+            $stmt->bind_param("issss", 
                 $routeid, 
-                $userstory, 
                 $route["routestart"], 
                 $route["routestart"],
                 $route["routestop"], 
                 $route["routestop"]
             );
-
             $data = $this->format_map_data($stmt, $this->route->get_route_by_id($routeid));
-            $data['user'] = $user;
             $data['route'] = $route;
             return $data; 
         }

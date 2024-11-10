@@ -111,7 +111,6 @@
 
                             <div class="divider">ACTIONS</div>
                             <div id="actions">
-                                <button @click="route_actions(route.routeid,'purgeroute',$el.textContent)">Delete logs</button>
                                 <button @click="route_actions(route.routeid,'purgephotos',$el.textContent)">Delete logs & photos</button>
                             </div>
                             <div x-show="actionError" class="error-message" x-text="actionError"></div>
