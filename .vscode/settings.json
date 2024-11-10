@@ -1,5 +1,0 @@
-{
-    // "intelephense.files.exclude": ["**/vendor/**"]
-    "editor.foldingImportsByDefault": true,
-    "editor.saveFoldState": true
-}
