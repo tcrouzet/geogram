@@ -50,19 +50,43 @@
     </div>
 
     <div x-show="component === 'list'" id="listcontainer">
+
         <div id="list">
+
             <div class="list-header">
-                <span x-text="`${logs.length} adventurers`"></span>
+                <div class="sortable-col" @click="sortBy('username')">
+                    <span x-text="`${logs.length} adventurers`"></span>
+                    <i class="fas" :class="{
+                        'fa-sort': sortField !== 'username',
+                        'fa-sort-up': sortField === 'username' && sortDirection === 'asc',
+                        'fa-sort-down': sortField === 'username' && sortDirection === 'desc'
+                    }"></i>
+                </div>
                 <div class="stats">
-                    <span>km</span>
-                    <span>m+</span>
+                    <div class="sortable-col" @click="sortBy('logkm')">
+                        <span>km</span>
+                        <i class="fas" :class="{
+                            'fa-sort': sortField !== 'logkm',
+                            'fa-sort-up': sortField === 'logkm' && sortDirection === 'asc',
+                            'fa-sort-down': sortField === 'logkm' && sortDirection === 'desc'
+                        }"></i>
+                    </div>
+                    <div class="sortable-col" @click="sortBy('logdev')">
+                        <span>m+</span>
+                        <i class="fas" :class="{
+                            'fa-sort': sortField !== 'logdev',
+                            'fa-sort-up': sortField === 'logdev' && sortDirection === 'asc',
+                            'fa-sort-down': sortField === 'logdev' && sortDirection === 'desc'
+                        }"></i>
+                    </div>
                 </div>
             </div>
+
             <div class="list-content">
                 <template x-for="entry in logs" :key="entry.logid">
-                    <div class="list-row">
+                    <div class="list-row" @click="showUserOnMap(entry)">
                         <div class="user-col">
-                            <span class="expand">+</span>
+                            <span class="expand" @click.stop="expandUser(entry)">+</span>
                             <span x-text="entry.username"></span>
                         </div>
                         <div class="stats">
@@ -73,8 +97,9 @@
                 </template>
             </div>
         </div>
+ 
         <div id="mapfooter">
-        <div class="small-line">
+            <div class="small-line">
                 <button @click="action_map()" class="small-bt">
                     <i class="fas fa-map"></i>
                 </button>
@@ -142,36 +167,13 @@ document.addEventListener('alpine:init', () => {
         commentText: '',
         currentLogId: null,
         canPost: false,
+        //List
+        sortField: 'username',
+        sortDirection: 'asc',
 
         async init() {
-            console.log("Init map");
-
-            // Attendre que headerComponent soit initialisé
-            if (!Alpine.store('headerActions').ended) {
-                await new Promise(resolve => {
-                    const checkStore = setInterval(() => {
-                        if (Alpine.store('headerActions').ended) {
-                            clearInterval(checkStore);
-                            resolve();
-                        }
-                    }, 100);
-                });
-            }
-
-            console.log("header store OK");
-            this.route = Alpine.store('headerActions').route;
-            this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
-            if(this.isLoggedIn){
-                console.log("Logged routes");
-                this.user = Alpine.store('headerActions').user;
-                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
-                this.username = this.user.username;
-                this.userid = this.user.userid;
-                this.userroute = this.user.userroute;
-                this.routeid = this.route.routeid;
-                this.canPost = this.isPostPossible();
-            }
-
+            await initService.initComponent(this);
+            
             if (!this.route) {
                 this.component = 'splash';
             } else if (this.route.routestatus > 1 && !(this.isLoggedIn && this.routeid == this.userroute)) {
@@ -485,19 +487,6 @@ document.addEventListener('alpine:init', () => {
             // Logic to update the list view with data
             const listContainer = document.getElementById('list');
             listContainer.innerHTML = data.map(entry => `<div>${entry.username}</div>`).join('');
-        },
-
-        highlightMarker(index) {
-            this.cursors.forEach((cursor, i) => {
-                const element = document.getElementById(`tr${i}`);
-                if (i === index) {
-                    element.className = "lineG";
-                    this.setCursorDiv(cursor, this.usercolors[i], this.userinitials[i], this.userimgs[i], true);
-                } else {
-                    element.className = i % 2 ? "line" : "lineW";
-                    this.setCursorDiv(cursor, this.usercolors[i], this.userinitials[i], this.userimgs[i], false);
-                }
-            });
         },
 
         setCursorDiv(cursor, color, initials, img, highlight) {
@@ -982,26 +971,13 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        isPostPossible() {
-            if (!this.isLoggedIn) return false;
-
-            if(this.route.routeclosed) return false;
-
-            if(this.user.userroute != this.route.routeid){
-                //Not connected to the route
-                return false;
+        isRouteActive() {
+            const now = new Date();
+            if (this.route.routestop) {
+                const stopDate = new Date(this.route.routestop);
+                return stopDate > now;
             }
-            
-            // Créateur peut toujours poster
-            if (this.user.constatus === 3) return true;
-
-            // Route publique, tout utilisateur connecté peut poster
-            if(this.route.routestatus === 0) return true;
-
-            // Route visible ou privée, seuls les invités peuvent publier
-            if(this.route.routestatus > 0 && this.user.constatus == 2) return true;
-
-            return false;
+            return true;  // Si pas de date de fin, la route est active
         },
 
         showAccessMessage() {
@@ -1011,6 +987,53 @@ document.addEventListener('alpine:init', () => {
                 this.showPopup('You need to be invited to post on this route', true);
             }
         },
+
+        sortBy(field) {
+            if (this.sortField === field) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortField = field;
+                this.sortDirection = 'asc';
+            }
+            
+            this.logs = [...this.logs].sort((a, b) => {
+                let aVal = field === 'logkm' ? parseFloat(a.logkm_km) : 
+                        field === 'logdev' ? parseFloat(a.logdev) : 
+                        a[field];
+                let bVal = field === 'logkm' ? parseFloat(b.logkm_km) : 
+                        field === 'logdev' ? parseFloat(b.logdev) : 
+                        b[field];
+                
+                if (this.sortDirection === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+        },
+
+        showUserOnMap(entry) {
+            this.component = 'map';
+            // Attendre que la carte soit prête
+            this.$nextTick(() => {
+                // Trouver le marker correspondant
+                const userMarker = this.cursors.find(marker => 
+                    marker.getLatLng().lat === entry.loglatitude && 
+                    marker.getLatLng().lng === entry.loglongitude
+                );
+
+                if (userMarker) {
+                    // Centrer la carte sur le marker
+                    this.map.setView(userMarker.getLatLng(), 12);
+                    // Ouvrir le popup
+                    userMarker.openPopup();
+                }
+            });
+        },
+
+        expandUser(entry){
+            window.location.href = "/" + this.route.routeslug + "/story/" + entry.userid;
+        }
 
     }));
 });

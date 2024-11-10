@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Services\Database;
 use App\Services\RouteService;
+use App\Services\UserService;
 use App\Utils\Tools;
 use App\Services\FilesManager;
 use App\Services\Gpx\GpxNearest;
@@ -124,11 +125,14 @@ class MapService
         lecho("NewLog");
 
         $route = $this->route->get_route_by_id($routeid);
-        if($route["routeclosed"]) {
-            $this->error = "Route closed";
-            return false;
+        if ($route["routestop"]) {
+            $stopTimestamp = strtotime($route["routestop"]);
+            if ($stopTimestamp < time()) {
+                $this->error = "Route closed";
+                return false;
+            }
         }
-
+        
         $nearest = new GpxNearest($routeid);
         $point = $nearest->user($latitude, $longitude);
         // lecho($point);
@@ -250,5 +254,24 @@ class MapService
         }
         return ['status' => 'error', 'message' => 'Comment error'];
     }
+
+    public function userStory(){
+        lecho("User Story");
+        $userstory = $_POST['userstory'] ?? '';
+        $routeid =  $_POST['routeid'] ?? '';
+
+        if($userstory && $routeid){
+            $user = (new UserService())->get_user($userstory);
+            $query = "SELECT * FROM rlogs WHERE logroute = ? AND loguser = ? ORDER BY logtime ASC";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("ii", $routeid, $userstory);
+            $data = $this->format_map_data($stmt, $this->route->get_route_by_id($routeid));
+            $data['user'] = $user;
+            return $data; 
+        }
+
+        return ['status' => 'error', 'message' => 'Unknown story'];
+    }
+    
 
 }

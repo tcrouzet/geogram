@@ -76,6 +76,7 @@ class UserService
     }
 
     public function improuveUser($userid, $userInfo){
+        lecho("Improve User");
         $telegram = $userInfo['telegram'] ?? '';
         $link = $userInfo['link'] ?? '';
         $picture = $userInfo['picture'] ?? '';
@@ -102,10 +103,12 @@ class UserService
         }
 
         if($picture){
-            $source = stripslashes($picture);
             $target = $this->fileManager->user_photo($userid);
-            if(Tools::resizeImage($source, $target, 250)){
-                $this->set_user_photo($userid,1);
+            if(!file_exists($target)){
+                $source = stripslashes($picture);
+                if(Tools::resizeImage($source, $target, 250)){
+                    $this->set_user_photo($userid,1);
+                }
             }
         }
 
@@ -142,6 +145,7 @@ class UserService
         if ($result && $result->num_rows > 0) {
             $user = $result->fetch_assoc();
             $user['photopath'] = $this->fileManager->user_photo_web($user);
+            $user['fusername'] = Tools::normalizeName($user['username']);
             return $user;
         } else {
             return false;
@@ -215,7 +219,7 @@ class UserService
                 return ['status' => 'error', 'message' => 'Update fail'];
             }
     
-        }    
+        }
         return ['status' => 'error', 'message' => 'Unknown user'];
     }
 
@@ -343,5 +347,5 @@ class UserService
         }
     
     }
-    
+
 }

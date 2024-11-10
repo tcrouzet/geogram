@@ -297,8 +297,13 @@ class RouteService
         $routestatus = $_POST['routestatus'] ?? '';
         $routerem = $_POST['routerem'] ?? '';
         $routemode = $_POST['routemode'] ?? '';
-        $routeclosed = $_POST['routeclosed'] === 'true' ? 1 : 0;
-    
+        // $routeclosed = $_POST['routeclosed'] === 'true' ? 1 : 0;
+
+        $routestart = !empty($_POST['routestart']) ? 
+            date('Y-m-d H:i:s', strtotime($_POST['routestart'])) : null;
+        $routestop = !empty($_POST['routestop']) ? 
+            date('Y-m-d H:i:s', strtotime($_POST['routestop'])) : null;
+
         $query = "SELECT * FROM routes WHERE routeid=?;";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $routeid);
@@ -307,17 +312,15 @@ class RouteService
     
         if ($result && $result->num_rows > 0) {
     
-            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ?, routemode = ?, routeclosed = ? WHERE routeid = ?");
-            $stmt->bind_param("sssiiii", $routename, $routerem, $routestatus, $telegram, $routemode, $routeclosed, $routeid);
+            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ?, routemode = ?, routestart = NULLIF(?, ''), routestop = NULLIF(?, '') WHERE routeid = ?");
+            $stmt->bind_param("sssiissi", $routename, $routerem, $routestatus, $telegram, $routemode, $routestart, $routestop, $routeid);
             if ($stmt->execute())
                return ['status' => 'success', 'message' => 'Update fail'];
             else
                 return ['status' => 'error', 'message' => 'Update fail'];
     
-        } else {
-            return ['status' => 'error', 'message' => 'Unknown route'];    
         }
-    
+        return ['status' => 'error', 'message' => 'Unknown route'];    
     }
 
     public function routeconnect(){

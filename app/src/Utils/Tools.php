@@ -191,4 +191,16 @@ class Tools
         return $colors[$code];
     }
 
+    public static function normalizeName(string $name): string {
+        // Convertir en minuscules et diviser en mots
+        $words = explode(' ', mb_strtolower(trim($name)));
+        
+        // Capitaliser chaque mot
+        $words = array_map(function($word) {
+            return mb_convert_case($word, MB_CASE_TITLE, 'UTF-8');
+        }, $words);
+        
+        // Rejoindre les mots
+        return implode(' ', $words);
+    }
 }

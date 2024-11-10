@@ -36,9 +36,22 @@
                             <label>Description</label>
                             <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
 
-                            <label>
+                            <label>Start date (optional)</label>
+                            <input type="datetime-local" 
+                                class="input-field" 
+                                :value="formatDateTime(route.routestart)"
+                                @input="route.routestart = $event.target.value; updateRoute(route)">
+
+                            <label>End date (optional)</label>
+                            <input type="datetime-local" 
+                                class="input-field" 
+                                :value="formatDateTime(route.routestop)"
+                                @input="route.routestop = $event.target.value; updateRoute(route)"
+                                :min="route.routestart">
+    
+                            <!-- <label>
                                 <input type="checkbox" x-model="route.routeclosed" @change="updateRoute(route)" :checked="route.routeclosed === 1"> Route closed
-                            </label>
+                            </label> -->
                                                     
                             <label x-text="route.gpx === 0 ? 'New GPX' : 'Update GPX'"></label>
                             <input type="file" @change="handleGPXUpload(route.routeid)" accept=".gpx" class="input-field">
@@ -280,7 +293,9 @@ document.addEventListener('alpine:init', () => {
                     routestatus: route.routestatus,
                     telegram: route.routetelegram,
                     routemode: route.routemode,
-                    routeclosed: route.routeclosed,
+                    routestart: route.routestart,
+                    routestop: route.routestop
+
                 })
             })
             // .then(response => response.text()) // Récupérer le texte brut pour le débogage
@@ -505,6 +520,12 @@ document.addEventListener('alpine:init', () => {
                     console.log(this.telegramChannels);
                 }
             });
+        },
+
+        formatDateTime(sqlDateTime) {
+            if (!sqlDateTime) return '';
+            // Convertit format SQL en format datetime-local
+            return sqlDateTime.slice(0, 16); // Garde YYYY-MM-DD HH:mm
         },
 
     }));

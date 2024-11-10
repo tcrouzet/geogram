@@ -47,6 +47,7 @@ document.addEventListener('alpine:init', () => {
         menuOpen: false,
         isLoggedIn: false,
         isOnRoute: false,
+        userstory: <?= json_encode($userid) ?>,
 
         async init(reset=false) {
             console.log("***Initializing header");
@@ -59,7 +60,7 @@ document.addEventListener('alpine:init', () => {
             } else {
                 this.user = this.getUserFromLocalStorage();
             }
-            console.log("***Initializing header ended");
+            // console.log("***Initializing header ended");
 
             this.isLoggedIn = this.user !== null && this.user !== undefined;
             if(this.isLoggedIn) {
@@ -82,42 +83,23 @@ document.addEventListener('alpine:init', () => {
         },
 
         initStore(ended=false){
-            console.log("***Init store");
+            // console.log("***Init store");
             Alpine.store('headerActions', {
                 user: this.user,
                 route: this.route,
                 isLoggedIn: this.isLoggedIn,
                 isOnRoute: this.isOnRoute,
+                userstory: this.userstory,
                 ended: ended,
             });
         },
 
         async checkAuthStatus() {
-            console.log("***checkAuthStatus");
-            const formData = new FormData();
-            formData.append('view', 'getSession');
-            
-            return new Promise((resolve) => {
-                fetch('/api/', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        console.log("***GetSession OK");
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        resolve(data.user);
-                    } else {
-                        console.log("***No user data");
-                        resolve(null);
-                    }
-                })
-                .catch(error => {
-                    console.error("***Auth check failed:", error);
-                    resolve(null);
-                });
-            });
+            const data = await apiService.call('getSession', {});
+            if (data.status == 'success') {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                return data.user;
+            }
         },
 
         getUserFromLocalStorage() {
@@ -127,29 +109,17 @@ document.addEventListener('alpine:init', () => {
         },
 
         get userIconStyle() {
-            console.log("***iconStyle");
             $style = this.user.userphoto ? `background-image: url('/userdata/users/${this.user.userid}/photo.jpeg');`
                 : `background-color: ${this.user.usercolor};`;
             return $style;
         },
 
-        logout() {
-            const formData = new FormData();
-            formData.append('view', 'logout');
-            
-            fetch('/api/', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Nettoyer le stockage local
-                    console.log("Logout success");
-                    localStorage.removeItem('user');
-                    window.location.href = '/';
-                }
-            });
+        async logout() {
+            const data = await apiService.call('logout', {});
+            if (data.status == 'success') {
+                localStorage.removeItem('user');
+                window.location.href = '/';
+            }
         },
 
         userpage() {
