@@ -80,7 +80,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         connected(userdata){
-            console.log('Utilisateur connecté:', userdata);
+            log('Utilisateur connecté:', userdata);
             localStorage.setItem('user', JSON.stringify(userdata));
             window.location.href = `/`;
         },

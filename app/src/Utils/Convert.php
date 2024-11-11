@@ -28,9 +28,10 @@ class Convert
         $this->context = new ContextService();
     }
 
-    // -1001831273860
+    // -1001831273860 g727 2024
+    // -1001669242626 tour magne
 
-    public function import_logs($chatid=-1001831273860){
+    public function import_logs($chatid=-1001669242626){
 
         $route = $this->route->get_route_by_telegram($chatid);
         if(!$route){

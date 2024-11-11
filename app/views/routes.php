@@ -34,7 +34,7 @@
                             <input type="text" class="input-field" x-model="route.routename" required minlength="3" maxlength="30" @change="updateRoute(route)">
 
                             <label>Description</label>
-                            <input type="text" class="input-field" x-model="route.routerem" required minlength="30" maxlength="256" @change="updateRoute(route)">
+                            <input type="text" class="input-field" x-model="route.routerem" required minlength="10" maxlength="256" @change="updateRoute(route)">
 
                             <label>Start date (optional)</label>
                             <input type="datetime-local" 
@@ -48,6 +48,15 @@
                                 :value="formatDateTime(route.routestop)"
                                 @input="route.routestop = $event.target.value; updateRoute(route)"
                                 :min="route.routestart">
+
+                            <label>Last days to show (optional - 0 for all days)</label>
+                            <input type="number" 
+                                class="input-field" 
+                                x-model="route.routelastdays" 
+                                @change="updateRoute(route)"
+                                min="0" 
+                                max="365"
+                                placeholder="Leave empty to show all days">
     
                             <!-- <label>
                                 <input type="checkbox" x-model="route.routeclosed" @change="updateRoute(route)" :checked="route.routeclosed === 1"> Route closed
@@ -60,7 +69,7 @@
                             <label>Status</label>
                             <select x-model="route.routestatus" @change="updateRoute(route)">
                                 <option value="2">Private</option>
-                                <option value="1">Open for logged in</option>
+                                <option value="1">Open for all, invited to publish</option>
                                 <option value="0">Open for all</option>
                             </select>
                             <div x-show="route.routestatus > 0">
@@ -265,7 +274,8 @@ document.addEventListener('alpine:init', () => {
                 telegram: route.routetelegram,
                 routemode: route.routemode,
                 routestart: route.routestart,
-                routestop: route.routestop
+                routestop: route.routestop,
+                routelastdays: route.routelastdays,
             });
             if (data.status == 'success') {
                 console.log('Route updated successfully');

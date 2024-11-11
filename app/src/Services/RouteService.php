@@ -54,6 +54,14 @@ class RouteService
         return ['status' => 'error', 'message' => "Loading routes fail"];
     }
 
+    public function route_exists($routeid) {
+        $query = "SELECT 1 FROM `routes` WHERE routeid = ? LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $routeid);
+        $stmt->execute();
+        return $stmt->get_result()->num_rows > 0;
+    }
+
     public function get_route_by_id($routeid){
         $query="SELECT * FROM `routes` WHERE routeid = ?";
         $stmt = $this->db->prepare($query);
@@ -287,7 +295,12 @@ class RouteService
     
         $routeid = $_POST['routeid'] ?? '';
         if(empty($routeid)){
-            return ['status' => 'error', 'message' => 'Empty routename'];
+            return ['status' => 'error', 'message' => 'No route id'];
+        }
+
+        if(!$this->route_exists($routeid)){
+            $this->error = 'Unknown route';
+            return ['status' => 'error', 'message' => 'Unknown route'];
         }
     
         $routename = $_POST['routename'] ?? '';
@@ -297,7 +310,9 @@ class RouteService
 
         $telegram = $_POST['telegram'] ?? '';
         lecho("telegram",$telegram);
-    
+ 
+        $routelastdays = $_POST['routelastdays'] ?? '';
+ 
         $routestatus = $_POST['routestatus'] ?? '';
         $routerem = $_POST['routerem'] ?? '';
         lecho($routerem);
@@ -306,30 +321,50 @@ class RouteService
 
         lecho($_POST);
 
-        $routestart = !empty($_POST['routestart']) ? 
-            date('Y-m-d H:i:s', strtotime($_POST['routestart'])) : null;
-        $routestop = !empty($_POST['routestop']) ? 
-            date('Y-m-d H:i:s', strtotime($_POST['routestop'])) : null;
+        if (!empty($_POST['routestart']) && $_POST['routestart'] !== 'null') {
+            $timestamp = strtotime($_POST['routestart']);
+            $routestart = $timestamp ? date('Y-m-d H:i:s', $timestamp) : null;
+        } else {
+            $routestart = null;
+        }
+    
+        if (!empty($_POST['routestop']) && $_POST['routestop'] !== 'null') {
+            $timestamp = strtotime($_POST['routestop']);
+            $routestop = $timestamp ? date('Y-m-d H:i:s', $timestamp) : null;
+        } else {
+            $routestop = null;
+        }
 
-        $query = "SELECT * FROM routes WHERE routeid=?;";
+        // Requête modifiée pour gérer explicitement NULL
+        $query = "UPDATE routes SET 
+            routename = ?,
+            routerem = ?,
+            routestatus = ?,
+            routetelegram = ?,
+            routemode = ?,
+            routelastdays = ?,
+            routestart = CASE WHEN ? IS NULL THEN NULL ELSE ? END,
+            routestop = CASE WHEN ? IS NULL THEN NULL ELSE ? END
+            WHERE routeid = ?";
+
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $routeid);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    
-        if ($result && $result->num_rows > 0) {
-    
-            $stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ?, routemode = ?, routestart = ?, routestop = ? WHERE routeid = ?");
-            //$stmt = $this->db->prepare("UPDATE routes SET routename = ?, routerem = ?, routestatus = ?, routetelegram = ?, routemode = ?, routestart = NULLIF(?, ''), routestop = NULLIF(?, '') WHERE routeid = ?");
-            $stmt->bind_param("sssiissi", $routename, $routerem, $routestatus, $telegram, $routemode, $routestart, $routestop, $routeid);
-            if ($stmt->execute())
-               return ['status' => 'success', 'message' => 'Update done'];
-            else{
-                lecho($this->db->error);
-                return ['status' => 'error', 'message' => $this->db->error];
+        if (!$stmt) {
+            return ['status' => 'error', 'message' => 'Prepare failed: ' . $this->db->error];
+        }
+        lecho("prepare done");
+
+        if($stmt->bind_param("ssiiiissssi", $routename, $routerem, $routestatus, $telegram, $routemode, $routelastdays, $routestart, $routestart, $routestop, $routestop, $routeid)){
+            if ($stmt->execute()){
+                lecho("success");
+                return ['status' => 'success', 'message' => 'Update done'];
+            }else{
+                lecho("execute problem");
+                $this->error = $this->db->error;
             }
         }
-        return ['status' => 'error', 'message' => 'Unknown route'];    
+        lecho("Bin problem");
+        $this->error = $stmt->error;
+        return ['status' => 'error', 'message' => $this->error];
     }
 
     public function routeconnect(){

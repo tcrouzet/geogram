@@ -61,7 +61,6 @@
 
 </main>
 
-<!-- <script async src="https://telegram.org/js/telegram-widget.js?22"></script> -->
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('userComponent', () => ({
@@ -111,34 +110,16 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        updateUser() {
-            // Envoyer une requête pour mettre à jour la route
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    view: "updateuser",
-                    username: this.user.username
-                })
-            })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log('User updated');
-                    this.user.username = data.user.username;
-                    localStorage.setItem('user', JSON.stringify(this.user));
-                } else {
-                    console.error('Error updating user', data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        async updateUser() {
+            log();
+            const data = await apiService.call('updateuser', {
+                username: this.user.username
+            });
+            if (data.status == 'success') {
+                log('User updated');
+                this.user.username = data.user.username;
+                localStorage.setItem('user', JSON.stringify(this.user));
+            }
         },
 
         userPhotoUpload() {
@@ -163,11 +144,6 @@ document.addEventListener('alpine:init', () => {
                     method: 'POST',
                     body: formData
                 })
-                // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-                // .then(text => {
-                //     console.log('Response Text:', text); // Affiche la réponse brute
-                //     return JSON.parse(text); // Convertir en JSON si nécessaire
-                // })
                 .then(response => response.json())
                 .then(data => {
                     this.uploading = false;
@@ -204,11 +180,6 @@ document.addEventListener('alpine:init', () => {
                     userid: userid
                 })
             })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
             .then(response => response.json())
             .then(data => {
                 this.actionError = data.message;
@@ -245,4 +216,3 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 </script>
-
