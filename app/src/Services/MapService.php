@@ -66,7 +66,7 @@ class MapService
                 AND (? IS NULL OR logtime <= ?)
                 GROUP BY loguser
             )
-            ORDER BY rlogs.logtime ASC;";
+            ORDER BY logtime DESC;";
 
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("iissss", 
@@ -283,6 +283,10 @@ class MapService
         if($routeid){
 
             $route = (new RouteService())->get_route_by_id($routeid);
+
+            $start = $this->resetSQLdate($route["routestart"]);
+            $stop = $this->resetSQLdate($route["routestop"]); 
+    
             $query = "SELECT *
                 FROM rlogs
                 INNER JOIN users ON rlogs.loguser = users.userid
@@ -293,10 +297,10 @@ class MapService
             $stmt = $this->db->prepare($query);
             $stmt->bind_param("issss", 
                 $routeid, 
-                $route["routestart"], 
-                $route["routestart"],
-                $route["routestop"], 
-                $route["routestop"]
+                $start, 
+                $start,
+                $stop, 
+                $stop
             );
             $data = $this->format_map_data($stmt, $this->route->get_route_by_id($routeid));
             $data['route'] = $route;

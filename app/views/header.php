@@ -7,6 +7,13 @@
 
         <div  id="signin">
 
+            <div class="share-button">
+                <button class="share-btn" @click="showShareDialog()">
+                    <i class="fas fa-up-right-from-square"></i>
+                <span>Share</span>
+                </button>
+            </div>
+
             <template x-if="isLoggedIn">
                 <div class="user-menu">
                     <button @click="menuOpen = !menuOpen" class="icon-button">
@@ -149,7 +156,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         getUserFromLocalStorage() {
-            console.log("***getUserFromLocalStorage");
+            log();
             const user = localStorage.getItem('user');
             return user ? JSON.parse(user) : null;
         },
@@ -191,6 +198,22 @@ document.addEventListener('alpine:init', () => {
 
         donate() {
             window.location.href = `https://www.paypal.com/donate/?business=MCZTJGYPGXXCW&no_recurring=0&currency_code=EUR`;
+        },
+
+        showShareDialog() {
+            // Logique pour afficher le dialogue de partage
+            if (navigator.share) {
+                // API Web Share si disponible
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Fallback : copier le lien dans le presse-papier
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => alert('Link copied to clipboard!'))
+                    .catch(console.error);
+            }
         },
 
     }));

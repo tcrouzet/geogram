@@ -79,11 +79,7 @@ if($route_slug=="login"){
 }elseif($route_slug=="contact"){
     require("app/views/contact.php");
 }else{
-    if($page == "story"){
-        require("app/views/story.php");
-    }else{
-        require("app/views/map.php");
-    }
+    require("app/views/map.php");
 }
 
 require("app/views/html_footer.php");

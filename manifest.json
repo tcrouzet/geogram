@@ -1,16 +1,16 @@
 {
-    "short_name": "Geogram",
-    "name": "Geogram : Share your adventures",
-    "icons": [
-      {
-        "src": "icon.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      }
-    ],
-    "start_url": "/",
-    "orientation": "portrait",
-    "display": "standalone",
-    "theme_color": "#FDFDFD",
-    "background_color": "#FDFDFD"
-  }
+  "short_name": "Geogram",
+  "name": "Geogram : Share your adventures",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "orientation": "portrait-primary",
+  "display": "standalone",
+  "theme_color": "#FDFDFD",
+  "background_color": "#FDFDFD"
+}

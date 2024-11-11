@@ -13,5 +13,9 @@ Finaly you have to open webhook.php from the web to activate your bot webhook.
 1. Open @BotFather
 2. In BotFather, /setdomain@YourBotName yourWebApp (/setdomain@GeoBikepacking_bot https://geo.zefal.com/api/?view=telegram)
 
-### Initialisation
+### To Do
 
+Cron task for weather and cities…
+Factorize popup and story, add tools to edit, delete…
+Last x days, API side
+Debugs :-)
