@@ -14,40 +14,44 @@ class RouteService
     private $fileManager;
     private $error = false;
     private $userService;
+    private $user = null;
+    private $userid = null;
     
-    public function __construct() 
+    public function __construct($user=null) 
     {
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
         $this->userService = new UserService();
+        $this->user = $user;
+        if($this->user)
+            $this->userid = $this->user['userid'];
     }
 
     public function getError() {
         return $this->error;
     }
 
-    public function getroutes(): array
-    {    
+    public function getroutes(): array {
         lecho("getroutes");
-    
-        $userid = $_POST['userid'] ?? '';
-    
+        
         $query = "SELECT * FROM connectors c INNER JOIN routes r ON c.conrouteid = r.routeid WHERE c.conuserid = ?;";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $userid);
+        $stmt->bind_param("i", $this->userid);
         $stmt->execute();
         $result = $stmt->get_result();
-        $routes = $result->fetch_all(MYSQLI_ASSOC);
-        
-        $superchargedRoutes = array_map(
-            function($route) {
-                $supercharged = $this->supercharge($route);
-                return $supercharged;
-            },
-            $routes
-        );
-        
-        return $superchargedRoutes;
+        if($result){
+            $routes = $result->fetch_all(MYSQLI_ASSOC);
+            
+            $superchargedRoutes = array_map(
+                function($route) {
+                    $supercharged = $this->supercharge($route);
+                    return $supercharged;
+                },
+                $routes
+            );
+            return ['status' => 'success', 'routes' => $superchargedRoutes];
+        }
+        return ['status' => 'error', 'message' => "Loading routes fail"];
     }
 
     public function get_route_by_id($routeid){

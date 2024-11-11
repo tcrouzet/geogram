@@ -162,17 +162,15 @@ document.addEventListener('alpine:init', () => {
         telegramConnected: false,
         telegramChannels: [],
 
-        init(){
-            console.log("Init routes");
+        async init(){
+            log();
+            await initService.initComponent(this);
+
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
             if(this.isLoggedIn){
-                console.log("Logged routes");
-                this.user = Alpine.store('headerActions').user;
-                this.isOnRoute = Alpine.store('headerActions').isOnRoute;
-                this.username = this.user.username;
-                this.userid = this.user.userid;
+                log("Logged routes");
                 if(this.user.usertelegram){
-                    console.log("usertelegram");
+                    log("usertelegram");
                     this.telegramConnected = true;
                     this.loadTelegramChannels();
                 }
@@ -180,33 +178,13 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        loadRoutes() {
-            console.log("loadRoutes");
-            const formData = new URLSearchParams();
-            formData.append('view', "getroutes");
-            formData.append('userid', this.userid);
-
-            // console.log(formData.toString());
-
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString()
-            })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                this.routes = data;
-                //this.printRoutes(data);
-            })
-            .catch(error => console.error('Error:', error));
+        async loadRoutes() {
+            log();
+            const data = await apiService.call('getroutes');
+            if (data.status == 'success') {
+                log(data);
+                this.routes = data.routes;
+            }
         },
 
         toggleEdit(routeId) {
@@ -498,27 +476,15 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        loadTelegramChannels() {
-            console.log("loadTelegram");
-            if(!this.telegramConnected)
-                return false;
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    view: "getUserChannels"
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.status === 'success') {
-                    this.telegramChannels = data.channels;
-                    console.log(this.telegramChannels);
-                }
-            });
+        async loadTelegramChannels() {
+            log();
+
+            if(!this.telegramConnected) return false;
+
+            const data = await apiService.call('getUserChannels');
+            if (data.status == 'success') {
+                this.telegramChannels = data.channels;
+            }
         },
 
         formatDateTime(sqlDateTime) {

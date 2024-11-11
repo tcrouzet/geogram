@@ -12,9 +12,10 @@ I am improving the application as requests come in. Don't hesitate to contact me
 
 <form
 action="https://formspree.io/f/mgebvkwn"
-method="POST">
+method="POST"
+id="contact">
 <label>Email:<input type="email" name="email" style="width: 100%"></label><br>
-<label>Message:<br><textarea name="message" style="width: 100%;height:10rem"></textarea><br></label><br>
+<label>Message:<br><textarea name="message" style="height:10rem"></textarea><br></label><br>
 <button type="submit">Post</button><br></form>
 
 </div>

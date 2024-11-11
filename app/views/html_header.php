@@ -14,9 +14,11 @@ function canonical(){
 }
 
 function version(){
-    $version="A4";
-    $version=time();
-    return $version;
+    if (DEBUG) {
+        return time();
+    }else{
+        return VERSION;
+    }
 }
 ?>
 

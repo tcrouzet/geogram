@@ -25,12 +25,17 @@ class AuthService
             'redirectUri' => $config['redirect_uri'],
             'cookieSecret' => $config['cookie_secret'],
             'scope' => ['openid', 'profile', 'email'],
-            'cookieDomain' => 'geo.zefal.com',
+            'cookieDomain' => GEO_DOMAIN,
             'cookieSecure' => true,
+            'cookieSameSite' => 'Lax',
             'cookiePath' => '/',
-            'responseType' => 'code'
+            'cookieExpires' => 5184000, // 60 jours
+            'responseType' => 'code',
+            'persistUser' => true,
+            'persistIdToken' => true,
+            'persistAccessToken' => true
         ]);
-                
+        
         $this->auth0 = new Auth0($configuration);
         $this->user = $user;
         $this->userService = new UserService($user);
@@ -97,8 +102,8 @@ class AuthService
         }
     }
 
-    public function handleSession() 
-    {
+    public function handleSession() {
+        lecho("handleSession");
         $session = $this->auth0->getCredentials();
         if ($session && isset($session->user['app_userid'])) {
             // Récupérer les données utilisateur via UserService

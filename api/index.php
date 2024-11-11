@@ -36,7 +36,7 @@ try {
         $view = 'callback';
     }
      
-    //lecho("View:",$view);
+    lecho("View:",$view);
     
     // Routes publiques (pas besoin de token)
     $publicRoutes = [

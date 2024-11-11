@@ -2,6 +2,10 @@
 
 <main x-data="mapComponent()">
 
+    <div x-show="loading" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
     <div x-show="component === 'splash'" id="splash">
         <h1>Share your adventures</h1>
         <p>When you bike or hike, you can send your location, pictures and messages to your friends.</p>
@@ -20,7 +24,7 @@
 
     <div x-show="component === 'map'" id="mapcontainer">
         <div id="map"></div>
-        <div x-html="getMapFooter('map')"></div>
+        <div x-html="mapFooter"></div>
     </div>
 
     <div  x-show="component === 'story'" id="storycontenair" class="longcontenair">
@@ -35,7 +39,7 @@
 
             <template x-if="slogs.length > 0">
                 <div>
-                    <h1 x-text="Story'"></h1>
+                    <h1>Story</h1>
 
                     <div class="sort-controls">
                         <button @click="StorySortBy('logtime')" class="sort-btn">
@@ -99,7 +103,7 @@
                 </div>
             </template>
         </div>
-        <div x-html="getMapFooter('story')"></div>
+        <div x-html="mapFooter"></div>
     </div>
 
     <div x-show="component === 'list'" id="listcontainer" class="longcontenair">
@@ -160,8 +164,7 @@
                 </div>
             </template>
         </div>
-
-        <div x-html="getMapFooter('list')"></div>
+        <div x-html="mapFooter"></div>
 
     </div>
 
@@ -180,6 +183,7 @@
 <script>
 
 document.addEventListener('alpine:init', () => {
+
     Alpine.data('mapComponent', () => ({
         //Display
         component: 'splash',
@@ -188,6 +192,7 @@ document.addEventListener('alpine:init', () => {
         user: null,
         isLoggedIn: false,
         isOnRoute: false,
+        canPost: false,
         userid: 0,
         userroute: 0,
         routeid: 0,
@@ -202,6 +207,8 @@ document.addEventListener('alpine:init', () => {
         newPhoto: false,
         // Actions
         canPost: false,
+        mapFooter: '',
+        loading: false,
         // Comments
         showCommentModal: false,
         commentText: '',
@@ -229,7 +236,10 @@ document.addEventListener('alpine:init', () => {
                 await new Promise(resolve => setTimeout(resolve, 100));
                 await this.initializeMap();
             }
-            console.log("Component:" + this.component);
+            log("Component:" + this.component);
+            this.canPost = this.isPostPossible();
+            log("canPost:" + this.canPost);
+            this.mapFooter = this.getMapFooter();
 
             window.addEventListener('error', (event) => {
                 if (event.message && (
@@ -239,18 +249,18 @@ document.addEventListener('alpine:init', () => {
                     window.location.reload();
                 }
             });
-            console.log("Init Map ended");
+            log("Init Map ended");
         },
 
         checkMap(value) {
-            console.log("checkMap");
+            log("checkMap");
             if (value === 'map') {
                 this.initializeMap();
             }
         },
 
         initializeMap() {
-            console.log('Initializing Map...');
+            log();
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -259,10 +269,10 @@ document.addEventListener('alpine:init', () => {
                 maxZoom: 18,
             }).addTo(this.map);
             //this.action_testlocalise();
-            this.showPopup("Loading map…");
+            this.loading = true;
             this.loadMapData();
             this.$watch('logs', (newLogs) => {
-                console.log("New logs");
+                log("New logs");
                 if(this.component === 'map'){
                     this.updateMarkers(newLogs);
                     this.action_fitall();
@@ -270,8 +280,9 @@ document.addEventListener('alpine:init', () => {
                         this.showPhoto();
                     }
                 }
-                console.log("End new log");
+                log("End new log");
             });
+            this.loading = false;
         },
 
         async loadMapData() {
@@ -301,7 +312,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         updateMarkers(logs) {
-            console.log("updateMarkers");
+            log();
 
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
@@ -352,12 +363,10 @@ document.addEventListener('alpine:init', () => {
                 //No cursor
                 this.action_localise();
             }
-            console.log("Fin Markers");
+            log("Fin Markers");
         },
 
         markerPopup(marker, entry){
-            //console.log(entry);
-
             const commentButton = entry.loguser === this.userid ? 
                 `<button @click="addComment(${entry.logid})">
                     ${entry.logcomment ? 'Edit comment' : 'Add comment'}
@@ -395,43 +404,26 @@ document.addEventListener('alpine:init', () => {
             this.showCommentModal = true;
         },
 
-        submitComment() {
+        async submitComment() {
             if (this.commentText.trim() === '') {
                 alert('Le commentaire ne peut pas être vide');
                 return;
             }
-            
-            const formData = new FormData();
-            formData.append('view', 'submitComment');
-            formData.append('logid', this.currentLogId);
-            formData.append('comment', this.commentText);
-            formData.append('userid', this.userid);
-            formData.append('routeid', this.routeid);
-            
-            fetch('/api/', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    this.mapMode = false;
-                    this.showCommentModal = false;
-                    this.newPhoto = true;
-                    this.logs = data.logs;
-                    //this.showPhoto();
-                } else {
-                    console.log('Erreur : ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Erreur lors de l\'ajout du commentaire');
+            const data = await apiService.call('submitComment', {
+               logid: this.currentLogId,
+                comment: this.commentText,
+                routeid: this.route.routeid,
             });
+            if (data.status == 'success') {
+                this.mapMode = false;
+                this.showCommentModal = false;
+                this.newPhoto = true;
+                this.logs = data.logs;
+            }
         },
 
         updateGPX() {
-            console.log("Display Geojson",this.geoJSON);
+            log("Display Geojson",this.geoJSON);
 
             if (!this.geoJSON) return;
             if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
@@ -465,10 +457,9 @@ document.addEventListener('alpine:init', () => {
                     }).addTo(this.map);
 
                     this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
-                    this.removePopup();
                 })
                 .catch(error => {
-                    console.log('Erreur GeoJSON:', error);
+                    console.error('Erreur GeoJSON:', error);
                 });
         },
 
@@ -493,7 +484,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async action_localise(){
-            console.log("Localise " + this.canPost);
+            log(this.canPost);
             if(this.canPost){
                 this.action_map();
                 try {
@@ -503,7 +494,7 @@ document.addEventListener('alpine:init', () => {
                         this.sendgeolocation();
                     }
                 } catch (error) {
-                    console.log('Error or cancelled:', error);
+                    console.error('Error or cancelled:', error);
                 }
             }else{
                 this.showAccessMessage();
@@ -540,7 +531,7 @@ document.addEventListener('alpine:init', () => {
                             };
                             bestAccuracy = Math.floor(accuracy);
                         }
-                        console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
+                        log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
 
                         if (bestAccuracy < 20) {
                             navigator.geolocation.clearWatch(watchId);
@@ -573,16 +564,11 @@ document.addEventListener('alpine:init', () => {
                     longitude: this.bestPosition["longitude"]
                 })
             })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     this.logs = data.logs;
-                    console.log('New location');
+                    log('New location');
                 } else {
                     console.error('Error updating location:', data.message);
                 }
@@ -681,7 +667,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_fitall() {
-            console.log("fitall");
+            log();
             let bounds = null;
 
             // Inclure les limites des marqueurs
@@ -712,7 +698,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_fitgpx() {
-            console.log("fitgpx");
+            log();
             if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
                 this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
             }
@@ -720,13 +706,15 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_map() {
-            console.log("map");
+            log();
             this.component = "map";
+            this.mapFooter = this.getMapFooter();
         },
 
         action_list() {
-            console.log("list");
+            log();
             this.component = "list";
+            this.mapFooter = this.getMapFooter();
         },
 
         action_reload(){
@@ -735,7 +723,7 @@ document.addEventListener('alpine:init', () => {
 
         action_testlocalise() {
             const clickHandler = (e) => {
-                console.log("testGeolocalise");
+                log();
                 // Vérifier si on n'a pas cliqué sur un marker
                 const clickedMarker = this.cursors.some(marker => 
                     marker.getLatLng().equals(e.latlng)
@@ -747,7 +735,7 @@ document.addEventListener('alpine:init', () => {
                         longitude: e.latlng.lng,
                         timestamp: Math.floor(Date.now() / 1000)
                     };      
-                    console.log(this.bestPosition);
+                    log(this.bestPosition);
                     this.sendgeolocation();
                 }
                 
@@ -795,16 +783,16 @@ document.addEventListener('alpine:init', () => {
                     // Lancer l'extraction EXIF
                     this.getExifData(file)
                         .then(gpsData => {
-                            console.log('GPS data:');
+                            log('GPS data:');
                             this.uploadImage(file, gpsData);
                         })
                         .catch(error => {
 
-                            console.log('No GPS data:', error);
+                            console.error('No GPS data:', error);
                             // Si pas d'EXIF, utiliser la géolocalisation actuelle
                             return this.get_localisation()
                                 .then(position => {
-                                    console.log("position OK");
+                                    log("position OK");
                                     this.uploadImage(file, position);
                                 })
                                 .catch(geoError => {
@@ -849,7 +837,7 @@ document.addEventListener('alpine:init', () => {
                                 timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
                             }
                             timestamp = Math.floor(timestamp / 1000);
-                            console.log(timestamp);
+                            log(timestamp);
 
                             resolve({ latitude, longitude, timestamp });
                         } else {
@@ -889,11 +877,6 @@ document.addEventListener('alpine:init', () => {
                         method: 'POST',
                         body: formData
                     })
-                    // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-                    // .then(text => {
-                    //     console.log('Response Text:', text); // Affiche la réponse brute
-                    //     return JSON.parse(text); // Convertir en JSON si nécessaire
-                    // })
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
@@ -921,7 +904,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         showPhoto() {
-            console.log("showPhoto");
+            log();
             this.newPhoto = false;
             
             // Trouver le log le plus récent
@@ -1000,13 +983,14 @@ document.addEventListener('alpine:init', () => {
 
         expandUser(entry){
             this.storyUser = entry.userid;
-            console.log(this.storyName)
+            log(this.storyName)
             this.storyName = entry.username_formated;
             this.storyPhotoOnly = false;
             this.action_story();
         },
 
-        getMapFooter(mode) {
+        getMapFooter() {
+            log();
             // Définir quels boutons de mode afficher
             const modeButtons = {
                 'map': `
@@ -1033,27 +1017,27 @@ document.addEventListener('alpine:init', () => {
                         <i class="fas fa-list"></i>
                     </button>
                 `
-            };
+            }[this.component];
 
             return `
                 <div id="mapfooter">
                     <div class="small-line">
-                        ${modeButtons[mode]}
+                        ${modeButtons}
                         <button @click="action_fitall()" class="small-bt">
                             <i class="fas fa-expand-arrows-alt"></i>
                         </button>
                         <button @click="action_fitgpx()" class="small-bt">
                             <i class="fas fa-compress"></i>
                         </button>
-                        <button @click="action_gallery()" class="small-bt" ${!this.canPost ? 'disabled-bt' : ''}">
+                        <button @click="action_gallery()" class="small-bt ${this.canPost ? '' : 'disabled-bt'}">
                             <i class="fas fa-images"></i>
                         </button>
                     </div>
                     <div class="big-line">
-                        <button @click="action_localise()" class="big-bt" ${!this.canPost ? 'disabled-bt' : ''}">
+                        <button @click="action_localise()" class="big-bt ${this.canPost ? '' : 'disabled-bt'}">
                             <i class="fas fa-map-marker-alt"></i>
                         </button>
-                        <button @click="action_photo()" class="big-bt" ${!this.canPost ? 'disabled-bt' : ''}">
+                        <button @click="action_photo()" class="big-bt ${this.canPost ? '' : 'disabled-bt'}">
                             <i class="fas fa-camera"></i>
                         </button>
                     </div>
@@ -1064,14 +1048,20 @@ document.addEventListener('alpine:init', () => {
 
         async action_story(){
             if(!this.slogs){
+                this.loading = true;
                 const data = await apiService.call('story', {
                     routeid: this.route.routeid,
                 });
                 if (data.status == 'success') {
                     this.slogs = this.sortData(data.logs, this.sortField, this.sortDirection);
+                }else{
+                    alert(data.message);
+                    window.location.reload();
                 }
+                this.loading = false;
             }
             this.component = "story";
+            this.mapFooter = this.getMapFooter();
         },
 
         sortData(data, field, direction) {
@@ -1105,6 +1095,45 @@ document.addEventListener('alpine:init', () => {
             this.slogs = this.sortData(this.slogs, this.sortField, this.sortDirection);
         },
 
+        isRouteActive() {
+            const now = new Date();
+            
+            // Vérifier si la date existe et est valide
+            if (this.route.routestop && 
+                this.route.routestop !== '0000-00-00 00:00:00' && 
+                this.route.routestop !== null) {
+                
+                const stopDate = new Date(this.route.routestop);
+                // Vérifier si la conversion en date est valide
+                if (!isNaN(stopDate.getTime())) {
+                    return stopDate > now;
+                }
+            }
+            return true;  // Par défaut, la route est active
+        },
+
+        isPostPossible() {
+            log();
+            if (!this.isLoggedIn) return false;
+
+            if (!this.isRouteActive()) return false;
+
+            if (this.user.userroute != this.route.routeid){
+                //Not connected to the route
+                log("isPostPossible: not on route");
+                return false;
+            }
+            
+            // Route publique, tout utilisateur connecté peut poster
+            if(this.route.routestatus === 0) return true;
+
+            // Route visible ou privée, seuls les invités peuvent publier
+            if(this.route.routestatus > 0 && this.user.constatus == 2) return true;
+
+            return false;
+        },
+
     }));
+
 });
 </script>

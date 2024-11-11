@@ -27,7 +27,7 @@ class MapService
         $this->route = new RouteService();
         $this->user = $user;
         if($this->user)
-        $this->userid = $this->user['userid'];
+            $this->userid = $this->user['userid'];
 
         $this->routeid = $_POST['routeid'] ?? '';
         if ($this->routeid < 1) {
@@ -40,6 +40,7 @@ class MapService
     }
     
     public function loadMapData(){
+        lecho("load map data $this->routeid");
         return $this->get_map_data($this->routeid);
     }
 
@@ -49,6 +50,9 @@ class MapService
         if(!$route){
             return ['status' => 'error', 'message' => 'Unknown route'];
         }
+
+        $start = $this->resetSQLdate($route["routestart"]);
+        $stop = $this->resetSQLdate($route["routestop"]); 
 
         $query = "SELECT *
             FROM rlogs
@@ -68,10 +72,10 @@ class MapService
         $stmt->bind_param("iissss", 
             $routeid, 
             $routeid, 
-            $route["routestart"], 
-            $route["routestart"],
-            $route["routestop"], 
-            $route["routestop"]
+            $start, 
+            $start,
+            $stop, 
+            $stop
         );
 
         return $this->format_map_data($stmt, $route); 
@@ -118,17 +122,34 @@ class MapService
         
         return ['status' => 'error', 'message' => 'Newlog error'];
     }
+
+    private function resetSQLdate($mydate){
+        if (empty($mydate) || $mydate == '0000-00-00 00:00:00')
+            return null;
+        else
+            return $mydate;
+    }
+
+    private function isRouteActive($route) {
+        if (!empty($route['routestop']) && 
+            $route['routestop'] !== '0000-00-00 00:00:00' && 
+            $route['routestop'] !== null) {
+            
+            $stopTime = strtotime($route['routestop']);
+            if ($stopTime !== false) {
+                return $stopTime > time();
+            }
+        }
+        return true;
+    }
     
     public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $weather = null){    
         lecho("NewLog");
 
         $route = $this->route->get_route_by_id($routeid);
-        if ($route["routestop"]) {
-            $stopTimestamp = strtotime($route["routestop"]);
-            if ($stopTimestamp < time()) {
-                $this->error = "Route closed";
-                return false;
-            }
+        if(!$this->isRouteActive($route)){
+            $this->error = "Route closed";
+            return false;
         }
         
         $nearest = new GpxNearest($routeid);
@@ -154,13 +175,14 @@ class MapService
             $insertStmt = $this->db->prepare($insertQuery);
             $insertStmt->bind_param("iiddiiisisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $timestamp);
         }else{
-            // lecho("No timestamp");
+            lecho("No timestamp");
             $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertStmt = $this->db->prepare($insertQuery);
             $insertStmt->bind_param("iiddiiisis", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson);
         }
         
         if ($insertStmt->execute() &&  $insertStmt->affected_rows > 0) {
+            lecho("Insert ok");
             return true;
         }
         // lecho($insertStmt->error);
@@ -277,6 +299,7 @@ class MapService
             );
             $data = $this->format_map_data($stmt, $this->route->get_route_by_id($routeid));
             $data['route'] = $route;
+            lecho($data);
             return $data; 
         }
         return ['status' => 'error', 'message' => 'Unknown story'];
