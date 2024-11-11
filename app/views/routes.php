@@ -254,74 +254,35 @@ document.addEventListener('alpine:init', () => {
             this.editingRouteId = this.editingRouteId === routeId ? null : routeId;
         },
 
-        updateRoute(route) {
-            // Envoyer une requête pour mettre à jour la route
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    view: "updateroute",
-                    userid: this.user.userid,
-                    routeid: route.routeid,
-                    routename: route.routename,
-                    routerem: route.routerem,
-                    routestatus: route.routestatus,
-                    telegram: route.routetelegram,
-                    routemode: route.routemode,
-                    routestart: route.routestart,
-                    routestop: route.routestop
-
-                })
-            })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log('Route updated successfully');
-                    this.toggleConnect(route.routeid);
-                } else {
-                    console.error('Error updating route:', data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        async updateRoute(route) {
+            log();
+            const data = await apiService.call('updateroute', {
+                userid: this.user.userid,
+                routeid: route.routeid,
+                routename: route.routename,
+                routerem: route.routerem,
+                routestatus: route.routestatus,
+                telegram: route.routetelegram,
+                routemode: route.routemode,
+                routestart: route.routestart,
+                routestop: route.routestop
+            });
+            if (data.status == 'success') {
+                console.log('Route updated successfully');
+                this.toggleConnect(route.routeid);
+            }
         },
 
-        toggleConnect(routeid) {
-            // Envoyer une requête pour mettre à jour la route
-            console.log("connect",routeid);
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    view: "routeconnect",
-                    userid: this.user.userid,
-                    routeid: routeid,
-                })
-            })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log('New connexion');
-                    this.updateStatus(data.user);
-                    //window.location.href = `/routes/`;
-                } else {
-                    console.error('Error updating route:', data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        async toggleConnect(routeid) {
+            log();
+            const data = await apiService.call('routeconnect', {
+                userid: this.user.userid,
+                routeid: routeid,
+            });
+            if (data.status == 'success') {
+                console.log('New connexion');
+                this.updateStatus(data.user);
+            }
         },
 
         route_actions(routeid, action, message){

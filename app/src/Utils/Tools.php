@@ -206,6 +206,8 @@ class Tools
     }
 
     public static function formatMessage($message) {
+        if(empty($message)) return "";
+        
         // Expression régulière pour détecter les URLs
         $pattern = '/(https?:\/\/[^\s<]+[^<.,:;"\')\]\s])/i';
         

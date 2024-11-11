@@ -52,6 +52,7 @@ class Convert
                     if($geoUser)
                         $this->user->connect($geoUser["userid"],$route['routeid'],2);
                     $oldUser = $row["userid"];
+                    lecho($geoUser['username']);
                 }
                 if(!$geoUser){
                     //Créer un user
@@ -74,7 +75,13 @@ class Convert
                 }else{
                     $weather = null;
                 }
-                lecho("weather");
+                //lecho("weather");
+
+                if(!empty($data['city'])){
+                    $city = $data['city'];
+                }else{
+                    $city = null;
+                }
 
                 if (empty($data['texts'])) {
                     $data['texts'] = ['T'.$row['timestamp'] => ''];
@@ -96,7 +103,7 @@ class Convert
                         }
                     }
 
-                    if($this->map->newlog($geoUser["userid"], $route['routeid'], $row['latitude'], $row['longitude'], $message, $photo, $timestamp, $weather)){
+                    if($this->map->newlog($geoUser["userid"], $route['routeid'], $row['latitude'], $row['longitude'], $message, $photo, $timestamp, $weather, $city)){
                         echo("<pre>$message</pre>");
                     }else{
                         echo($this->map->getError());

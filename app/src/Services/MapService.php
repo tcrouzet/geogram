@@ -143,7 +143,7 @@ class MapService
         return true;
     }
     
-    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $weather = null){    
+    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $weather = null, $city = null){    
         lecho("NewLog");
 
         $route = $this->route->get_route_by_id($routeid);
@@ -168,17 +168,18 @@ class MapService
         }
     
         $weatherJson = json_encode($weather);
+        $cityJson =  json_encode($city);
 
         // Conversion en date au format ISO 8601 (YYYY-MM-DD HH:MM:SS)
         if($timestamp){
-            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiddiiisisi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $timestamp);
+            $insertStmt->bind_param("iiddiiisissi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson, $timestamp);
         }else{
             lecho("No timestamp");
-            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiddiiisis", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson);
+            $insertStmt->bind_param("iiddiiisiss", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson);
         }
         
         if ($insertStmt->execute() &&  $insertStmt->affected_rows > 0) {
