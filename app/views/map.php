@@ -39,8 +39,6 @@
 
             <template x-if="slogs.length > 0">
                 <div>
-                    <h1>Story</h1>
-
                     <div class="sort-controls">
                         <button @click="StorySortBy('logtime')" class="sort-btn">
                             Date
@@ -75,7 +73,7 @@
                             <div class="log-entry">
                                 <div class="log-header">
                                     <template x-if="!storyUser">
-                                        <span class="log-author" x-text="log.username_formated"></span>
+                                        <span class="log-author" x-text="log.username_formated" @click.stop="showUserStory(log)"></span>
                                     </template>
                                     <span class="log-date" x-text="log.date_formated"></span>
                                 </div>
@@ -149,9 +147,9 @@
 
                     <div class="list-content">
                         <template x-for="entry in logs" :key="entry.logid">
-                            <div class="list-row" @click="showUserOnMap(entry)">
+                            <div class="list-row" @click="showUserStory(entry)">
                                 <div class="user-col">
-                                    <span class="expand" @click.stop="expandUser(entry)">+</span>
+                                    <i class="fas fa-map-marker-alt" @click="showUserOnMap(entry)"></i>
                                     <span x-text="entry.username"></span>
                                 </div>
                                 <div class="stats">
@@ -190,6 +188,8 @@ document.addEventListener('alpine:init', () => {
         //Datas
         route: null,
         user: null,
+        page: null,
+        //Calculated
         isLoggedIn: false,
         isOnRoute: false,
         canPost: false,
@@ -208,7 +208,7 @@ document.addEventListener('alpine:init', () => {
         // Actions
         canPost: false,
         mapFooter: '',
-        loading: false,
+        loading: true,
         // Comments
         showCommentModal: false,
         commentText: '',
@@ -227,18 +227,11 @@ document.addEventListener('alpine:init', () => {
         async init() {
             await initService.initComponent(this);
             
-            if (!this.route) {
-                this.component = 'splash';
-            } else if (this.route.routestatus > 1 && !(this.isLoggedIn && this.routeid == this.userroute)) {
-                this.component = 'error';
-            } else {
-                this.component = 'map';
+            if(this.component == 'map' || this.component == 'list' || this.component == 'story'){
                 await new Promise(resolve => setTimeout(resolve, 100));
                 await this.initializeMap();
             }
-            log("Component:" + this.component);
             this.canPost = this.isPostPossible();
-            log("canPost:" + this.canPost);
             this.mapFooter = this.getMapFooter();
 
             window.addEventListener('error', (event) => {
@@ -249,6 +242,14 @@ document.addEventListener('alpine:init', () => {
                     window.location.reload();
                 }
             });
+
+            if(this.component == "story"){
+                await this.action_story();
+            }else if(this.component == "list"){
+                await this.action_list();
+            }
+
+            this.loading = false;
             log("Init Map ended");
         },
 
@@ -259,7 +260,7 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        initializeMap() {
+        async initializeMap() {
             log();
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
@@ -268,21 +269,12 @@ document.addEventListener('alpine:init', () => {
                 // attribution: '',
                 maxZoom: 18,
             }).addTo(this.map);
-            //this.action_testlocalise();
-            this.loading = true;
-            this.loadMapData();
-            this.$watch('logs', (newLogs) => {
-                log("New logs");
-                if(this.component === 'map'){
-                    this.updateMarkers(newLogs);
-                    this.action_fitall();
-                    if(this.newPhoto){
-                        this.showPhoto();
-                    }
-                }
-                log("End new log");
-            });
-            this.loading = false;
+            await this.loadMapData();
+            this.updateMarkers(this.logs);
+            if(this.newPhoto){
+                this.showPhoto();
+            }
+            log("end");
         },
 
         async loadMapData() {
@@ -707,12 +699,18 @@ document.addEventListener('alpine:init', () => {
 
         action_map() {
             log();
+            Alpine.store('headerActions').initTitle();
             this.component = "map";
             this.mapFooter = this.getMapFooter();
+
+            this.$nextTick(() => {
+                this.map.invalidateSize();
+            });            
         },
 
         action_list() {
             log();
+            Alpine.store('headerActions').initTitle({story: "List"});
             this.component = "list";
             this.mapFooter = this.getMapFooter();
         },
@@ -964,6 +962,7 @@ document.addEventListener('alpine:init', () => {
 
         showUserOnMap(entry) {
             this.component = 'map';
+            this.mapFooter = this.getMapFooter();
             // Attendre que la carte soit prête
             this.$nextTick(() => {
                 // Trouver le marker correspondant
@@ -981,9 +980,8 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        expandUser(entry){
+        showUserStory(entry){
             this.storyUser = entry.userid;
-            log(this.storyName)
             this.storyName = entry.username_formated;
             this.storyPhotoOnly = false;
             this.action_story();
@@ -1060,6 +1058,7 @@ document.addEventListener('alpine:init', () => {
                 }
                 this.loading = false;
             }
+            Alpine.store('headerActions').initTitle({story: "Story", storyUserName: this.storyName, storyUser: this.storyUser});
             this.component = "story";
             this.mapFooter = this.getMapFooter();
         },

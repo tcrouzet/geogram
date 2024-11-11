@@ -7,9 +7,19 @@ function log(message = '') {
         try {
             let functionName = new Error().stack?.split('\n')[2]?.trim()?.split(' ')[1] || 'unknown';
             functionName = functionName.replace("Proxy.", "");
-            console.log(`${functionName}${message ? ': ' + message : ''}`);
+            
+            if (typeof message === 'object') {
+                console.log(functionName + ':');
+                console.log(message);
+            } else {
+                console.log(`${functionName}${message ? ': ' + message : ''}`);
+            }
         } catch (e) {
-            console.log(message ? message : 'log');
+            if (typeof message === 'object') {
+                console.log(message);
+            } else {
+                console.log(message ? message : 'log');
+            }
         }
     }
 }
@@ -84,6 +94,7 @@ const initService = {
             username: store.user?.username,
             userroute: store.user?.userroute,
             routeid: store.route?.routeid,
+            component: store.component,
             userstory: store.userstory,
         };
     },

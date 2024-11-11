@@ -263,6 +263,7 @@ header {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--color-text);
 }
 /* #routename {
     width: 100%;
@@ -596,7 +597,6 @@ textarea {
 
 .long {
     overflow-y: auto;
-    /* flex: 1; */
     margin-bottom: var(--footer-height);
 }
 
@@ -610,15 +610,14 @@ textarea {
 }
 
 .list-content {
-    flex: 1;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 .list-row {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--color-G-light);
 }
 
 .list-row:nth-child(even) {
@@ -739,6 +738,7 @@ textarea {
 
 .log-author {
     font-weight: bold;
+    cursor: pointer;
 }
 
 .log-content {

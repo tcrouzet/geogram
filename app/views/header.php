@@ -34,10 +34,8 @@
 
     </div>
 
-    <template x-if="route && route.routename">
-        <div id="routename">
-            <a :href="`/${route.routeslug}`" x-text="route.routename"></a>
-        </div>
+    <template x-if="title">
+        <div id="routename" x-html="title"></div>
     </template>
 
 </header>
@@ -49,10 +47,13 @@ document.addEventListener('alpine:init', () => {
 
         user: null,
         route: <?= json_encode($route) ?>,
+        page: <?= json_encode($page) ?>,
         menuOpen: false,
         isLoggedIn: false,
         isOnRoute: false,
         storyUser: <?= json_encode($userid) ?>,
+        component: 'splash',
+        title: '',
 
         async init(reset=false) {
             console.log("***Initializing header");
@@ -82,9 +83,46 @@ document.addEventListener('alpine:init', () => {
                 }
             }
 
+            this.initMode();
+            this.initTitle();
+
             this.initStore(true);
             Alpine.store('headerActions').init = this.init.bind(this);
-            console.log("***Header initilalized");
+            Alpine.store('headerActions').initTitle = this.initTitle.bind(this);
+            log("initilalized");
+        },
+
+        initTitle(params = {}){
+            log(params);
+            let title = '';
+            if (this.route && this.route.routename){
+                title += `<a href="${this.route.routeslug}">${this.route.routename}</a>`;
+            }
+            if(params && params.story){
+                title += ` &raquo; <a href="${this.route.routeslug}/${params.story}">${params.story}</a>`;
+                if(params.storyUserName && params.storyUserName){
+                    title += ` &raquo; <a href="${this.route.routeslug}/${params.story}/${params.storyUser}">${params.storyUserName}</a>`;
+                }
+            }
+            log(title);
+            this.$nextTick(() => {
+                this.title = title;
+            });
+        },
+
+        initMode(){
+            if (!this.route) {
+                this.component = 'splash';
+            } else if (this.route.routestatus > 1 && !(this.isLoggedIn && this.routeid == this.userroute)) {
+                this.component = 'error';
+            } else if (this.page == 'Story'){
+                this.component = 'story';
+            } else if (this.page == 'List'){
+                this.component = 'list';
+            } else {
+                this.component = 'map';
+            }
+            log(this.component);
         },
 
         initStore(ended=false){
@@ -95,6 +133,9 @@ document.addEventListener('alpine:init', () => {
                 isLoggedIn: this.isLoggedIn,
                 isOnRoute: this.isOnRoute,
                 storyUser: this.storyUser,
+                component: this.component,
+                init: null,
+                initTitle: null,
                 ended: ended,
             });
         },

@@ -193,7 +193,8 @@ class Tools
 
     public static function normalizeName(string $name): string {
         // Convertir en minuscules et diviser en mots
-        $words = explode(' ', mb_strtolower(trim($name)));
+
+        $words = explode(' ', mb_strtolower(trim( str_replace("_"," ",$name) )));
         
         // Capitaliser chaque mot
         $words = array_map(function($word) {
