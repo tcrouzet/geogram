@@ -41,6 +41,7 @@ try {
     // Routes publiques (pas besoin de token)
     $publicRoutes = [
         'loginSocial' => [AuthController::class, 'loginSocial'],
+        'loginEmail' => [AuthController::class, 'loginEmail'],
         'callback' => [AuthController::class, 'callback'],
         'getSession' => [AuthController::class, 'getSession'],
         'logout' => [AuthController::class, 'logout'],
@@ -90,8 +91,6 @@ try {
     } 
     elseif (isset($protectedRoutes[$view])) {
         // Route protégée : vérifier le token d'abord
-
-       // Nouvelle vérification avec Auth0
        $authService = new AuthService();
        $session = $authService->handleSession();
        
@@ -104,7 +103,7 @@ try {
             if ($response = $controller->getError()) {
                 $data = $response;
             } else {
-                // Passer l'ID utilisateur Auth0 au contrôleur si nécessaire
+                // Passer l'ID utilisateur au contrôleur si nécessaire
                 $data = $controller->$method();
             }
         }

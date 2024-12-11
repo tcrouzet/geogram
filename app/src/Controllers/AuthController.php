@@ -21,20 +21,31 @@ class AuthController
     }
 
     // Login social
+    public function loginEmail()
+    {
+        try {
+            lecho("AuthController loginEmail");
+            return $this->authService->loginWithEmail();
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    // Login social
     public function loginSocial()
     {
-        lecho("Controler loginSocial");
-        $provider = $_POST['provider'] ?? '';
-        if (!$provider) {
-            return ['status' => 'error', 'message' => 'Provider required'];
+        try {
+            lecho("AuthController loginSocial");
+            return $this->authService->loginWithSocial();
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
-        return $this->authService->loginWithSocial($provider);
     }
 
     public function callback() 
     {
         try {
-            lecho("Callback");
+            lecho("AuthController Callback");
             //lecho("GET params:", $_GET);
             //return $this->authService->handleCallback($_GET);
             return $this->authService->handleCallback();

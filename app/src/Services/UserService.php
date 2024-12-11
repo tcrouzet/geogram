@@ -185,7 +185,7 @@ class UserService
             return false;
         }
     }
-
+    
     public function connect($userid,$routeid,$status=2){
         lecho("connect",$userid,$routeid);
         $insertQuery = "INSERT IGNORE INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)";
@@ -294,6 +294,17 @@ class UserService
         else
             return false;
     }
+
+    public function set_user_token($userid){
+        $token = strval($userid) . "_" . bin2hex(random_bytes(64));
+        $stmt = $this->db->prepare("UPDATE users SET usertoken = ? WHERE userid = ?");
+        $stmt->bind_param("si", $token, $userid);
+        if ($stmt->execute())
+            return $token;
+        else
+            return false;
+    }
+
 
     public function set_user_telegram($userId,$telegramId){
         if ($userId && $telegramId) {

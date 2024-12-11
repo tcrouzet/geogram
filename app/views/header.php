@@ -3,7 +3,7 @@
 
     <div class="header-top">
 
-        <div id="geogram"><a href="/"><img src="/assets/img/geogram-logo.svg" alt="Geogram"></a></div>
+        <div id="geogram"><a href="/"><img src="<?= LOGO ?>" alt="Geogram"></a></div>
 
         <div  id="signin">
 
@@ -35,7 +35,7 @@
             </template>
 
             <template x-if="!isLoggedIn">
-                <img src="/assets/img/sign-in.svg?1" @click="login" class="marker markerS" alt="Sign in">
+                <img src="/assets/img/sign-in.svg?2" @click="login" class="marker markerS" alt="Sign in">
             </template>
         </div>
 
@@ -158,7 +158,16 @@ document.addEventListener('alpine:init', () => {
         getUserFromLocalStorage() {
             log();
             const user = localStorage.getItem('user');
-            return user ? JSON.parse(user) : null;
+            if (user) {
+                try {
+                    return JSON.parse(user);
+                } catch (e) {
+                    console.log('Error parsing JSON');
+                    console.log(user);
+                    return null;
+                }
+            }
+            return null;
         },
 
         get userIconStyle() {

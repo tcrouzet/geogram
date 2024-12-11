@@ -12,15 +12,21 @@
         <div id="login">
 
             <h1>Welcome</h1>
-            <p style="text-align: center;">Connect to Geogram.</p>
+            <p style="text-align: center;">Connect to <?=GEONAME; ?></p>
 
             <button class="btn btn-google" @click="login('google-oauth2')" x-bind:disabled="loading">
                 Continue with Google
             </button>
-    
-            <button class="btn btn-mail" @click="login('Username-Password-Authentication')" x-bind:disabled="loading">
-                Continue with email
-            </button>
+
+            <div class="divider">OR</div>
+
+            <div>
+                <input type="email" x-model="email" placeholder="Email" :required="isEmailLogin" class="userfield"/>
+                <div x-show="emailError" class="error-message" x-text="emailError"></div>
+                <button class="btn btn-mail" @click="login('email')" x-bind:disabled="loading">
+                    Continue with email
+                </button>
+            </div>
 
         </div>
     </template>
@@ -28,6 +34,12 @@
     <template x-if="isLoggedIn">
         <div id="login">
             You are logged
+        </div>
+    </template>
+
+    <template x-if="waitingMessage">
+        <div id="login">
+            Check your email and click the link to complete your login.
         </div>
     </template>
 
@@ -39,14 +51,26 @@ document.addEventListener('alpine:init', () => {
 
         isLoggedIn: false,
         loading: false,
+        isEmailLogin: false,
+        emailError: '',
+        email: '',
+        waitingMessage: false,
     
         init(){
             console.log("loginInit");
-            this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;        
+            this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
+
+            if(!this.isLoggedIn){
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('waiting') === '1') {
+                    this.waitingMessage = true;
+                }
+            }
         },
 
         login(provider) {
             this.loading = true;
+            this.isEmailLogin = provider === 'email';
 
             // Récupérer les paramètres d'URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -54,11 +78,24 @@ document.addEventListener('alpine:init', () => {
             const telegram = urlParams.get('telegram');
 
             const formData = new FormData();
-            console.log("loginSocial");
-            formData.append('view', 'loginSocial');
             formData.append('provider', provider);
             if (link) formData.append('link', link);
             if (telegram) formData.append('telegram', telegram);
+            if (this.isEmailLogin) {
+                console.log(this.email);
+
+                if (!this.checkEmailsername(this.email)) {
+                    console.log("Bad email");
+                    this.emailError = "Bad email";
+                    this.loading = false;
+                    return false;
+                }
+
+                formData.append('email', this.email);
+                formData.append('view', 'loginEmail');
+            }else{
+                formData.append('view', 'loginSocial');
+            }
             
             fetch('/api/', {
                 method: 'POST',
@@ -77,6 +114,11 @@ document.addEventListener('alpine:init', () => {
             .catch(error => {
                 alert('Login error:' + error);
             });
+        },
+
+        checkEmailsername(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
         },
 
         connected(userdata){

@@ -5,11 +5,16 @@
     --color-G: #4ECDC4;
     --color-G-light: #F2FBFA;
     --color-e: #FF6B6B;
+    /* --color-e: #e4002b;*/
     --color-light-gray: #ccc;
     --color-dark-gray: #555;
     --color-hover: rgba(76, 205, 196, 0.05); /* Pour #4ECDC4 */
     --button-border-radius: 9999px;
     --footer-height: 6rem;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 a:link,a:visited,a:hover,a:active {color: inherit;text-decoration: none}
@@ -23,7 +28,7 @@ body, html {
 }
 
 main {
-    position: absolute;
+    position: fixed;
     top: 3.8rem;
     bottom: 0;
     left: 0;
@@ -42,26 +47,37 @@ main {
     display: flex;
     flex-direction: column;
     margin: auto;
-    padding: 20vh 1rem 30vh 1rem;
+    justify-content: center;
+    padding-bottom: 10vh;
 }
 #login h1 {
     margin-bottom: 1.5rem;
     margin-top: 0;
     padding: 0;
 }
-#login .btn, #splash .btn {
+
+#login .btn, #splash .btn, #login .userfield {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 10px;
-    border: none;
-    font-size: 16px;
-    margin-bottom: 10px;
-    cursor: pointer;
+    padding: 0.8rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
     position: relative;
     border-radius: var(--button-border-radius);
+    box-sizing: border-box;
 }
+
+#login .btn {
+    cursor: pointer;
+}
+
+#login .userfield {
+    border: 1px solid var(--color-light-gray);
+    background-color: transparent;
+}
+
 #login .btn-google, #login .btn-facebook, #login .btn-apple, #login .btn-mail {
     background-color: white;
     border: 1px solid #ccc;
@@ -135,25 +151,25 @@ main {
     box-sizing: border-box;
 }
 
-#splash .divider {
+.divider {
     margin-top: 1rem;
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
     text-align: center;
 }
-#splash .divider::before, .divider::after {
+.divider::before, .divider::after {
     content: "";
     flex: 1;
     border-bottom: 1px solid var(--color-light-gray);
 }
-#splash .divider:not(:empty)::before {
+.divider:not(:empty)::before {
     margin-right: .5em;
 }
-#splash .divider:not(:empty)::after {
+.divider:not(:empty)::after {
     margin-left: .5em;
 }
-#splash .input-field {
+.input-field {
     width: 97%;
     padding: 0.5rem;
     border-radius: 5px;
@@ -167,10 +183,10 @@ main {
     border: none;
     margin-top: 1rem;
 }
-#splash .error-message{
+.error-message{
     margin-top: 0.2rem;
     margin-bottom: 1rem;
-    color: var(--co);
+    color: var(--color-e);
 }
 
 #splash label{
@@ -230,9 +246,9 @@ main {
 /* header */
 
 header {
+    position: fixed;
     display: flex;
     flex-direction: column;
-    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -240,7 +256,8 @@ header {
     height: 3.7rem;
     padding: 0;
     z-index: 1000;
-    color: var(--color-background);
+    color: var(--color-text);
+    background-color: var(--color-background);
 }
 
 .header-top {
@@ -400,7 +417,7 @@ header {
     margin-bottom: var(--footer-height);
 }
 #mapfooter {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
@@ -864,6 +881,16 @@ span.why a:link,span.why a:visited,span.why a:hover,span.why a:active {color: in
     }
 }
 
+/* Spécifique pour iOS */
 @supports (-webkit-touch-callout: none) {
-    /* CSS specific to iOS devices */
+    body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+    
+    main {
+        position: fixed;
+        /* height: calc(100% - 3.8rem - var(--footer-height)); */
+    }
 }
