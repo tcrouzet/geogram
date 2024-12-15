@@ -32,6 +32,17 @@ class AuthController
     }
 
     // Login social
+    public function loginToken()
+    {
+        try {
+            lecho("AuthController loginToken");
+            return $this->authService->loginWithToken();
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    // Login social
     public function loginSocial()
     {
         try {

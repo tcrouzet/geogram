@@ -42,6 +42,7 @@ try {
     $publicRoutes = [
         'loginSocial' => [AuthController::class, 'loginSocial'],
         'loginEmail' => [AuthController::class, 'loginEmail'],
+        'loginToken' => [AuthController::class, 'loginToken'],
         'callback' => [AuthController::class, 'callback'],
         'getSession' => [AuthController::class, 'getSession'],
         'logout' => [AuthController::class, 'logout'],

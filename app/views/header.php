@@ -68,8 +68,11 @@ document.addEventListener('alpine:init', () => {
             this.initStore();
             
             const urlParams = new URLSearchParams(window.location.search);
+            log(urlParams);
             if (urlParams.get('login') === 'success') {
                 this.user = await this.checkAuthStatus();
+            } else if (urlParams.get('login') === 'token') {
+                this.user = await this.checkAuthToken();
             } else {
                 this.user = this.getUserFromLocalStorage();
             }
@@ -148,7 +151,22 @@ document.addEventListener('alpine:init', () => {
         },
 
         async checkAuthStatus() {
+            log();
             const data = await apiService.call('getSession', {});
+            if (data.status == 'success') {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                return data.user;
+            }
+        },
+
+        async checkAuthToken() {
+            log();
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            log(token);
+
+            const data = await apiService.call('loginToken', {token: token});
+
             if (data.status == 'success') {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 return data.user;

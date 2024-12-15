@@ -56,17 +56,17 @@ main {
     padding: 0;
 }
 
-#login .btn, #splash .btn, #login .userfield {
+.btn, .userfield {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 0.8rem;
+    padding: 0.8rem!important;
     font-size: 1rem;
+    margin-top: 0.5rem;
     margin-bottom: 0.5rem;
     position: relative;
     border-radius: var(--button-border-radius);
-    box-sizing: border-box;
 }
 
 #login .btn {
@@ -151,6 +151,10 @@ main {
     box-sizing: border-box;
 }
 
+#splash .btn{
+    width: calc(100% - 2rem);
+}
+
 .divider {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -177,11 +181,10 @@ main {
     display: block;
     background-color: transparent;
 }
-#splash .btn-submit {
+.btn-submit {
     background-color: var(--color);
     color: var(--color-background);
     border: none;
-    margin-top: 1rem;
 }
 .error-message{
     margin-top: 0.2rem;
@@ -401,13 +404,6 @@ header {
     flex-direction: column;
     width: 100%;
     height: 100%;
-}
-#splash > * {
-    max-width: 40rem;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 1rem;
-    box-sizing: border-box;
 }
 #map {
     display: flex;

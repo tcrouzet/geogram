@@ -562,30 +562,20 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        sendgeolocation() {
-            // Envoyer une requête pour mettre à jour la route
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',                },
-                body: new URLSearchParams({
-                    view: "sendgeolocation",
-                    userid: this.userid,
-                    routeid: this.routeid,
-                    latitude: this.bestPosition["latitude"],
-                    longitude: this.bestPosition["longitude"]
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    this.logs = data.logs;
-                    log('New location');
-                } else {
-                    console.error('Error updating location:', data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        async sendgeolocation() {
+            log();
+            const data = await apiService.call('sendgeolocation', {
+                userid: this.userid,
+                routeid: this.routeid,
+                latitude: this.bestPosition["latitude"],
+                longitude: this.bestPosition["longitude"]
+
+            });
+            if (data.status == 'success') {
+                this.logs = data.logs;
+                this.updateMarkers(this.logs);
+                log('New location');
+            }
         },
 
         updatePopup(message, watchId, bestPosition, resolve, reject) {
@@ -871,7 +861,7 @@ document.addEventListener('alpine:init', () => {
 
                             resolve({ latitude, longitude, timestamp });
                         } else {
-                            reject('No GPS data found');
+                            reject('No GPS data found in Exif');
                         }
                     });
                 };
@@ -1010,28 +1000,28 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-            async showUserOnMap(entry) {
-                this.component = 'map';
-                this.mapFooter = this.getMapFooter();
+        async showUserOnMap(entry) {
+            this.component = 'map';
+            this.mapFooter = this.getMapFooter();
 
-                if (this.slogs) {
-                    this.logs = this.slogs;
-                }
+            if (this.slogs) {
+                this.logs = this.slogs;
+            }
 
-                await this.$nextTick();
+            await this.$nextTick();
 
-                this.updateMarkers(this.logs);
+            this.updateMarkers(this.logs);
 
-                // Trouver et afficher le marker
-                const userMarker = this.cursors.find(marker => 
-                    marker.getLatLng().lat === entry.loglatitude && 
-                    marker.getLatLng().lng === entry.loglongitude
-                );
+            // Trouver et afficher le marker
+            const userMarker = this.cursors.find(marker => 
+                marker.getLatLng().lat === entry.loglatitude && 
+                marker.getLatLng().lng === entry.loglongitude
+            );
 
-                if (userMarker) {
-                    this.map.setView(userMarker.getLatLng(), 12);
-                    userMarker.openPopup();
-                }
+            if (userMarker) {
+                this.map.setView(userMarker.getLatLng(), 12);
+                userMarker.openPopup();
+            }
         },
 
         showUserStory(entry){

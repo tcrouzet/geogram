@@ -116,24 +116,30 @@ class UserService
     }
 
     public function get_user($param) {
+        lecho("GetUser");
     
         $isEmail = strpos($param, '@') !== false;
-    
+        $isToken = preg_match('/^\d+_[a-f0-9]{128}$/', $param) === 1;
+
+        $query = "SELECT * FROM users u
+        LEFT JOIN routes r ON u.userroute = r.routeid
+        LEFT JOIN connectors c ON u.userid = c.conuserid
+        WHERE ";
+
         if ($isEmail) {
-            $query = "SELECT * FROM users u
-                LEFT JOIN routes r ON u.userroute = r.routeid
-                LEFT JOIN connectors c ON u.userid = c.conuserid
-                WHERE u.useremail = ?";
+            $query .= "u.useremail = ?";
+        } else if ($isToken) {
+            lecho("isToken");
+            $query .= "u.usertoken = ?";
         } else {
-            $query = "SELECT * FROM users u
-                LEFT JOIN routes r ON u.userroute = r.routeid 
-                LEFT JOIN connectors c ON u.userid = c.conuserid 
-                WHERE u.userid = ?";
+            $query .= "u.userid = ?";
         }
     
         $stmt = $this->db->prepare($query);
     
         if ($isEmail) {
+            $stmt->bind_param("s", $param);
+        } else if ($isToken) {
             $stmt->bind_param("s", $param);
         } else {
             $stmt->bind_param("i", $param);
@@ -143,6 +149,7 @@ class UserService
         $result = $stmt->get_result();
     
         if ($result && $result->num_rows > 0) {
+            lecho("UserFound");
             $user = $result->fetch_assoc();
             $user['photopath'] = $this->fileManager->user_photo_web($user);
             $user['fusername'] = Tools::normalizeName($user['username']);
@@ -296,7 +303,8 @@ class UserService
     }
 
     public function set_user_token($userid){
-        $token = strval($userid) . "_" . bin2hex(random_bytes(64));
+        $timestamp = time();
+        $token = strval($userid) . "_" . strval($timestamp) . "_" . bin2hex(random_bytes(32));
         $stmt = $this->db->prepare("UPDATE users SET usertoken = ? WHERE userid = ?");
         $stmt->bind_param("si", $token, $userid);
         if ($stmt->execute())
@@ -305,6 +313,15 @@ class UserService
             return false;
     }
 
+    public function is_token_valid($token, $expiration = 3600) {
+        $parts = explode('_', $token);
+        if (count($parts) !== 3) return false;
+        
+        $tokenTimestamp = intval($parts[1]);
+        $currentTime = time();
+        
+        return ($currentTime - $tokenTimestamp) < $expiration;
+    }
 
     public function set_user_telegram($userId,$telegramId){
         if ($userId && $telegramId) {

@@ -33,7 +33,6 @@ class AuthService
         lecho("AuthService providerName:", $providerName);
     }
 
-
     public function loginWithEmail() {
         try {
             $email = $_POST['email'] ?? null;
@@ -43,44 +42,65 @@ class AuthService
                 return ['status' => 'error', 'message' => 'No email'];
             }
 
-            $user = $this->userService->get_user($email);
-            if($user){
-                // Existing user
+            // Créer un state avec les paramètres
+            $state = [
+                'link' => $_POST['link'] ?? null,
+                'telegram' => $_POST['telegram'] ?? null,
+            ];    
+            $state =base64_encode(json_encode($state));
 
-                $token = $this->userService->set_user_token($user['user']['userid']);
-                if($this->sendEmail($email,$token)){
+            // $user = $this->userService->get_user($email);
+            $userInfo["email"]=$email;
+            $r = $this->userService->findOrCreateUser($userInfo);
+            if( $r['status']=="success" ){
+                $user = $r['user'];
+                $token = $this->userService->set_user_token($user['userid']);
+                if($this->sendEmail($email, $token, $state)){
                     return ['status' => 'redirect', 'url' => '/login?waiting=1'];
                 }else{
                     return ['status' => 'error', 'message' => 'No log in mail send'];
                 }
 
-
-                    // // Stocker l'ID utilisateur dans un cookie ou session
-                    // setcookie('user_session', json_encode([
-                    //     'app_userid' => $user['user']['userid']
-                    // ]), time() + ($this->cookies_time), '/', '', true, true);
-                    // return ['status' => 'success', 'user' => $user['user']];
-
-
-            }else{
-                // New user
             }
 
-    
-            if ($user['status'] == "success") {
-                // Stocker l'ID utilisateur dans un cookie ou session
-                setcookie('user_session', json_encode([
-                    'app_userid' => $user['user']['userid']
-                ]), time() + ($this->cookies_time), '/', '', true, true);
-                return ['status' => 'success', 'user' => $user['user']];
-            } else {
-                return ['status' => 'error', 'message' => 'Invalid credentials'];
-            }
+            return ['status' => 'error', 'message' => 'Invalid credentials'];
+
         } catch (\Exception $e) {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
     
+    public function loginWithToken() {
+        try {
+            $token = $_POST['token'] ?? null;
+            lecho("AuthService loginWithToken:", $token);
+
+            if(empty($token)){
+                return ['status' => 'error', 'message' => 'No token'];
+            }
+
+            if(!$this->userService->is_token_valid($token)){
+                return ['status' => 'error', 'message' => 'Expired token'];
+            }
+
+            $state = $_POST['state'] ?? null;
+
+            $user = $this->userService->get_user($token);
+            if($user){
+                // Stocker l'ID utilisateur dans un cookie ou session
+                setcookie('user_session', json_encode([
+                    'app_userid' => $user['userid']
+                ]), time() + ($this->cookies_time), '/', '', true, true);
+                
+                return ['status' => 'success', 'user' => $user];
+            } else {
+                return ['status' => 'error', 'message' => "Unknown token"];
+            }
+  
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
 
     public function loginWithSocial() {
         lecho("AuthService loginSocial");
@@ -167,7 +187,7 @@ class AuthService
 
 
     public function handleSession() {
-        lecho("handleSession");
+        lecho("AuthService handleSession");
     
         // Vérifier si le cookie de session utilisateur existe
         if (isset($_COOKIE['user_session'])) {
@@ -226,7 +246,7 @@ class AuthService
         return $this->error;
     }
 
-    public function sendEmail($userEmail,$token){
+    public function sendEmail($userEmail,$token,$state=""){
 
         $mail = new PHPMailer(true);
         try {
@@ -243,13 +263,13 @@ class AuthService
 
             // Destinataire
             $mail->CharSet = 'UTF-8';
-            $mail->setFrom($config['Useremail'], $config['UserReanName']);
+            $mail->setFrom($config['Useremail'], $config['UserRealName']);
             $mail->addAddress($userEmail);
 
             // Contenu de l'email
             $mail->isHTML(true);
             $mail->Subject = GEONAME.' logging';
-            $mail->Body    = 'Clic on this link : <a href="'.BASE_URL.'/verify?token=' . $token . '">log in</a>';
+            $mail->Body    = 'Clic on this link : <a href="'.BASE_URL.'/?login=token&token=' . $token . '&state=' . $state . '">log in</a>';
 
             $mail->send();
             lecho('log in mail send to',$userEmail);

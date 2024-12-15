@@ -25,7 +25,5 @@ sudo chmod 775 userdata
 sudo chown -R apache:apache userdata
 
 # Nettoyer les logs anciens
-sudo journalctl --vacuum-time=1d
-sudo rm -rf /tmp/*
-sudo rm -rf /var/tmp/*
+sudo journalctl --vacuum-time=1d > /dev/null 2>&1
 

@@ -7,7 +7,7 @@
         <div class="spinner"></div>
     </div>
 
-    <template x-if="!isLoggedIn">
+    <template x-if="!isLoggedIn && !waitingMessage">
 
         <div id="login">
 
@@ -21,7 +21,7 @@
             <div class="divider">OR</div>
 
             <div>
-                <input type="email" x-model="email" placeholder="Email" :required="isEmailLogin" class="userfield"/>
+                <input type="email" x-model="email" placeholder="Email" :required="isEmailLogin" class="userfield" @keyup.enter="login('email')"/>
                 <div x-show="emailError" class="error-message" x-text="emailError"></div>
                 <button class="btn btn-mail" @click="login('email')" x-bind:disabled="loading">
                     Continue with email
@@ -57,12 +57,14 @@ document.addEventListener('alpine:init', () => {
         waitingMessage: false,
     
         init(){
-            console.log("loginInit");
+            log("loginInit");
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
 
             if(!this.isLoggedIn){
+                log("No logged");
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('waiting') === '1') {
+                    log("Waiting");
                     this.waitingMessage = true;
                 }
             }
