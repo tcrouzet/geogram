@@ -34,9 +34,25 @@ class RouteService
     public function getroutes(): array {
         lecho("getroutes");
         
-        $query = "SELECT * FROM connectors c INNER JOIN routes r ON c.conrouteid = r.routeid WHERE c.conuserid = ?;";
+        $query = "SELECT *
+            FROM connectors c
+            INNER JOIN routes r ON c.conrouteid = r.routeid
+            WHERE c.conuserid = ?
+
+            UNION
+
+            SELECT NULL AS conid, r.routeid AS conrouteid, NULL AS conuserid, NULL AS contime, 0 AS constatus, r.*
+            FROM routes r
+            WHERE r.routestatus <2
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM connectors c
+                WHERE c.conrouteid = r.routeid AND c.conuserid = ?
+            );
+            ";
+
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $this->userid);
+        $stmt->bind_param("ii", $this->userid, $this->userid);
         $stmt->execute();
         $result = $stmt->get_result();
         if($result){
@@ -151,6 +167,14 @@ class RouteService
             $message = $this->delete_all_logs($routeid);
         }else if($action == "purgephotos"){
             $message = $this->delete_logs_and_photos($routeid);
+        }else if($action == "deleteroute"){
+            $message = $this->delete_logs_and_photos($routeid);
+            if($message){
+                $message = $this->delete_route($routeid);
+                if($message){
+                    return ['status' => 'redirect', 'url' => '/routes'];
+                }
+            }
         }else{
             return ['status' => 'error', 'message' => "Unknown action: $action"];        
         }
@@ -160,14 +184,34 @@ class RouteService
         else
             return ['status' => 'error', 'message' => "Action $action fail"];
     }
-    
+
+    public function delete_route($routeid){
+        if($this->delete_logs_and_photos($routeid)){
+            if($this->delete_connectors_by_route($routeid)){
+                $stmt = $this->db->prepare("DELETE FROM routes WHERE routeid=?");
+                $stmt->bind_param("i", $routeid);
+                if ($stmt->execute())
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public function delete_connectors_by_route($routeid){
+        $stmt = $this->db->prepare("DELETE FROM connectors WHERE conrouteid=?");
+        $stmt->bind_param("i", $routeid);
+        if ($stmt->execute())
+            return true;
+        return false;
+    }
+
+
     public function delete_all_logs($routeid){
         $stmt = $this->db->prepare("DELETE FROM rlogs WHERE logroute=?");
         $stmt->bind_param("i", $routeid);
         if ($stmt->execute())
             return true;
-        else
-            return false;
+        return false;
     }
 
     public function delete_logs_and_photos($routeid){
@@ -367,6 +411,18 @@ class RouteService
         return ['status' => 'error', 'message' => $this->error];
     }
 
+    public function isConnected($userid, $routeid) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM connectors WHERE conuserid = ? AND conrouteid = ?");
+        $stmt->bind_param("ii", $userid, $routeid);
+        $stmt->execute();
+        if($result = $stmt->get_result()){
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            return $row['count'];
+        }
+        return false;
+    }
+    
     public function routeconnect(){
         lecho("routeconnect");
     
@@ -379,8 +435,13 @@ class RouteService
             $stmt = $this->db->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
             $stmt->bind_param("ii", $routeid, $userid);
             if ($stmt->execute()){
+
+                if (!$this->isConnected($userid,$routeid)){
+                    // Is not connected
+                    $this->connect($userid,$routeid,0);
+                }
+
                 $user = $this->userService->get_user($userid);
-                unset($user['userpsw']);
                 return ['status' => 'success', 'user' => $user ];
             }else
                 return ['status' => 'error', 'message' => 'Update fail'];

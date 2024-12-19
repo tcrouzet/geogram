@@ -56,6 +56,13 @@
                 </template>
             </div>
 
+            <div class="divider">USER DATA</div>
+            <ul>
+                <li><strong>User ID:</strong> <span x-text="user.userid"></span></li>
+                <li><strong>User Route:</strong> <span x-text="user.userroute"></span></li>
+                <li><strong>Route Status:</strong> <span x-text="getRouteStatusDescription(user.routestatus)"></span></li>
+                <li><strong>Route Con Status:</strong> <span x-text="getConStatusDescription(user.constatus)"></span></li>
+            </ul>
         </div>  
     </template>
 
@@ -210,6 +217,34 @@ document.addEventListener('alpine:init', () => {
                         view: "telegramDisconnect"
                     })
                 });
+            }
+        },
+
+        getRouteStatusDescription(status) {
+            switch(status) {
+                case 0:
+                    return "Public (everyone can view, must be logged in to post - 0)";
+                case 1:
+                    return "Visible (everyone can view, must be invited to post - 1)";
+                case 2:
+                    return "Private (must be invited to view and post - 2)";
+                default:
+                    return "Unknown";
+            }
+        },
+
+        getConStatusDescription(status) {
+            switch(status) {
+                case 3:
+                    return "Creator (3)";
+                case 2:
+                    return "Invited to publish (2)";
+                case 1:
+                    return "Invited to view (1)";
+                case 0:
+                    return "Connected only (0)";
+                default:
+                    return "Unknown status";
             }
         },
 

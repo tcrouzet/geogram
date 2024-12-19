@@ -115,6 +115,7 @@ class UserService
         return true;
     }
 
+    // $param can be userid, useremail or token
     public function get_user($param) {
         lecho("GetUser");
     
@@ -123,7 +124,7 @@ class UserService
 
         $query = "SELECT * FROM users u
         LEFT JOIN routes r ON u.userroute = r.routeid
-        LEFT JOIN connectors c ON u.userid = c.conuserid
+        LEFT JOIN connectors c ON u.userid = c.conuserid AND r.routeid = c.conrouteid
         WHERE ";
 
         if ($isEmail) {

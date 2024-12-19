@@ -29,7 +29,7 @@ const apiService = {
     async call(view, params = {}, options = {}) {
         log(view + " api call");
 
-        const formData = new URLSearchParams();
+        const formData = new FormData();
         formData.append('view', view);
         
         // Add parameters
@@ -40,10 +40,62 @@ const apiService = {
         try {
             const response = await fetch('/api/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString(),
+                body: formData,
+                credentials: 'same-origin',
+                timeout: 30000
+            });
+
+            if (options.debug) {
+                log('API Response:', await response.clone().text());
+            }
+
+            const data = await response.json();
+
+            // Si session expirée et pas déjà réessayé
+            if (data.status === 'error') {
+                log(data.message);
+                return {status: 'error', message: data.message};
+            }
+
+            log(view + " api success");
+            return data;
+        } catch (error) {
+            console.error(`API Error (${view}):`, error);
+            throw error;
+        }
+    }
+};
+
+
+const apiServiceOld = {
+    async call(view, params = {}, options = {}) {
+        log(view + " api call");
+
+        const isFileUpload = Object.values(params).some(value => value instanceof File);
+        log("isFile" + isFileUpload);
+
+        const formData = new URLSearchParams();
+        formData.append('view', view);
+        
+        // Add parameters
+        Object.entries(params).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+
+        const headers = {};
+        let body = {};
+        if (isFileUpload){
+            body = formData;    
+        }else{
+            headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            body = formData.toString();
+        }
+
+        try {
+            const response = await fetch('/api/', {
+                method: 'POST',
+                headers: headers,
+                body: body,
                 credentials: 'same-origin',
                 timeout: 30000
             });

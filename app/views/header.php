@@ -63,7 +63,7 @@ document.addEventListener('alpine:init', () => {
         title: '',
 
         async init(reset=false) {
-            console.log("***Initializing header");
+            log("***Initializing header");
 
             this.initStore();
             
@@ -80,7 +80,7 @@ document.addEventListener('alpine:init', () => {
 
             this.isLoggedIn = this.user !== null && this.user !== undefined;
             if(this.isLoggedIn) {
-                console.log("***logged");
+                log("***logged");
                 //console.log(this.user);
                 this.isOnRoute = this.user.routeid > 0 ? true : false;
                 if ((this.route === null || reset === true) && this.isOnRoute) {

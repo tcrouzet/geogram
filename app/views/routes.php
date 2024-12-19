@@ -70,7 +70,7 @@
                             <select x-model="route.routestatus" @change="updateRoute(route)">
                                 <option value="2">Private</option>
                                 <option value="1">Open for all, invited to publish</option>
-                                <option value="0">Open for all</option>
+                                <option value="0">Open for all (just logged to publish)</option>
                             </select>
                             <div x-show="route.routestatus > 0">
                                 <a :href="`${route.publishpath}`" x-text="'Invitation link for publishers'"></a>
@@ -121,6 +121,7 @@
                             <div class="divider">ACTIONS</div>
                             <div id="actions">
                                 <button @click="route_actions(route.routeid,'purgephotos',$el.textContent)">Delete logs & photos</button>
+                                <button @click="route_actions(route.routeid,'deleteroute',$el.textContent)">Delete route</button>
                             </div>
                             <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
@@ -295,81 +296,61 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        route_actions(routeid, action, message){
+        async route_actions(routeid, action, message){
+
             if (!confirm(' Do you really to ' + message.toLowerCase()) ) {
                     return;
             }
 
-            fetch('/api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    view: "routeAction",
-                    action: action,
-                    userid: this.user.userid,
-                    routeid: routeid,
-                })
-            })
-            // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-            // .then(text => {
-            //     console.log('Response Text:', text); // Affiche la réponse brute
-            //     return JSON.parse(text); // Convertir en JSON si nécessaire
-            // })
-            .then(response => response.json())
-            .then(data => {
-                this.actionError = data.message;
-                if (data.status === 'success') {
-                    return true;
-                } else {
-                    return false;
-                }
-            })
-            .catch(error => {
-                alert('An error occurred during action.');
+            const data = await apiService.call('routeAction', {
+                action: action,
+                userid: this.user.userid,
+                routeid: routeid
             });
+
+            if (data.status === 'success') {
+                return true;
+            }else if (data.status === 'redirect') {
+                window.location.reload();
+                return true;
+            } else {
+                return false;
+            }
         },
 
+
         handleGPXUpload(routeid) {
-            return (event) => {
-                const file = event.target.files[0];
-                if (!file || file.type !== 'application/gpx+xml') {
-                    this.gpxError = 'Please upload a valid GPX file.';
-                    return;
-                }
-                this.gpxError = 'Uploading…';
-
-                const formData = new FormData();
-                formData.append('view', 'gpxupload');
-                formData.append('userid', this.user.userid);
-                formData.append('routeid', routeid);
-                formData.append('gpxfile', file);
-
-                fetch('/api/', {
-                    method: 'POST',
-                    body: formData
-                })
-                // .then(response => response.text()) // Récupérer le texte brut pour le débogage
-                // .then(text => {
-                //     console.log('Response Text:', text); // Affiche la réponse brute
-                //     return JSON.parse(text); // Convertir en JSON si nécessaire
-                // })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        this.gpxError = 'Distance: ' + data.gpx.total_km + "m Up:" + data.gpx.total_dev + "m Points:" + data.gpx.total_points + " Tracks:" + data.gpx.total_tracks;
-                        return true;
-                    } else {
-                        this.gpxError = 'Upload failed: ' + data.message;
-                        return false;
+            log();
+            return async (event) => {
+                try {
+                    const file = event.target.files[0];
+                    if (!file || !file.name.endsWith('.gpx')) {
+                        this.gpxError = 'Please upload a valid GPX file.';
+                        return;
                     }
-                })
-                .catch(error => {
-                    this.uploading = false;
-                    console.error('Error:', error);
-                    alert('An error occurred during upload.');
-                });
+                    
+                    this.gpxError = 'Uploading…';
+
+                    const formData = new FormData();
+                    formData.append('userid', this.user.userid);
+                    formData.append('routeid', routeid);
+                    formData.append('gpxfile', file);
+
+                    const data = await apiService.call('gpxupload', {
+                        userid: this.user.userid,
+                        routeid: this.route.routeid,
+                        gpxfile: file
+                    });
+
+                    if (data.status == 'success') {
+                        this.gpxError = 'Distance: ' + data.gpx.total_km + "m Up:" + data.gpx.total_dev + "m Points:" + data.gpx.total_points + " Tracks:" + data.gpx.total_tracks;
+                    } else {
+                    this.gpxError = 'Upload failed: ' + data.message;
+                    }
+                } catch (error) {
+                    log(error);
+                    this.gpxError = 'An error occurred during upload.';
+                }
             }
         },
 
