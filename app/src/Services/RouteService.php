@@ -118,6 +118,7 @@ class RouteService
     }
 
     public function get_route_by_link($link){
+        lecho("get_route_by_link");
         $query="SELECT * FROM `routes` WHERE routepublisherlink = ? OR 	routeviewerlink = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ss", $link, $link);
@@ -326,11 +327,15 @@ class RouteService
         return ['routeid' => $routeid, 'status' => $status];
     }
 
-    public function connect($userid,$routeid,$status=2){
-        lecho("connect",$userid,$routeid);
-        $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)";
+    public function connect($userid, $routeid, $status = 2) {
+        lecho("connect", $userid, $routeid);
+    
+        // Requête SQL avec ON DUPLICATE KEY UPDATE
+        $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)
+                        ON DUPLICATE KEY UPDATE constatus = ?";
         $insertStmt = $this->db->prepare($insertQuery);
-        $insertStmt->bind_param("iii", $routeid, $userid, $status);
+        $insertStmt->bind_param("iiii", $routeid, $userid, $status, $status);
+    
         return $insertStmt->execute();
     }
     
@@ -428,26 +433,38 @@ class RouteService
     
         $userid = $_POST['userid'] ?? '';
         $routeid = intval($_POST['routeid'] ?? '');
-        //lecho($_POST);
-    
-        if ($user = $this->userService->get_user($userid)) {
-    
-            $stmt = $this->db->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
-            $stmt->bind_param("ii", $routeid, $userid);
-            if ($stmt->execute()){
+        $link = urldecode($_POST['link'] ?? '');
 
-                if (!$this->isConnected($userid,$routeid)){
-                    // Is not connected
-                    $this->connect($userid,$routeid,0);
-                }
+        lecho("routeconnect",$userid,$routeid,$link);
+    
+        if (!empty($userid) && $user = $this->userService->get_user($userid)) {
 
-                $user = $this->userService->get_user($userid);
-                return ['status' => 'success', 'user' => $user ];
-            }else
-                return ['status' => 'error', 'message' => 'Update fail'];
+            if (!empty($link)){
+                lecho("link not roueid");
+                $route = $this->get_route_by_link($link);
+                $routeid = $route['routeid'];
+            }
+            lecho("routeid:",$routeid);
+
+            if($routeid>0){
+                $stmt = $this->db->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
+                $stmt->bind_param("ii", $routeid, $userid);
+                if ($stmt->execute()){
+
+                    if (!$this->isConnected($userid,$routeid)){
+                        // Is not connected
+                        $this->connect($userid,$routeid,0);
+                    }else{
+                        lecho("is conected");
+                    }
+
+                    $user = $this->userService->get_user($userid);
+                    return ['status' => 'success', 'user' => $user ];
+                }else
+                    return ['status' => 'error', 'message' => 'Update fail'];
+            }
     
         }
-    
         return ['status' => 'error', 'message' => 'Unknown user'];
     }
     

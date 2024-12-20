@@ -49,15 +49,19 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('loginComponent', () => ({
 
+        user: null,
         isLoggedIn: false,
         loading: false,
         isEmailLogin: false,
         emailError: '',
         email: '',
         waitingMessage: false,
+        link: '',
     
-        init(){
+        async init(){
             log("loginInit");
+            await initService.initComponent(this);
+
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
 
             if(!this.isLoggedIn){
@@ -67,44 +71,52 @@ document.addEventListener('alpine:init', () => {
                     log("Waiting");
                     this.waitingMessage = true;
                 }
+            }else{
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('link')) {
+                    await this.toggleConnect(urlParams.get('link'));
+                }
+                window.location.href = '/';
             }
         },
 
-        login(provider) {
-            this.loading = true;
-            this.isEmailLogin = provider === 'email';
+        async login(provider) {
+            try {
 
-            // Récupérer les paramètres d'URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const link = urlParams.get('link');
-            const telegram = urlParams.get('telegram');
+                this.loading = true;
+                this.isEmailLogin = provider === 'email';
 
-            const formData = new FormData();
-            formData.append('provider', provider);
-            if (link) formData.append('link', link);
-            if (telegram) formData.append('telegram', telegram);
-            if (this.isEmailLogin) {
-                console.log(this.email);
+                // Récupérer les paramètres d'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const link = urlParams.get('link');
+                const telegram = urlParams.get('telegram');
 
-                if (!this.checkEmailsername(this.email)) {
-                    console.log("Bad email");
-                    this.emailError = "Bad email";
-                    this.loading = false;
-                    return false;
+                let data;
+
+                if (this.isEmailLogin) {
+                    log(this.email);
+
+                    if (!this.checkEmailsername(this.email)) {
+                        log("Bad email");
+                        this.emailError = "Bad email";
+                        this.loading = false;
+                        return false;
+                    }
+
+                    data = await apiService.call('loginEmail', {
+                        link: link,
+                        telegram: telegram,
+                        email: this.email,
+                        provider: provider
+                    });
+                }else{
+                    data = await apiService.call('loginSocial', {
+                        link: link,
+                        telegram: telegram,
+                        provider: provider
+                    });
                 }
-
-                formData.append('email', this.email);
-                formData.append('view', 'loginEmail');
-            }else{
-                formData.append('view', 'loginSocial');
-            }
-            
-            fetch('/api/', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
+                
                 if (data.status === 'success') {
                     this.connected(data.user);
                 } else if (data.status === 'redirect' && data.url) {
@@ -112,10 +124,11 @@ document.addEventListener('alpine:init', () => {
                 } else if (data.status === 'error') {
                     console.error('Login error:', data.message);
                 }
-            })
-            .catch(error => {
-                alert('Login error:' + error);
-            });
+            } catch (error) {
+                console.error('Unexpected error during login:', error);
+            } finally {
+                this.loading = false;
+            }
         },
 
         checkEmailsername(email) {
@@ -127,6 +140,20 @@ document.addEventListener('alpine:init', () => {
             log('Utilisateur connecté:', userdata);
             localStorage.setItem('user', JSON.stringify(userdata));
             window.location.href = `/`;
+        },
+
+        async toggleConnect(link) {
+            log();
+            const encodedLink = encodeURIComponent(link);
+            const data = await apiService.call('routeconnect', {
+                userid: this.user.userid,
+                link: encodedLink,
+            });
+            if (data.status == 'success') {
+                console.log('New connexion');
+                Alpine.store('headerActions').updateStatus(data.user);
+                this.user = data.user;
+            }
         },
 
     }));

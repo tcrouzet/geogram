@@ -358,7 +358,7 @@ document.addEventListener('alpine:init', () => {
 
             if (!this.geoJSON && this.cursors.length == 0) {
                 //No cursor
-                this.action_localise();
+                this.showPopup('No GPX on this route', true);
             }
             log("Fin Markers");
         },
@@ -808,7 +808,7 @@ document.addEventListener('alpine:init', () => {
                         })
                         .catch(error => {
 
-                            console.error('No GPS data:', error);
+                            log('No GPS data in Exif:', error);
                             // Si pas d'EXIF, utiliser la géolocalisation actuelle
                             return this.get_localisation()
                                 .then(position => {

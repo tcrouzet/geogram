@@ -292,7 +292,8 @@ document.addEventListener('alpine:init', () => {
             });
             if (data.status == 'success') {
                 console.log('New connexion');
-                this.updateStatus(data.user);
+                Alpine.store('headerActions').updateStatus(data.user);
+                this.user = data.user;
             }
         },
 
@@ -403,12 +404,12 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        updateStatus(user){
-            localStorage.setItem('user', JSON.stringify(user));
-            this.user = user;
-            Alpine.store('headerActions').user = user;
-            Alpine.store('headerActions').init(true);
-        },
+        // updateStatus(user){
+        //     localStorage.setItem('user', JSON.stringify(user));
+        //     this.user = user;
+        //     Alpine.store('headerActions').user = user;
+        //     Alpine.store('headerActions').init(true);
+        // },
 
         rooted(routedata){
             console.log('Utilisateur connecté:', routedata);

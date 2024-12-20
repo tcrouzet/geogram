@@ -224,4 +224,8 @@ class Tools
         return $formattedMessage;
     }
 
+    public static function isStringNotInteger($var){
+        return is_string($var) && (!ctype_digit($var) || strval(intval($var)) !== $var);
+    }
+
 }

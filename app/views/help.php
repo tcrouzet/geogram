@@ -87,7 +87,19 @@ The avatar serves as a cursor on the map, otherwise a simple colored dot is used
 <li>Purge: delete all messages (usefull before the start of the adventure, and after a testing period).</li>
 <li>Delete: delete every thing. The same result occur when you unsubscribe GeoBikepacking_bot.</li>
 <li>An inactive adventure for more than one month is automatically archived.</li>
+</ol>
 
+### Telegram
+<p>On peut lier à un groupe Telegram à une route de façon que les géolocalisions, les messages et les photos postés sur le groupe se retrouvent dans <?= GEONAME ?>.
+<ol>
+    <li>Se connecter à son compte Telegram.
+</ol>
+
+
+/geogram affiche un lien pour ouvrir une conversation avec le bot.
+Une fois en conversation avec le bot,cliquer sur START affiche un lien pour se connecter à geogram avec son identificateur Telegram.
+
+Quand le bot <?= TELEGRAM_BOT ?> ajouté à un nouveau groupe, le groupe associé à l'admin.
 </ol>
 
 </div>

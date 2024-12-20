@@ -99,6 +99,7 @@ document.addEventListener('alpine:init', () => {
             this.initStore(true);
             Alpine.store('headerActions').init = this.init.bind(this);
             Alpine.store('headerActions').initTitle = this.initTitle.bind(this);
+            Alpine.store('headerActions').updateStatus = this.updateStatus.bind(this);
             log("initilalized");
         },
 
@@ -241,6 +242,12 @@ document.addEventListener('alpine:init', () => {
                     .then(() => alert('Link copied to clipboard!'))
                     .catch(console.error);
             }
+        },
+
+        updateStatus(user){
+            localStorage.setItem('user', JSON.stringify(user));
+            Alpine.store('headerActions').user = user;
+            this.init(true);
         },
 
     }));

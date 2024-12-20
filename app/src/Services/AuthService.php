@@ -113,6 +113,7 @@ class AuthService
             $state = [
                 'link' => $_GET['link'] ?? null,
                 'telegram' => $_GET['telegram'] ?? null,
+                'telegramuser' => $_GET['telegramuser'] ?? null,
                 'providerName' => $providerName
             ];
     

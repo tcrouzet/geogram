@@ -61,7 +61,7 @@
                 <li><strong>User ID:</strong> <span x-text="user.userid"></span></li>
                 <li><strong>User Route:</strong> <span x-text="user.userroute"></span></li>
                 <li><strong>Route Status:</strong> <span x-text="getRouteStatusDescription(user.routestatus)"></span></li>
-                <li><strong>Route Con Status:</strong> <span x-text="getConStatusDescription(user.constatus)"></span></li>
+                <li><strong>Route User Status:</strong> <span x-text="getConStatusDescription(user.constatus)"></span></li>
             </ul>
         </div>  
     </template>

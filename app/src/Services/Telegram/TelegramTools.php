@@ -16,8 +16,12 @@ class TelegramTools
             return "NoTitle";
     }
 
+    public static function get_chatid($message) {
+        return isset($message["chat"]) && isset($message["chat"]["id"]) ? $message["chat"]["id"] : 0;
+    }
+    
     public static function get_userid($message){
-        return $message["from"]["id"];
+        return isset($message["from"]) && isset($message["from"]["id"]) ? $message["from"]["id"] : 0;
     }
     
     public static function get_username($message){
@@ -34,7 +38,7 @@ class TelegramTools
         return trim($username);
     }
     
-    public static function ShortLivedMessage($telegram, $chatid, $msg, $timeout=2){    
+    public static function ShortLivedMessage($telegram, $chatid, $msg, $timeout=2){
         $response = $telegram->sendMessage(['chat_id' => $chatid, 'text' => $msg, 'disable_notification' => true]);
         virtual_finish();
         if (isset($response['ok'])) {
@@ -45,6 +49,23 @@ class TelegramTools
             return true;
         }
         return false;    
+    }
+
+    public static function SendMessage($telegram, $chatid, $msg){
+        return $telegram->sendMessage(['chat_id' => $chatid, 'text' => $msg, 'disable_notification' => true]);
+    }
+
+    public static function deleteMessage($telegram, $chatid, $messageid){
+        $response = $telegram->deleteMessage([
+            'chat_id' => $chatid,
+            'message_id' => $messageid,
+            'disable_notification' => true
+        ]);
+        if (!$response['ok']) {
+            lecho("Failed to delete message: " . $response['description']);
+        } else {
+            lecho("Message deleted successfully.");
+        }
     }
 
     public static function todelete($telegram, $chatid, $message_id, $routemode, $level=1){    

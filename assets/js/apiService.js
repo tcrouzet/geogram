@@ -160,7 +160,7 @@ const initService = {
         Object.assign(component, data);
 
         if (component.isLoggedIn) {
-            console.log("Logged user");
+            log("Logged user");
             if (typeof component.onLogin === 'function') {
                 await component.onLogin();
             }

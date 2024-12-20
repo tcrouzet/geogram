@@ -35,16 +35,19 @@ class TelegramService
     }
 
     public function handleUpdate() {
+
         if (!$this->init()) return;
+        if ($this->privateChat()) return;
         if ($this->isCallback()) return;
 
         //TEST
-        if( isset($this->message["group_chat_created"])){
-            $this->error = "NewGroupCreated";
-            lecho($this->error);
-            return;
-        }
+        // if( isset($this->message["group_chat_created"])){
+        //     $this->error = "NewGroupCreated";
+        //     lecho($this->error);
+        //     return;
+        // }
 
+        if ($this->command()) return;
         if ($this->location()) return;
         if ($this->text()) return;
         if ($this->photo()) return;
@@ -57,6 +60,12 @@ class TelegramService
         }elseif( isset($this->update["edited_message"])) {
             $this->message = $this->update["edited_message"];
         }
+
+        $this->chatid = TelegramTools::get_chatid($this->message);
+        $this->userid = TelegramTools::get_userid($this->message);
+
+        if($this->isPrivateChat())
+            return true;
         
         $this->title = TelegramTools::get_chatitle($this->message);
         if ( empty($this->title) ){
@@ -64,8 +73,9 @@ class TelegramService
             return false;
         }
 
+        if ($this->isNewChannel()) return true;
+
         //Channel
-        $this->chatid = $this->message["chat"]["id"];
         $this->channel = $this->getChannel( round($this->chatid) );
         if(!$this->channel){
             $this->error = "Unknown channel $this->chatid $this->title";
@@ -76,7 +86,7 @@ class TelegramService
             return false;
         }
 
-        $this->userid = TelegramTools::get_userid($this->message);
+        //User
         if( !$this->user = $this->getUser( round($this->userid) )){
             $this->error = "The chat user $this->userid not in Geogram";
             $link = BASE_URL . "/login/?link=" . $this->channel["routepublisherlink"]. "&telegram=" . $this->chatid;
@@ -89,9 +99,6 @@ class TelegramService
             $this->error = "no username";
             return false;
         }
-
-        // New Channel
-        if ($this->isNewChannel()) return;
 
         // Migrate
         if( isset($this->message["migrate_to_chat_id"]) ){
@@ -110,6 +117,52 @@ class TelegramService
         return true;
     }
 
+    // Manage messages starting with /
+    private function command(){
+        lecho("commandStart");
+        if ( isset($this->message["text"]) && strpos( stripslashes($this->message["text"]), '/') === 0 ){
+            TelegramTools::deleteMessage($this->telegram, $this->chatid, $this->message_id);
+            if($this->geogram()) return true;
+            // More commands to come
+            return true;
+        }
+        return false;
+    }
+
+    private function geogram(){
+        if ( isset($this->message["text"]) && $this->message["text"] === "/geogram" ){
+            lecho("geogram");
+            $privateChatLink = "https://t.me/".TELEGRAM_BOT."?start=".$this->chatid;
+            $message = "To connect with ".GEONAME.", please click $privateChatLink to start a conversation with ".TELEGRAM_BOT.". Once you have opened the private chat, please clic the START button down screen and wait a link to proceed.";
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, $message, 15);
+            return true;
+        }
+        return false;
+    }
+
+    private function isPrivateChat(){
+        return isset($this->message["chat"]["type"]) && $this->message["chat"]["type"] === "private";
+    }
+
+    private function privateChat() {
+        if ( $this->isPrivateChat()){
+            lecho("privateChat");
+            if (isset($this->message['text']) && strpos($this->message['text'], '/start') === 0) {
+                lecho("/start");
+                // Extrait le paramètre après '/start '
+                $startParam = trim(substr($this->message['text'], 6));
+                $channel = $this->getChannel( intval($startParam) );
+                if(!$channel){
+                    return TelegramTools::SendMessage($this->telegram, $this->chatid, "Unknown channel");
+                }        
+                $link = BASE_URL."/login?telegram=".$this->userid."&link=".urlencode($channel['routepublisherlink']);
+                $message = "To connect to ". $channel['routename'] ." on ". GEONAME . " click $link";
+                return TelegramTools::SendMessage($this->telegram, $this->chatid, $message);
+            }
+        }
+        return false;
+    }
+    
     private function text(){
         if( isset($this->message["text"])){
             $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) WHERE logroute = ? AND loguser = ? AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
@@ -247,15 +300,18 @@ class TelegramService
 
     private function isNewChannel(){
         if (isset($this->update["my_chat_member"])) {
+            lecho("IsNewChannel");
             $chat = $this->update["my_chat_member"]["chat"];
             
-            if ($chat['type'] === 'channel') {
+            if ($chat['type'] === 'channel' || $chat['type'] === 'group') {
 
                 $user = $this->update["my_chat_member"]["from"];
                 $chatId = round($chat['id']);
                 $userId = round($user['id']);
 
-                return $this->newChannel($chatId, $userId, $chat['title'], $this->update["my_chat_member"]["new_chat_member"]["status"]);
+                if($this->newChannel($chatId, $userId, $chat['title'], $this->update["my_chat_member"]["new_chat_member"]["status"])){
+                    TelegramTools::SendMessage($this->telegram, $chatId, "Connected to ".BASE_URL.". On ".GEONAME." you must be connected to Telegram to associate a route to this group.");
+                }
 
                 //Implement
                 //ChatMemberUpdate($update["my_chat_member"]);
@@ -267,6 +323,7 @@ class TelegramService
     }
 
     private function newChannel($chatId, $userId, $title, $status){
+        lecho("NewChannel");
         $insertQuery = "INSERT INTO telegram (channel_id, channel_admin, channel_title, channel_status) VALUES (?, ?, ?, ?)";
         $insertStmt = $this->db->prepare($insertQuery);
         $insertStmt->bind_param("iiss", $chatId, $userId, $title, $status);

@@ -25,7 +25,7 @@ function version(){
 <!DOCTYPE html>
 <html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">
 <head profile="http://gmpg.org/xfn/11">
-    <title>Geogram - <?= e($pagename) ?></title>
+    <title><?= e(GEONAME) ?> - <?= e($pagename) ?></title>
     <base href="/">
     <link rel="shortcut icon" href="/favicon.ico" >
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
