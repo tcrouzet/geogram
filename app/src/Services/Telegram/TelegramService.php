@@ -123,6 +123,7 @@ class TelegramService
         if ( isset($this->message["text"]) && strpos( stripslashes($this->message["text"]), '/') === 0 ){
             TelegramTools::deleteMessage($this->telegram, $this->chatid, $this->message_id);
             if($this->geogram()) return true;
+            if($this->reconnect()) return true;
             // More commands to come
             return true;
         }
@@ -135,6 +136,15 @@ class TelegramService
             $privateChatLink = "https://t.me/".TELEGRAM_BOT."?start=".$this->chatid;
             $message = "To connect with ".GEONAME.", please click $privateChatLink to start a conversation with ".TELEGRAM_BOT.". Once you have opened the private chat, please clic the START button down screen and wait a link to proceed.";
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, $message, 15);
+            return true;
+        }
+        return false;
+    }
+
+    private function reconnect(){
+        if ( isset($this->message["text"]) && $this->message["text"] === "/reconnect" ){
+            lecho("reconnect");
+            $this->newChannel($this->chatid, $this->userid, $this->title, "reconnect");
             return true;
         }
         return false;
@@ -309,8 +319,11 @@ class TelegramService
                 $chatId = round($chat['id']);
                 $userId = round($user['id']);
 
-                if($this->newChannel($chatId, $userId, $chat['title'], $this->update["my_chat_member"]["new_chat_member"]["status"])){
-                    TelegramTools::SendMessage($this->telegram, $chatId, "Connected to ".BASE_URL.". On ".GEONAME." you must be connected to Telegram to associate a route to this group.");
+                if($this->update["my_chat_member"]["new_chat_member"]["status"] == "left"){
+                    //Destruction du groupe
+                    $this->deleteChannelConnexion($chatId);
+                }else{
+                    $this->newChannel($chatId, $userId, $chat['title'], $this->update["my_chat_member"]["new_chat_member"]["status"]);
                 }
 
                 //Implement
@@ -322,13 +335,34 @@ class TelegramService
         return false;
     }
 
-    private function newChannel($chatId, $userId, $title, $status){
+    private function deleteChannelConnexion($chatId){
+        lecho("deleteChannelConnexion");
+        $query = "DELETE FROM telegram WHERE channel_id = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $chatId);
+        return $stmt->execute();
+    }    
+
+    private function newChannel($chatId, $userId, $title, $status) {
         lecho("NewChannel");
-        $insertQuery = "INSERT INTO telegram (channel_id, channel_admin, channel_title, channel_status) VALUES (?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO telegram (channel_id, channel_admin, channel_title, channel_status) 
+                        VALUES (?, ?, ?, ?)
+                        ON DUPLICATE KEY UPDATE 
+                        channel_title = VALUES(channel_title),
+                        channel_status = VALUES(channel_status)";
         $insertStmt = $this->db->prepare($insertQuery);
         $insertStmt->bind_param("iiss", $chatId, $userId, $title, $status);
-        return $insertStmt->execute();
+        if ($insertStmt->execute()){
+            $user = $this->getUser($userId);
+            if($user){
+                TelegramTools::SendMessage($this->telegram, $chatId, $user['username']." connected to ".BASE_URL.".");
+            }else
+                TelegramTools::SendMessage($this->telegram, $chatId, "Connected to ".BASE_URL.". On ".GEONAME." you must be connected to Telegram to associate a route to this group.");
+        } else {
+            TelegramTools::SendMessage($this->telegram, $chatId, "Connection to ".BASE_URL." impossible.");
+        }
     }
+    
 
     private function getChannel($chatId){
         $query = "SELECT * FROM telegram t LEFT JOIN routes r ON t.channel_id = r.routetelegram WHERE t.channel_id = ?";

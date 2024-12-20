@@ -57,8 +57,6 @@ class AuthController
     {
         try {
             lecho("AuthController Callback");
-            //lecho("GET params:", $_GET);
-            //return $this->authService->handleCallback($_GET);
             return $this->authService->handleCallback();
             
         } catch (\Exception $e) {

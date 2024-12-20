@@ -44,13 +44,15 @@ class AuthService
 
             // Créer un state avec les paramètres
             $state = [
-                'link' => $_POST['link'] ?? null,
-                'telegram' => $_POST['telegram'] ?? null,
+                'link' => urldecode($_POST['link'] ?? ''),
+                'telegram' => $_POST['telegram'] ?? '',
             ];    
             $state =base64_encode(json_encode($state));
 
             // $user = $this->userService->get_user($email);
             $userInfo["email"]=$email;
+            $userInfo['link'] = $state['link'];
+            $userInfo['telegram'] = $state['telegram'];
             $r = $this->userService->findOrCreateUser($userInfo);
             if( $r['status']=="success" ){
                 $user = $r['user'];
@@ -111,12 +113,12 @@ class AuthService
 
             // Créer un state avec les paramètres
             $state = [
-                'link' => $_GET['link'] ?? null,
-                'telegram' => $_GET['telegram'] ?? null,
-                'telegramuser' => $_GET['telegramuser'] ?? null,
+                'link' => urldecode($_POST['link'] ?? ''),
+                'telegram' => $_POST['telegram'] ?? '',
                 'providerName' => $providerName
             ];
-    
+            lecho($state);
+
             // Générer l'URL d'autorisation
             $authorizationUrl = $this->provider->getAuthorizationUrl([
                 'scope' => ['openid', 'profile', 'email'],
@@ -142,6 +144,7 @@ class AuthService
             }
 
             $params = json_decode(base64_decode($_GET['state']), true);
+            lecho($params);
             $providerName = $params['providerName'] ?? '';
             $this->set_provider($providerName);
         

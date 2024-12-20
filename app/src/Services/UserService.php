@@ -28,7 +28,9 @@ class UserService
     }
 
     public function findOrCreateUser($userInfo){
-        if($userInfo["email"] && $user = $this->get_user($userInfo["email"])){  
+        if($userInfo["email"] && $user = $this->get_user($userInfo["email"])){
+
+
             $this->improuveUser($user['userid'], $userInfo);
             $user = $this->get_user($user['userid']);
             return ['status' => "success", 'user' => $user];
@@ -83,21 +85,20 @@ class UserService
         $routeid = $userInfo['routeid'] ?? '';
 
         if($telegram){
+            lecho("Improve User telegram");
             $this->set_user_telegram($userid, $telegram);
         }
 
         if($link){
+            lecho("Improve User link",$link);
             $route = (new RouteService())->get_route_by_link($link);
-            if($route['routeid'] != TESTROUTE){
-                $status = 1;
-                if($route['routepublisherlink'] == $link)
-                    $status = 2;
-                $this->connect($userid, $route['routeid'], $status);
-                $this->set_user_route($userid, $route['routeid']);
-            }
-        }
-
-        if($routeid){
+            lecho($route);
+            $status = 1;
+            if($route['routepublisherlink'] == $link)
+                $status = 2;
+            $this->connect($userid, $route['routeid'], $status);
+            $this->set_user_route($userid, $route['routeid']);
+        }elseif($routeid){
             $this->connect($userid, $routeid, 2);
             $this->set_user_route($userid, $routeid);
         }
@@ -194,14 +195,16 @@ class UserService
         }
     }
     
-    public function connect($userid,$routeid,$status=2){
-        lecho("connect",$userid,$routeid);
-        $insertQuery = "INSERT IGNORE INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)";
+    public function connect($userid, $routeid, $status = 2) {
+        lecho("connect", $userid, $routeid);
+        $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) 
+                        VALUES (?, ?, ?)
+                        ON DUPLICATE KEY UPDATE constatus = VALUES(constatus)";
         $insertStmt = $this->db->prepare($insertQuery);
         $insertStmt->bind_param("iii", $routeid, $userid, $status);
         return $insertStmt->execute();
     }
-
+    
     public function delete_user($userid){
         $query = "DELETE FROM users WHERE userid=?;";
         $stmt = $this->db->prepare($query);

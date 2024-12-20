@@ -88,9 +88,9 @@ document.addEventListener('alpine:init', () => {
 
                 // Récupérer les paramètres d'URL
                 const urlParams = new URLSearchParams(window.location.search);
-                const link = urlParams.get('link');
+                let link = urlParams.get('link');
+                if(link) link = encodeURIComponent(link);
                 const telegram = urlParams.get('telegram');
-
                 let data;
 
                 if (this.isEmailLogin) {
