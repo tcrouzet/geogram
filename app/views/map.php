@@ -8,11 +8,11 @@
 
     <div x-show="component === 'splash'" id="splash">
         <h1>Share your adventures</h1>
-        <p>When you bike or hike, you can send your location, pictures and messages to your friends. Have a look to <a href="/g727-2024">g727 2024</a>.</p>
+        <p>When you bike or hike, you can send your location, pictures and messages to your friends. Have a look to <a href="/routes">public routes</a>.</p>
         <h1>Geogram Test Route</h1>
         <p>Even without <a href="/login">log in</a>, you can see the <a href="/testroute">Test Route</a> where all <a href="/login">log in</a> users can test Geogram.</p>
         <h1>Create your own routes</h1>
-        <p>Once <a href="/login">log in</a>, you can create a public or private route. Then you can invite spectators or adventurers to join the route.</p>
+        <p>Once <a href="/login">log in</a>, you can create public or private routes. Then you can invite spectators or adventurers to join the routes.</p>
         <p style="text-align: center;"><br><a href="/help">More informations…</a></p>
 
     </div>
@@ -324,9 +324,15 @@ document.addEventListener('alpine:init', () => {
                 if (entry.loglatitude && entry.loglongitude && entry.username_formated){
 
                     // Vérification de la présence d'une image pour cet utilisateur
+                    // const statusIcon = entry.logphoto ? 
+                    //     '<i class="fa-solid fa-camera status-icon"></i>' : 
+                    //     (entry.logcomment ? '<i class="fa-solid fa-comment status-icon"></i>' : '');
+
                     const statusIcon = entry.logphoto ? 
-                        '<i class="fa-solid fa-camera status-icon"></i>' : 
-                        (entry.logcomment ? '<i class="fa-solid fa-comment status-icon"></i>' : '');
+                        '<div class="status-icon-photo"></div>' : 
+                        (entry.logcomment ? 
+                        '<div class="status-icon-comment"></div>' : 
+                        '');
 
                     const icon = entry.userphoto ? L.divIcon({
                         className: 'custom-div-icon',
@@ -451,7 +457,8 @@ document.addEventListener('alpine:init', () => {
             let isFirstTrack = true;
             const map = this.map;
 
-            // Charge la trace GPX et l'ajoute à la carte
+            // Charge la trace geoJSON et l'ajoute à la carte
+            log("geoJSON:",this.geoJSON);
             fetch(this.geoJSON)
                 .then(response => response.json())
                 .then(data => {

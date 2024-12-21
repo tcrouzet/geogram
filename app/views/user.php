@@ -62,6 +62,7 @@
                 <li><strong>User Route:</strong> <span x-text="user.userroute"></span></li>
                 <li><strong>Route Status:</strong> <span x-text="getRouteStatusDescription(user.routestatus)"></span></li>
                 <li><strong>Route User Status:</strong> <span x-text="getConStatusDescription(user.constatus)"></span></li>
+                <li><strong>Telegram ID:</strong> <span x-text="user.usertelegram"></span></li>
             </ul>
         </div>  
     </template>
@@ -90,8 +91,10 @@ document.addEventListener('alpine:init', () => {
         //telegram
         telegramConnected: false,
 
-        init(){
-            console.log("userInit");
+        async init(){
+            log();
+            await initService.initComponent(this);
+
             this.isLoggedIn = Alpine.store('headerActions').isLoggedIn;
             if(!this.isLoggedIn)
                 window.location.href = "/login";
@@ -100,11 +103,11 @@ document.addEventListener('alpine:init', () => {
                 this.email = this.user.useremail;
                 this.username = this.user.username;
                 if(this.user.usertelegram){
-                    console.log("Telegram connected");
+                    log("Telegram connected");
                     this.telegramConnected = true;
                 }
             }
-            console.log("userInit ended");
+            log("userInit ended");
         },
 
         checkUsername() {

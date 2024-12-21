@@ -120,6 +120,8 @@ document.addEventListener('alpine:init', () => {
                 if (data.status === 'success') {
                     this.connected(data.user);
                 } else if (data.status === 'redirect' && data.url) {
+                    // log(data);
+                    // alert("redirectStart");
                     window.location.href = data.url;
                 } else if (data.status === 'error') {
                     console.error('Login error:', data.message);

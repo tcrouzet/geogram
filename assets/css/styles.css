@@ -2,10 +2,9 @@
     --color: #007bff;
     --color-text: #000;
     --color-background: #FDFDFD;
-    --color-G: #4ECDC4;
+    --color-G: #007bff; /* 4ECDC4 */
     --color-G-light: #F2FBFA;
-    --color-e: #FF6B6B;
-    /* --color-e: #e4002b;*/
+    --color-e: #e4002b; /* Zéfal red */
     --color-light-gray: #ccc;
     --color-dark-gray: #555;
     --color-hover: rgba(76, 205, 196, 0.05); /* Pour #4ECDC4 */
@@ -149,6 +148,7 @@ main {
     margin-right: auto;
     padding: 0 1rem;
     box-sizing: border-box;
+    line-height: 1.4;
 }
 
 #splash .btn{
@@ -517,12 +517,17 @@ div.geoPopup img{max-width:inherit;height: auto;}
     background-size: cover;
 }
 
-.status-icon {
+.status-icon-photo, .status-icon-comment {
     position: absolute;
-    top: -0.3rem;
-    right: -0.3rem;
-    font-size: 1rem;
-    color: var(--color-G);
+    top: -0.2rem;
+    right: -0.2rem;
+    width: 0.7rem; height:0.7rem; border-radius: 50%;
+}
+.status-icon-photo{
+    background-color: var(--color-G);
+}
+.status-icon-comment{
+    background-color: var(--color-text);
 }
 
 .empty-message p{

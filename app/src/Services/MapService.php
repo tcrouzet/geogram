@@ -89,6 +89,7 @@ class MapService
             //lecho($logs);
 
             $geojson = $this->fileManager->route_geojson_web($route);
+            lecho("geoJSON:",$geojson);
 
             foreach ($logs as &$row) {
                 //lecho($row['username']);

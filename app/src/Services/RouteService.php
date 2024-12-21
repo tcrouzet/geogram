@@ -70,6 +70,20 @@ class RouteService
         return ['status' => 'error', 'message' => "Loading routes fail"];
     }
 
+    public function getpublicroutes() {
+        lecho("getpublicroutes");
+        
+        $query = "SELECT * FROM routes WHERE routestatus <2";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if($result){
+            $routes = $result->fetch_all(MYSQLI_ASSOC);
+            return ['status' => 'success', 'routes' => $routes];
+        }
+        return ['status' => 'error', 'message' => "Loading routes fail"];
+    }
+
     public function route_exists($routeid) {
         $query = "SELECT 1 FROM `routes` WHERE routeid = ? LIMIT 1";
         $stmt = $this->db->prepare($query);
@@ -326,19 +340,19 @@ class RouteService
         list($routeid, $status, $randomString) = explode('|', $data);
         return ['routeid' => $routeid, 'status' => $status];
     }
-
+    
     public function connect($userid, $routeid, $status = 2) {
         lecho("connect", $userid, $routeid);
     
-        // Requête SQL avec ON DUPLICATE KEY UPDATE
+        // Requête SQL avec ON DUPLICATE KEY UPDATE pour mettre à jour le statut uniquement s'il est supérieur
         $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)
-                        ON DUPLICATE KEY UPDATE constatus = ?";
+                        ON DUPLICATE KEY UPDATE constatus = IF(VALUES(constatus) > constatus, VALUES(constatus), constatus)";
         $insertStmt = $this->db->prepare($insertQuery);
-        $insertStmt->bind_param("iiii", $routeid, $userid, $status, $status);
+        $insertStmt->bind_param("iii", $routeid, $userid, $status);
     
         return $insertStmt->execute();
     }
-    
+
     public function updateroute(){
         lecho("updateroute");
     
@@ -505,7 +519,8 @@ class RouteService
     }
 
     public function routeGPX($routeid,$value){
-        $stmt = $this->db->prepare("UPDATE routes SET gpx = ? WHERE routeid = ?");
+        lecho("routeGPX");
+        $stmt = $this->db->prepare("UPDATE routes SET gpx = ?, routeupdate = NOW() WHERE routeid = ?");
         $stmt->bind_param("ii", $value, $routeid);
         if ($stmt->execute())
             return true;

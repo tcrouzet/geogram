@@ -5,10 +5,14 @@
     <template x-if="!isLoggedIn">
 
         <div id="splash">
-
-            <h1>Sorry</h1>
-            <p>You have to be logged.</p>
-
+            <div class="divider">PUBLIC ROUTES</div>
+            <ul>
+                <template x-for="route in routes" :key="route.routeid">
+                    <li>
+                        <a :href="`/${route.routeslug}`" x-text="route.routename"></a>
+                    </li>
+                </template>
+            </ul>
         </div>
     </template>
 
@@ -185,6 +189,8 @@ document.addEventListener('alpine:init', () => {
                     this.loadTelegramChannels();
                 }
                 this.loadRoutes();
+            }else{
+                this.loadPublicRoutes();
             }
         },
 
@@ -195,6 +201,19 @@ document.addEventListener('alpine:init', () => {
                 log(data);
                 this.routes = data.routes;
             }
+        },
+
+        async loadPublicRoutes() {
+            log();
+            const data = await apiService.call('getpublicroutes');
+            if (data.status == 'success') {
+                log(data);
+                this.routes = data.routes;
+            }
+        },
+
+        filterPublicRoutes() {
+            this.publicRoutes = this.routes.filter(route => route.routestatus < 2);
         },
 
         toggleEdit(routeId) {

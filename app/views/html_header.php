@@ -27,7 +27,7 @@ function version(){
 <head profile="http://gmpg.org/xfn/11">
     <title><?= e(GEONAME) ?> - <?= e($pagename) ?></title>
     <base href="/">
-    <link rel="shortcut icon" href="/favicon.ico" >
+    <link rel="shortcut icon" href="/favicon.ico?1" >
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 

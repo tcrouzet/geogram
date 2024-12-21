@@ -46,8 +46,7 @@ class AuthService
             $state = [
                 'link' => urldecode($_POST['link'] ?? ''),
                 'telegram' => $_POST['telegram'] ?? '',
-            ];    
-            $state =base64_encode(json_encode($state));
+            ];
 
             // $user = $this->userService->get_user($email);
             $userInfo["email"]=$email;
@@ -57,6 +56,7 @@ class AuthService
             if( $r['status']=="success" ){
                 $user = $r['user'];
                 $token = $this->userService->set_user_token($user['userid']);
+                $state =base64_encode(json_encode($state));
                 if($this->sendEmail($email, $token, $state)){
                     return ['status' => 'redirect', 'url' => '/login?waiting=1'];
                 }else{
@@ -84,8 +84,6 @@ class AuthService
             if(!$this->userService->is_token_valid($token)){
                 return ['status' => 'error', 'message' => 'Expired token'];
             }
-
-            $state = $_POST['state'] ?? null;
 
             $user = $this->userService->get_user($token);
             if($user){
@@ -133,7 +131,6 @@ class AuthService
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
-    
 
     public function handleCallback() {
         try {
@@ -188,7 +185,6 @@ class AuthService
             exit();
         }
     }
-
 
     public function handleSession() {
         lecho("AuthService handleSession");

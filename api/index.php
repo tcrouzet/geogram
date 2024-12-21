@@ -50,6 +50,9 @@ try {
         // 'createuser' => [UserService::class, 'createUser'],
         'loadMapData' => [MapService::class, 'loadMapData'],
         'userMarkers' => [MapService::class, 'userMarkers'],
+        'story' => [MapService::class, 'story'],
+
+        'getpublicroutes' => [RouteService::class, 'getpublicroutes'],
     ];
     
     // Routes protégées (nécessitent un token valide)
@@ -59,7 +62,6 @@ try {
         'sendgeolocation' => [MapService::class, 'sendgeolocation'],
         'logphoto' => [MapService::class, 'logphoto'],
         'submitComment' => [MapService::class, 'submitComment'],
-        'story' => [MapService::class, 'story'],
         
         'getroutes' => [RouteService::class, 'getroutes'],
         'routeAction' => [RouteService::class, 'routeAction'],

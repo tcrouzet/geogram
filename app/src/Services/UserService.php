@@ -79,25 +79,26 @@ class UserService
 
     public function improuveUser($userid, $userInfo){
         lecho("Improve User");
-        $telegram = $userInfo['telegram'] ?? '';
+        $telegram = intval($userInfo['telegram'] ?? 0);
         $link = $userInfo['link'] ?? '';
         $picture = $userInfo['picture'] ?? '';
         $routeid = $userInfo['routeid'] ?? '';
 
-        if($telegram){
-            lecho("Improve User telegram");
+        if($telegram != 0){
+            lecho("Improve User telegram", $telegram);
             $this->set_user_telegram($userid, $telegram);
         }
 
-        if($link){
+        if(!empty($link) && $link !== 'null'){
             lecho("Improve User link",$link);
             $route = (new RouteService())->get_route_by_link($link);
-            lecho($route);
-            $status = 1;
-            if($route['routepublisherlink'] == $link)
-                $status = 2;
-            $this->connect($userid, $route['routeid'], $status);
-            $this->set_user_route($userid, $route['routeid']);
+            if($route){
+                $status = 1;
+                if($route['routepublisherlink'] == $link)
+                    $status = 2;
+                $this->connect($userid, $route['routeid'], $status);
+                $this->set_user_route($userid, $route['routeid']);
+            }
         }elseif($routeid){
             $this->connect($userid, $routeid, 2);
             $this->set_user_route($userid, $routeid);
@@ -155,6 +156,7 @@ class UserService
             $user = $result->fetch_assoc();
             $user['photopath'] = $this->fileManager->user_photo_web($user);
             $user['fusername'] = Tools::normalizeName($user['username']);
+            lecho($user);
             return $user;
         } else {
             return false;
@@ -197,14 +199,16 @@ class UserService
     
     public function connect($userid, $routeid, $status = 2) {
         lecho("connect", $userid, $routeid);
-        $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) 
-                        VALUES (?, ?, ?)
-                        ON DUPLICATE KEY UPDATE constatus = VALUES(constatus)";
+    
+        // Requête SQL avec ON DUPLICATE KEY UPDATE pour mettre à jour le statut uniquement s'il est supérieur
+        $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)
+                        ON DUPLICATE KEY UPDATE constatus = IF(VALUES(constatus) > constatus, VALUES(constatus), constatus)";
         $insertStmt = $this->db->prepare($insertQuery);
         $insertStmt->bind_param("iii", $routeid, $userid, $status);
+    
         return $insertStmt->execute();
     }
-    
+
     public function delete_user($userid){
         $query = "DELETE FROM users WHERE userid=?;";
         $stmt = $this->db->prepare($query);
@@ -236,7 +240,8 @@ class UserService
 
     public function updaTelegramUser($telegram){
         lecho("Update telegram user");
-        
+        // lecho($telegram);
+
         if ($this->userid) {
             $telegram_id = intval($telegram["id"]);
             //$telegram["photo_url"];
