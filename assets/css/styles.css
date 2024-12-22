@@ -12,6 +12,7 @@
     --footer-height: 6rem;
 }
 
+/* Reset */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -21,13 +22,32 @@ a:link,a:visited,a:hover,a:active {color: inherit;text-decoration: none}
 body, html {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
-    height: 100vh;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    /* height: 100vh; */
     background-color: var(--color-background);
     overflow: hidden;
 }
 
-main {
+#header {
     position: fixed;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 3.7rem;
+    padding: 0;
+    margin: 0;
+    z-index: 1001;
+    color: var(--color-text);
+    background-color: var(--color-background);
+}
+
+main {
+    position: absolute;
     top: 3.8rem;
     bottom: 0;
     left: 0;
@@ -247,21 +267,6 @@ main {
 }
 
 /* header */
-
-header {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 3.7rem;
-    padding: 0;
-    z-index: 1000;
-    color: var(--color-text);
-    background-color: var(--color-background);
-}
 
 .header-top {
     display: flex;
@@ -883,7 +888,7 @@ span.why a:link,span.why a:visited,span.why a:hover,span.why a:active {color: in
 }
 
 /* Spécifique pour iOS */
-@supports (-webkit-touch-callout: none) {
+/* @supports (-webkit-touch-callout: none) {
     body {
         position: fixed;
         width: 100%;
@@ -892,6 +897,5 @@ span.why a:link,span.why a:visited,span.why a:hover,span.why a:active {color: in
     
     main {
         position: fixed;
-        /* height: calc(100% - 3.8rem - var(--footer-height)); */
     }
-}
+} */

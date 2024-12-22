@@ -13,7 +13,7 @@
         <p>Even without <a href="/login">log in</a>, you can see the <a href="/testroute">Test Route</a> where all <a href="/login">log in</a> users can test Geogram.</p>
         <h1>Create your own routes</h1>
         <p>Once <a href="/login">log in</a>, you can create public or private routes. Then you can invite spectators or adventurers to join the routes.</p>
-        <p style="text-align: center;"><br><a href="/help">More informations…</a></p>
+        <p style="text-align: center;"><br><a href="/help">More informations</a> | <a href="/">Reload</a></p>
 
     </div>
 

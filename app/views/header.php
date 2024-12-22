@@ -1,5 +1,5 @@
 <!-- Section Top -->
-<header x-data="headerComponent()">
+<div id="header" x-data="headerComponent()">
 
     <div class="header-top">
 
@@ -45,7 +45,7 @@
         <div id="routename" x-html="title"></div>
     </template>
 
-</header>
+</div>
  
 
 <script>

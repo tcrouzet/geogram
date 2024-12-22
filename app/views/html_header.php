@@ -40,7 +40,8 @@ function version(){
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Geogram">
+    <meta name="apple-mobile-web-app-title" content="<?= e(GEONAME) ?>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
 
     <meta property="og:description" content="<?= e(DESCRIPTION) ?>">

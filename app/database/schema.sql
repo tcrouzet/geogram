@@ -55,13 +55,13 @@ DROP TABLE IF EXISTS `connectors`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `connectors` (
   `conid` bigint(20) NOT NULL AUTO_INCREMENT,
-  `conrouteid` bigint(20) DEFAULT NULL,
-  `conuserid` bigint(20) DEFAULT NULL,
+  `conrouteid` bigint(20) NOT NULL,
+  `conuserid` bigint(20) NOT NULL,
   `contime` timestamp NOT NULL DEFAULT current_timestamp(),
   `constatus` int(2) NOT NULL DEFAULT 0,
   PRIMARY KEY (`conid`),
   UNIQUE KEY `conrouteid` (`conrouteid`,`conuserid`)
-) ENGINE=InnoDB AUTO_INCREMENT=301 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=307 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -253,4 +253,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-20 20:24:57
+-- Dump completed on 2024-12-21 17:21:43
