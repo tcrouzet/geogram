@@ -7,6 +7,7 @@ require_once './app/config/config.php';
 require_once './app/config/telegram.php';
 
 use App\Services\RouteService;
+use App\Services\UserService;
 
 if (DEBUG) {
     ini_set('display_errors', 1);
@@ -51,9 +52,13 @@ $OnMap = true;
 
 if (!empty($route_slug) && !in_array($route_slug, FORBIDDEN_SLUG)) {
     $route_O = new RouteService(); 
+    $user_O = new UserService();
     $route = $route_O->get_route_by_slug($route_slug);
     if($route){
         $pagename = $route['routename'];
+    }
+    if($userid){
+        $user = $user_O->get_user($userid);
     }
 }elseif(in_array($route_slug, FORBIDDEN_SLUG)){
     $OnMap = false;

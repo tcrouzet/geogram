@@ -106,17 +106,37 @@ document.addEventListener('alpine:init', () => {
         initTitle(params = {}){
             log(params);
             let title = '';
+            let link = '<?= BASE_URL ?>/';
+            let pageTitle = '<?= GEONAME ?>';
             if (this.route && this.route.routename){
-                title += `<a href="${this.route.routeslug}">${this.route.routename}</a>`;
-            }
-            if(params && params.story){
-                title += ` &raquo; <a href="${this.route.routeslug}/${params.story}">${params.story}</a>`;
-                if(params.storyUserName && params.storyUserName){
-                    title += ` &raquo; <a href="${this.route.routeslug}/${params.story}/${params.storyUser}">${params.storyUserName}</a>`;
+                link += this.route.routeslug
+                title += `<a href="${link}">${this.route.routename}</a>`;
+                pageTitle += " - " + this.route.routename;
+                if(params && params.story){
+                    //Path
+                    link += "/" + params.story;
+                    if(params.story != "map"){
+                        title += ` &raquo; <a href="${link}">${params.story}</a>`;
+                        pageTitle += " - " + params.story;
+                    }
+                    //User
+                    if(params.storyUserName && params.storyUserName){
+                        link += "/" + params.storyUser;
+                        title += ` &raquo; <a href="${link}">${params.storyUserName}</a>`;
+                        pageTitle += " - " + params.storyUserName;
+                    }
                 }
             }
             log(title);
+            // if (document.readyState === 'complete' && title !== '' && link !== window.location.pathname) {
+            //     history.pushState({}, '', link);
+            //     document.title = pageTitle;
+            // }
             this.$nextTick(() => {
+                if (title !== '' && link !== window.location.pathname) {
+                    history.pushState({}, '', link);
+                    document.title = pageTitle;
+                }
                 this.title = title;
             });
         },
@@ -229,7 +249,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         showShareDialog() {
-            // Logique pour afficher le dialogue de partage
+            log();
             if (navigator.share) {
                 // API Web Share si disponible
                 navigator.share({

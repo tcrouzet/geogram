@@ -189,7 +189,7 @@ document.addEventListener('alpine:init', () => {
         //Datas
         route: null,
         user: null,
-        page: null,
+        page: <?= json_encode($page) ?>,
         //Calculated
         isLoggedIn: false,
         isOnRoute: false,
@@ -218,7 +218,7 @@ document.addEventListener('alpine:init', () => {
         sortField: 'username',
         sortDirection: 'asc',
         //Story
-        storyUser: null,
+        storyUser: <?= json_encode($userid) ?>,
         storyName: '',
         sortField: 'logtime',
         sortDirection: 'desc',
@@ -270,8 +270,17 @@ document.addEventListener('alpine:init', () => {
                 // attribution: '',
                 maxZoom: 18,
             }).addTo(this.map);
+
             await this.loadMapData();
             this.updateMarkers(this.logs);
+
+            if(this.storyUser){
+                await this.userMarkers(this.storyUser);
+            }
+            if(this.page && this.page != "map"){
+                this.component = this.page;
+            }
+
             if(this.newPhoto){
                 this.showPhoto();
             }
@@ -283,7 +292,7 @@ document.addEventListener('alpine:init', () => {
             const data = await apiService.call('loadMapData', {
                 userroute: this.userroute,
                 routeid: this.route.routeid,
-                userstory: this.userstory,
+                // userstory: this.userstory,
                 routestatus: this.route.routestatus
             });
             if (data.status == 'success') {
@@ -303,6 +312,10 @@ document.addEventListener('alpine:init', () => {
             if (data.status == 'success') {
                 this.mapMode = false;
                 this.logs = data.logs;
+                log(this.logs[0]['username']);
+                this.storyUser = this.logs[0]['userid'];
+                this.story ="map";
+                this.storyName = this.logs[0]['username'];
                 this.updateMarkers(this.logs);
                 this.fit_markers();
             }
@@ -728,7 +741,7 @@ document.addEventListener('alpine:init', () => {
 
         action_map() {
             log();
-            Alpine.store('headerActions').initTitle();
+            Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
             this.mapFooter = this.getMapFooter();
 
@@ -739,7 +752,7 @@ document.addEventListener('alpine:init', () => {
 
         action_list() {
             log();
-            Alpine.store('headerActions').initTitle({story: "List"});
+            Alpine.store('headerActions').initTitle(this.buildStoryObj("list"));
             this.component = "list";
             this.mapFooter = this.getMapFooter();
         },
@@ -1032,6 +1045,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         showUserStory(entry){
+            this.story = "story";
             this.storyUser = entry.userid;
             this.storyName = entry.username_formated;
             this.storyPhotoOnly = false;
@@ -1095,6 +1109,10 @@ document.addEventListener('alpine:init', () => {
             //<button @click="action_reload()" class="small-bt"><i class="fas fa-rotate"></i></button>
         },
 
+        buildStoryObj(story){
+            return {story: story, storyUserName: this.storyName, storyUser: this.storyUser}
+        },
+
         async action_story(){
             if(!this.slogs){
                 log();
@@ -1110,7 +1128,7 @@ document.addEventListener('alpine:init', () => {
                 }
                 this.loading = false;
             }
-            Alpine.store('headerActions').initTitle({story: "Story", storyUserName: this.storyName, storyUser: this.storyUser});
+            Alpine.store('headerActions').initTitle(this.buildStoryObj("story"));
             this.component = "story";
             this.mapFooter = this.getMapFooter();
         },
