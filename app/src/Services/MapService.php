@@ -311,4 +311,25 @@ class MapService
         return ['status' => 'error', 'message' => 'Unknown story'];
     }
     
+    public function deleteLog() {
+        lecho("DeleteLog");
+
+        $logid = $_POST['logid'] ?? '';    
+
+        if($this->userid && $logid){
+        
+            $deleteQuery = "DELETE FROM rlogs WHERE logid = ? AND loguser = ?";
+            $deleteStmt = $this->db->prepare($deleteQuery);
+            $deleteStmt->bind_param("ii", $logid, $this->userid);
+        
+            if ($deleteStmt->execute() && $deleteStmt->affected_rows > 0) {
+                return ['status' => 'success', 'message' => 'Log not deleted'];
+            }
+        
+        }
+
+        return ['status' => 'error', 'message' => 'Log not deleted'];
+
+    }
+
 }

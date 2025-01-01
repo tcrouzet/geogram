@@ -405,9 +405,15 @@ document.addEventListener('alpine:init', () => {
                     ${entry.logcomment ? 'Edit comment' : 'Add comment'}
                 </button>` : '';
 
+            const deleteButton = entry.loguser === this.userid ? 
+                `<button @click="deleteCursor(${entry.logid})">Delete</button>` : '';
+
             const actionButton = this.mapMode ? 
                 `<button @click="userMarkers(${entry.userid})">User history</button>` :
                 `<button @click="allUsersMarkers()">All Users</button>`;
+
+            const zoomButton = `<button @click="zoom_lastmarker(${entry.userid})">Zoom last</button>`;
+
 
             const popupContent = `
                 <div class="geoPopup">
@@ -416,7 +422,9 @@ document.addEventListener('alpine:init', () => {
                     ${entry.logcomment ? `<p class="commentText">${entry.logcomment}</p>` : ''}
                     <div class="popup-actions">
                         ${commentButton}
+                        ${deleteButton}
                         ${actionButton}
+                        ${zoomButton}
                     </div>
                 </div>`;
                             
@@ -427,6 +435,27 @@ document.addEventListener('alpine:init', () => {
             await this.loadMapData();
             this.updateMarkers(this.logs);
             this.fit_markers();
+        },
+
+
+        async deleteCursor(logid) {
+            // Find the log and marker to delete
+
+            if (!confirm(' Do you really want to delete cursor?') ) {
+                    return;
+            }
+
+            const logIndex = this.logs.findIndex(log => log.logid === logid);
+
+            const data = await apiService.call('deleteLog', {
+                logid: logid,
+                routeid: this.routeid,
+            });
+            if (data.status == 'success') {
+
+                this.userMarkers(this.userid);
+
+            }
         },
 
         addComment(logId) {
@@ -595,6 +624,7 @@ document.addEventListener('alpine:init', () => {
                 this.logs = data.logs;
                 this.updateMarkers(this.logs);
                 log('New location');
+                this.zoom_lastmarker(this.userid);
             }
         },
 
@@ -1111,6 +1141,36 @@ document.addEventListener('alpine:init', () => {
 
         buildStoryObj(story){
             return {story: story, storyUserName: this.storyName, storyUser: this.storyUser}
+        },
+
+        zoom_lastmarker(userid = null) {
+            let targetMarker = null;
+
+            // this.map.closePopup();
+
+            if (userid !== null) {
+                // Find the last marker for the specified user
+                for (let i = this.cursors.length - 1; i >= 0; i--) {
+                    const cursor = this.cursors[i];
+                    const log = this.logs.find(log => log.loglatitude === cursor.getLatLng().lat && log.loglongitude === cursor.getLatLng().lng);
+
+                    if (log && log.userid === userid) {
+                        targetMarker = cursor;
+                        break;
+                    }
+                }
+            }
+
+            // If no specific user marker found, or no userid provided, use the last marker in general
+            if (!targetMarker && this.cursors.length > 0) {
+                targetMarker = this.cursors[this.cursors.length - 1];
+            }
+
+            // Zoom to the target marker
+            if (targetMarker) {
+                this.map.setView(targetMarker.getLatLng(), 15); // Adjust zoom level as necessary
+                targetMarker.openPopup(); // Optionally open the popup for the target marker
+            }
         },
 
         async action_story(){

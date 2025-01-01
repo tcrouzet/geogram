@@ -62,6 +62,7 @@ try {
         'sendgeolocation' => [MapService::class, 'sendgeolocation'],
         'logphoto' => [MapService::class, 'logphoto'],
         'submitComment' => [MapService::class, 'submitComment'],
+        'deleteLog' => [MapService::class, 'deleteLog'],        
         
         'getroutes' => [RouteService::class, 'getroutes'],
         'routeAction' => [RouteService::class, 'routeAction'],
