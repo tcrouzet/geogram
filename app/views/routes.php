@@ -100,19 +100,25 @@
                                 <div>
                                     <div class="divider">TELEGRAM</div>
                                     <label>Telegram channels</label>
-                                    <div x-effect="$el.value = route.routetelegram">
-                                        <select @change="updateRoute(route)">
-                                            <option value="">Select a channel...</option>
-                                            <template x-for="channel in telegramChannels" :key="channel.id">
-                                                <option 
-                                                    :value="channel.id" 
-                                                    x-text="channel.title"
-                                                    :selected="channel.id === route.routetelegram">
-                                                </option>
-                                            </template>
-                                        </select>
-                                    </div>
 
+                                    <!-- <button @click="alert('Route Telegram: ' + route.routetelegram + ' (Type: ' + typeof route.routetelegram + ')')">
+                                        Debug Route Telegram Value
+                                    </button> -->
+
+                                    <select 
+                                        x-model="route.routetelegram" 
+                                        @change="updateRoute(route)">
+                                        <option value="">Select a channel...</option>
+                                        <template x-for="channel in telegramChannels" :key="channel.id">
+                                            <option 
+                                                :value="channel.id" 
+                                                x-text="channel.title"
+                                                @click="alert('Channel ID: ' + channel.id + ' (Type: ' + typeof channel.id + ')')"
+                                                :selected="channel.id === route.routetelegram">
+                                            </option>
+                                        </template>
+                                    </select>
+    
                                     <label>Mode</label>
                                     <select x-model="route.routemode" @change="updateRoute(route)">
                                         <option value="2">Nothing deleted</option>
@@ -291,7 +297,7 @@ document.addEventListener('alpine:init', () => {
                 routename: route.routename,
                 routerem: route.routerem,
                 routestatus: route.routestatus,
-                telegram: route.routetelegram,
+                routetelegram: route.routetelegram,
                 routemode: route.routemode,
                 routestart: route.routestart,
                 routestop: route.routestop,

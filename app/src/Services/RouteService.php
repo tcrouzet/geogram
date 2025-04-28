@@ -355,6 +355,8 @@ class RouteService
 
     public function updateroute(){
         lecho("updateroute");
+
+        lecho($_POST);
     
         $routeid = $_POST['routeid'] ?? '';
         if(empty($routeid)){
@@ -371,8 +373,8 @@ class RouteService
             return ['status' => 'error', 'message' => 'Empty routename'];
         }
 
-        $telegram = $_POST['telegram'] ?? '';
-        lecho("telegram",$telegram);
+        $routetelegram = $_POST['routetelegram'] ?? '';
+        lecho("routetelegram",$routetelegram);
  
         $routelastdays = $_POST['routelastdays'] ?? '';
  
@@ -416,7 +418,7 @@ class RouteService
         }
         lecho("prepare done");
 
-        if($stmt->bind_param("ssiiiissssi", $routename, $routerem, $routestatus, $telegram, $routemode, $routelastdays, $routestart, $routestart, $routestop, $routestop, $routeid)){
+        if($stmt->bind_param("ssiiiissssi", $routename, $routerem, $routestatus, $routetelegram, $routemode, $routelastdays, $routestart, $routestart, $routestop, $routestop, $routeid)){
             if ($stmt->execute()){
                 lecho("success");
                 return ['status' => 'success', 'message' => 'Update done'];

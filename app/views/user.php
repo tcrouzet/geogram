@@ -31,7 +31,11 @@
 
             <div class="divider">ACTIONS</div>
             <div id="actions">
-                <button @click="user_actions(user.userid,'purgeuser',$el.textContent)">Delete all my logs</button>
+                <button @click="user_actions(user.userid,'purgeuser',$el.textContent)">Delete all my logs on all routes</button>
+
+                <template x-if="user.userroute > 0">
+                    <button @click="user_actions(user.userid, 'purgeuser_route', $el.textContent, user.userroute)">Delete my logs only on current route</button>
+                </template>
             </div>
             <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
@@ -174,9 +178,21 @@ document.addEventListener('alpine:init', () => {
         },
 
 
-        user_actions(userid, action, message){
+        user_actions(userid, action, message, routeid = null){
             if (!confirm(' Do you really to ' + message.toLowerCase()) ) {
                     return;
+            }
+
+            // Construire les paramètres de la requête
+            const params = {
+                view: "userAction",
+                action: action,
+                userid: userid
+            };
+            
+            // Ajouter routeid si présent
+            if (routeid) {
+                params.routeid = routeid;
             }
 
             fetch('/api/', {
@@ -184,11 +200,7 @@ document.addEventListener('alpine:init', () => {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({
-                    view: "userAction",
-                    action: action,
-                    userid: userid
-                })
+                body: new URLSearchParams(params)
             })
             .then(response => response.json())
             .then(data => {

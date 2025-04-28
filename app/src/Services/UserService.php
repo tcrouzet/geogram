@@ -362,6 +362,11 @@ class UserService
     
         if($action == "purgeuser"){
             $message = $this->purgeuser($this->userid);
+        }else if($action == "purgeuser_route"){
+            $routeid = isset($_POST['routeid']) ? intval($_POST['routeid']) : 0;
+            if($routeid>0) {
+                $message = $this->purgeuser_route($this->userid,$routeid);
+            }
         }else{
             return ['status' => 'error', 'message' => "Unknown action: $action"];        
         }
@@ -378,6 +383,18 @@ class UserService
     
         if ($stmt->execute()){
             $this->fileManager->purgeUserData($userid);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function purgeuser_route($userid, $routeid){
+        $stmt = $this->db->prepare("DELETE FROM rlogs WHERE loguser=? AND logroute=?");
+        $stmt->bind_param("ii", $userid, $routeid);
+    
+        if ($stmt->execute()){
+            $this->fileManager->purgeUserRouteData($userid, $routeid);
             return true;
         }else{
             return false;
