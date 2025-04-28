@@ -235,12 +235,37 @@ document.addEventListener('alpine:init', () => {
             this.canPost = this.isPostPossible();
             this.mapFooter = this.getMapFooter();
 
+            // window.addEventListener('error', (event) => {
+            //     if (event.message && (
+            //         event.message.includes('_latLngToNewLayerPoint')
+            //     )) {
+            //         alert('Leaflet error detected, reloading...');
+            //         window.location.reload();
+            //     }
+            // });
+
             window.addEventListener('error', (event) => {
-                if (event.message && (
-                    event.message.includes('_latLngToNewLayerPoint')
-                )) {
-                    alert('Leaflet error detected, reloading...');
-                    window.location.reload();
+                if (event.message && event.message.includes('_latLngToNewLayerPoint')) {
+                    console.error('Leaflet zoom error details:', event);
+                    
+                    // Au lieu de recharger immédiatement, essayer de récupérer
+                    try {
+                        // Forcer un redimensionnement de la carte
+                        this.map.invalidateSize();
+                        
+                        // Réinitialiser les couches problématiques
+                        if (this.geoJsonLayer) {
+                            this.map.removeLayer(this.geoJsonLayer);
+                            this.updateGPX();
+                        }
+                        
+                        event.preventDefault();
+                        return false;
+                    } catch (e) {
+                        // Si la récupération échoue, alors recharger
+                        alert('Leaflet error detected, reloading...');
+                        window.location.reload();
+                    }
                 }
             });
 
@@ -524,7 +549,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     }).addTo(this.map);
 
-                    this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0] });
+                    this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
                 })
                 .catch(error => {
                     console.error('Erreur GeoJSON:', error);
