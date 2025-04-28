@@ -453,8 +453,15 @@ document.addEventListener('alpine:init', () => {
             });
             if (data.status == 'success') {
 
-                this.userMarkers(this.userid);
+                // Fermer tous les popups
+                this.map.closePopup();
 
+                this.action_map();
+        
+                await this.loadMapData();
+                this.updateMarkers(this.logs);
+                this.action_fitgpx()
+        
             }
         },
 
