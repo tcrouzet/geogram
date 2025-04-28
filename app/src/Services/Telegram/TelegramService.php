@@ -89,8 +89,9 @@ class TelegramService
         //User
         if( !$this->user = $this->getUser( round($this->userid) )){
             $this->error = "The chat user $this->userid not in Geogram";
-            $link = BASE_URL . "/login/?link=" . $this->channel["routepublisherlink"]. "&telegram=" . $this->chatid;
-            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "If you want to publish on Geogram you must follow this link: $link",10);
+            // $link = BASE_URL . "/login/?link=" . $this->channel["routepublisherlink"]. "&telegram=" . $this->chatid;
+            // TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "If you want to publish on Geogram you must follow this link: $link",10);
+            lecho($this->error);
             return false;
         }
 
