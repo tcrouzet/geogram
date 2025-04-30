@@ -30,7 +30,6 @@ class UserService
     public function findOrCreateUser($userInfo){
         if($userInfo["email"] && $user = $this->get_user($userInfo["email"])){
 
-
             $this->improuveUser($user['userid'], $userInfo);
             $user = $this->get_user($user['userid']);
             return ['status' => "success", 'user' => $user];
@@ -54,7 +53,12 @@ class UserService
             $username = $userInfo["name"];
         }
 
-        $userroute = TESTROUTE; // Connected to testroute by default
+        if( empty($userInfo["route"]) ){
+            $userroute = $userInfo["route"];
+        }else{
+            $userroute = TESTROUTE; // Connected to testroute by default
+        }
+
         $userinitials = Tools::initial($username);
         $usercolor = Tools::getDarkColorCode(rand(0,10000));
     
@@ -65,7 +69,7 @@ class UserService
         if ($insertStmt->execute()) {
     
             $userid = $this->db->insert_id;
-            $this->connect($userid,TESTROUTE,2);
+            $this->connect($userid,$userroute,2);
             $this->improuveUser($userid, $userInfo);
             $user = $this->get_user($userid);
             return ['status' => "success", 'user' => $user];

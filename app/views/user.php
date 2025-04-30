@@ -64,7 +64,7 @@
             <ul>
                 <li><strong>User ID:</strong> <span x-text="user.userid"></span></li>
                 <li><strong>User mail:</strong> <span x-text="user.useremail"></span></li>
-                <li><strong>User token:</strong> <span x-text="user.usertoken"></span></li>
+                <li><strong>User token:</strong> <span x-text="user.usertoken" style="word-break: break-all; display: block; margin-top: 5px;"></span></li>
                 <li><strong>User Route:</strong> <span x-text="user.routename"></span></li>
                 <li><strong>User Route ID:</strong> <span x-text="user.userroute"></span></li>
                 <li><strong>Route Status:</strong> <span x-text="getRouteStatusDescription(user.routestatus)"></span></li>

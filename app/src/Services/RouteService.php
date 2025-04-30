@@ -432,18 +432,36 @@ class RouteService
         return ['status' => 'error', 'message' => $this->error];
     }
 
+    // public function isConnected($userid, $routeid) {
+    //     $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM connectors WHERE conuserid = ? AND conrouteid = ?");
+    //     $stmt->bind_param("ii", $userid, $routeid);
+    //     $stmt->execute();
+    //     if($result = $stmt->get_result()){
+    //         $row = $result->fetch_assoc();
+    //         $stmt->close();
+    //         return $row['count'];
+    //     }
+    //     return false;
+    // }
+
     public function isConnected($userid, $routeid) {
-        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM connectors WHERE conuserid = ? AND conrouteid = ?");
+        $stmt = $this->db->prepare("SELECT constatus FROM connectors WHERE conuserid = ? AND conrouteid = ? LIMIT 1");
         $stmt->bind_param("ii", $userid, $routeid);
         $stmt->execute();
-        if($result = $stmt->get_result()){
+        $result = $stmt->get_result();
+        // lecho("Connexions $userid to $routeid: " . ($result ? $result->num_rows : 'erreur') );
+        
+        if($result && $result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $stmt->close();
-            return $row['count'];
+            return (int)$row['constatus']; // Retourne constatus (0, 1, 2 ou 3)
         }
-        return false;
+        
+        $stmt->close();
+        return null; // Retourne null si aucun enregistrement trouvé
     }
-    
+
+
     public function routeconnect(){
         lecho("routeconnect");
     
@@ -467,7 +485,7 @@ class RouteService
                 $stmt->bind_param("ii", $routeid, $userid);
                 if ($stmt->execute()){
 
-                    if (!$this->isConnected($userid,$routeid)){
+                    if ($this->isConnected($userid,$routeid == null)){
                         // Is not connected
                         $this->connect($userid,$routeid,0);
                     }else{

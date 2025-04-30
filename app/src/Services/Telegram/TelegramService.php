@@ -5,6 +5,8 @@ namespace App\Services\Telegram;
 use App\Services\Database;
 use App\Services\MapService;
 use App\Services\FilesManager;
+use App\Services\RouteService;
+use App\Services\UserService;
 use App\Services\Telegram\TelegramCallback;
 use App\Services\Telegram\TelegramTools;
 use App\Utils\Tools;
@@ -15,6 +17,7 @@ class TelegramService
     private $telegram;
     private $update = null;
     private $db;
+    private $route;
     private $error = false;
     private $callback;
     private $message;
@@ -26,12 +29,16 @@ class TelegramService
     private $userid;    //Telegram userid
     private $username;  //Telegram username
     private $user;      //Geogram user
+    private $userService;
 
     public function __construct($update) 
     {
         $this->update = $update;
         $this->telegram = new \Telegram(TELEGRAM_BOT_TOKEN, false);
         $this->db = Database::getInstance()->getConnection();
+        $this->route = new RouteService();
+        $this->userService = new UserService();
+
     }
 
     public function handleUpdate() {
@@ -86,19 +93,43 @@ class TelegramService
             return false;
         }
 
-        //User
-        if( !$this->user = $this->getUser( round($this->userid) )){
-            $this->error = "The chat user $this->userid not in Geogram";
-            // $link = BASE_URL . "/login/?link=" . $this->channel["routepublisherlink"]. "&telegram=" . $this->chatid;
-            // TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "If you want to publish on Geogram you must follow this link: $link",10);
-            lecho($this->error);
-            return false;
-        }
-
         $this->username = TelegramTools::get_username($this->message); 
         if(empty($this->username)){
             $this->error = "no username";
             return false;
+        }
+
+        //User
+        if( !$this->user = $this->getUser( round($this->userid) )){
+
+            // Telegram user not in Geogram
+
+            $userInfo["email"]="$this->userid@telegram";
+            $userInfo['link'] = "";
+            $userInfo['telegram'] = $this->userid;
+            $userInfo['name'] = $this->username;
+            $userInfo['route'] = $this->channel["routeid"];
+
+            $r = $this->userService->createUser($userInfo);
+
+            if($r["status"] == "error"){
+                $this->error = "Error creating user: ".$r["message"];
+                lecho($this->error);
+                return false;
+            }else{
+                $this->user = $r["user"];
+            }
+
+        }else{
+
+            // Geogram user with Telegram account
+            $constatus = $this->route->isConnected($this->user['userid'], $this->channel["routeid"]);
+            if ($constatus == null or $constatus<2){
+                lecho($this->user['userid'] . " status with route " . $this->channel["routeid"] . ": $constatus");
+                // Force connexion beacause on Route Telegram Channel
+                $this->route->connect($this->user['userid'], $this->channel["routeid"], 2);
+            }
+
         }
 
         // Migrate
@@ -236,7 +267,7 @@ class TelegramService
                             lecho($this->error);
                             return false;
                         }
-                        TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],2);
+                        TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
                         TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!");
                         lecho("photo");
                         return true;
@@ -402,6 +433,7 @@ class TelegramService
         }
     }
 
+    // Get User by Telegram userid
     private function getUser($userid){
         $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.usertelegram = ?";
         $stmt = $this->db->prepare($query);

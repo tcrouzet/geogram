@@ -39,6 +39,10 @@ class TelegramTools
     }
     
     public static function ShortLivedMessage($telegram, $chatid, $msg, $timeout=2){
+        if(!TELEGRAM_ShortLivedMessage) {
+            return false;
+        }
+        $timeout = max(1, min(10, $timeout));
         $response = $telegram->sendMessage(['chat_id' => $chatid, 'text' => $msg, 'disable_notification' => true]);
         virtual_finish();
         if (isset($response['ok'])) {

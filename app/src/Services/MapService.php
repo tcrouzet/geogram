@@ -145,7 +145,7 @@ class MapService
     }
     
     public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $weather = null, $city = null){    
-        lecho("NewLog");
+        lecho("NewLog UserId: $userid RouteId: $routeid");
 
         $route = $this->route->get_route_by_id($routeid);
         if(!$this->isRouteActive($route)){
