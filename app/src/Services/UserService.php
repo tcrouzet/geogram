@@ -39,7 +39,7 @@ class UserService
     }
 
     public function createUser($userInfo){
-        lecho("CreateUser");
+        lecho("CreateUser", $userInfo);
         
         if (empty($userInfo["email"])) {
             return ['status' => 'error', 'message' => 'Email is required'];
@@ -59,12 +59,13 @@ class UserService
             $username = $userInfo["name"];
         }
 
-        if( !empty($userInfo["route"]) ){
+        if( !empty($userInfo["route"]) && $userInfo["route"]>0) {
+            lecho("Route value from userInfo:", $userInfo["route"]);
             $userroute = $userInfo["route"];
         }else{
             $userroute = TESTROUTE; // Connected to testroute by default
         }
-        lecho("Create user on ".$userroute." ".$userInfo["route"]);
+        lecho("Create user on ".$userroute);
 
         $userinitials = Tools::initial($username);
         $usercolor = Tools::getDarkColorCode(rand(0,10000));
