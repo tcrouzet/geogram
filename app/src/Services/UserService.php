@@ -41,10 +41,16 @@ class UserService
     public function createUser($userInfo){
         lecho("CreateUser");
         
-        if( empty($userInfo["email"]) || !filter_var($userInfo["email"], FILTER_VALIDATE_EMAIL) ){
-            return ['status' => 'error', 'message' => 'Invalid email'];
-        }else{
+        if (empty($userInfo["email"])) {
+            return ['status' => 'error', 'message' => 'Email is required'];
+        } else if ($this->isTelegramUserEmail($userInfo["email"])) {
+            // C'est un email Telegram valide
             $email = $userInfo["email"];
+        } else if (filter_var($userInfo["email"], FILTER_VALIDATE_EMAIL)) {
+            // C'est un email standard valide
+            $email = $userInfo["email"];
+        } else {
+            return ['status' => 'error', 'message' => 'Invalid email format: ' . $userInfo["email"]];
         }
 
         if( empty($userInfo["name"]) ){
@@ -58,6 +64,7 @@ class UserService
         }else{
             $userroute = TESTROUTE; // Connected to testroute by default
         }
+        lecho("Create user on ".$userroute." ".$userInfo["route"]);
 
         $userinitials = Tools::initial($username);
         $usercolor = Tools::getDarkColorCode(rand(0,10000));
@@ -81,6 +88,11 @@ class UserService
 
     }
 
+    function isTelegramUserEmail($email) {
+        // Vérifie si l'email correspond au format xxx@telegram
+        return (bool)preg_match('/^[0-9]+@telegram$/', $email);
+    }
+    
     public function improuveUser($userid, $userInfo){
         lecho("Improve User");
         $telegram = intval($userInfo['telegram'] ?? 0);

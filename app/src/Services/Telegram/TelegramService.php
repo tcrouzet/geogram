@@ -204,17 +204,22 @@ class TelegramService
         }
         return false;
     }
-    
+
     private function text(){
-        if( isset($this->message["text"])){
-            $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) WHERE logroute = ? AND loguser = ? AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
+        if(isset($this->message["text"])){
+            $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) 
+                      WHERE logroute = ? AND loguser = ? 
+                      AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
+            
             $stmt = $this->db->prepare($query);
             $stmt->bind_param("siiii", $this->message["text"], $this->user["routeid"], $this->user["userid"], $this->user["routeid"], $this->user["userid"]);
+            
             if (!$stmt->execute()){
                 $this->error = "Error sql 2 - no log for the user";
                 lecho($this->error);
             }
-            TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
+            
+            TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"], 1);
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
             lecho("text");
             return true;
