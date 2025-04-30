@@ -46,13 +46,20 @@ class MapService
 
     public function get_map_data($routeid){
 
+        lecho("get_map_data $routeid");
+
         $route = $this->route->get_route_by_id($routeid);
         if(!$route){
             return ['status' => 'error', 'message' => 'Unknown route'];
         }
 
         $start = $this->resetSQLdate($route["routestart"]);
-        $stop = $this->resetSQLdate($route["routestop"]); 
+        $stop = $this->resetSQLdate($route["routestop"]);
+
+        lecho("Start: " . ($start ?: 'NULL') . " Stop: " . ($stop ?: 'NULL'));
+
+        $hasStartFilter = !empty($start);
+        $hasStopFilter = !empty($stop);
 
         $query = "SELECT *
             FROM rlogs
@@ -61,22 +68,46 @@ class MapService
             AND (rlogs.loguser, rlogs.logtime) IN (
                 SELECT loguser, MAX(logtime)
                 FROM rlogs
-                WHERE logroute = ?
-                AND (? IS NULL OR logtime >= ?)
-                AND (? IS NULL OR logtime <= ?)
-                GROUP BY loguser
-            )
-            ORDER BY logtime DESC;";
+                WHERE logroute = ?";
+
+        if ($hasStartFilter) {
+            $query .= " AND logtime >= ?";
+        }
+
+        if ($hasStopFilter) {
+            $query .= " AND logtime <= ?";
+        }
+
+        $query .= " GROUP BY loguser) ORDER BY rlogs.logtime DESC";
+        // lecho($query);
 
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("iissss", 
-            $routeid, 
-            $routeid, 
-            $start, 
-            $start,
-            $stop, 
-            $stop
-        );
+
+        if ($hasStartFilter && $hasStopFilter) {
+            $stmt->bind_param("iiss", 
+                $routeid, 
+                $routeid, 
+                $start,
+                $stop, 
+            );
+        }else if($hasStartFilter){
+            $stmt->bind_param("iis", 
+                $routeid, 
+                $routeid, 
+                $start,
+            );
+        }else if($hasStopFilter){
+            $stmt->bind_param("iis", 
+                $routeid, 
+                $routeid, 
+                $stop,
+            );
+        }else{
+            $stmt->bind_param("ii", 
+                $routeid, 
+                $routeid
+            );
+        }
 
         return $this->format_map_data($stmt, $route); 
     }
@@ -86,13 +117,13 @@ class MapService
         $stmt->execute();
         if($result = $stmt->get_result()){
             $logs = $result->fetch_all(MYSQLI_ASSOC);
-            //lecho($logs);
+            lecho("Logs: ".count($logs));
 
             $geojson = $this->fileManager->route_geojson_web($route);
             lecho("geoJSON:",$geojson);
 
             foreach ($logs as &$row) {
-                //lecho($row['username']);
+                // lecho($row['username']);
                 $row['logkm_km'] = Tools::meters_to_distance($row["logkm"], $route, false);
                 if($row['username'])
                     $row['username_formated'] = Tools::normalizeName($row['username']);

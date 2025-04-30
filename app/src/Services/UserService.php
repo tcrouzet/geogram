@@ -59,7 +59,7 @@ class UserService
             $username = $userInfo["name"];
         }
 
-        if( empty($userInfo["route"]) ){
+        if( !empty($userInfo["route"]) ){
             $userroute = $userInfo["route"];
         }else{
             $userroute = TESTROUTE; // Connected to testroute by default
@@ -364,6 +364,17 @@ class UserService
         if ($userId && $routeId) {
             $stmt = $this->db->prepare("UPDATE users SET userroute = ? WHERE userid = ?");
             $stmt->bind_param("ii", $routeId, $userId);
+            if ($stmt->execute()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function set_user_email($userId,$email){
+        if ($userId && $email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $stmt = $this->db->prepare("UPDATE users SET useremail = ? WHERE userid = ?");
+            $stmt->bind_param("si", $email, $userId);
             if ($stmt->execute()){
                 return true;
             }

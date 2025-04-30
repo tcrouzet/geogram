@@ -12,7 +12,7 @@ use App\Services\Telegram\TelegramTools;
 use App\Utils\Tools;
 
 
-class TelegramService 
+class TelegramService
 {
     private $telegram;
     private $update = null;
@@ -155,6 +155,7 @@ class TelegramService
         if ( isset($this->message["text"]) && strpos( stripslashes($this->message["text"]), '/') === 0 ){
             TelegramTools::deleteMessage($this->telegram, $this->chatid, $this->message_id);
             if($this->geogram()) return true;
+            if($this->updateMail()) return true;
             if($this->reconnect()) return true;
             // More commands to come
             return true;
@@ -164,10 +165,10 @@ class TelegramService
 
     private function geogram(){
         if ( isset($this->message["text"]) && $this->message["text"] === "/geogram" ){
-            lecho("geogram");
+            lecho("geogram command");
             $privateChatLink = "https://t.me/".TELEGRAM_BOT."?start=".$this->chatid;
             $message = "To connect with ".GEONAME.", please click $privateChatLink to start a conversation with ".TELEGRAM_BOT.". Once you have opened the private chat, please clic the START button down screen and wait a link to proceed.";
-            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, $message, 15);
+            TelegramTools::ImportantShortLivedMessage($this->telegram, $this->chatid, $message, 15);
             return true;
         }
         return false;
@@ -178,6 +179,24 @@ class TelegramService
             lecho("reconnect");
             $this->newChannel($this->chatid, $this->userid, $this->title, "reconnect");
             return true;
+        }
+        return false;
+    }
+
+    private function updateMail() {
+        if (isset($this->message["text"]) && preg_match('/^\/mail\s+(.+)$/i', $this->message["text"], $matches)) {
+            lecho("mail command");
+            
+            // Extraire l'email de la commande (après l'espace)
+            $newEmail = trim($matches[1]);
+            lecho("New mail $newEmail");
+
+            if($this->userService->set_user_email($this->user['userid'], $newEmail)){
+                return true;
+            }else{
+                lecho("Invalid email format");
+            }
+
         }
         return false;
     }

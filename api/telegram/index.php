@@ -2,7 +2,6 @@
 
 //https://geo.zefal.com/api/telegram/
 
-
 require_once '../../vendor/autoload.php';
 require_once '../../app/config/config.php';
 require_once '../../app/config/telegram.php';

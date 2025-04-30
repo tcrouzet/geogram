@@ -31,7 +31,7 @@ Contrairement à une app classique installée via un store, une web app s'utilis
 ## Aventuriers
 
 1. [S'enregister via Google ou avec un email.](/login)
-2. [Rejoindre une route publique](/routes) ou accepter une invitation sous forme de lien hypertexte.
+2. [Rejoindre une route publique](/routes) ou accepter une invitation sous forme de lien hypertexte vers route privée ou semi-privée.
 1. <i class="fas fa-images"></i> publier plusieurs photos en même temps.
 1. <i class="fas fa-map-marker-alt"></i> se géolocaliser.
 1. <i class="fas fa-camera"></i> publier une photo.
@@ -39,7 +39,7 @@ Contrairement à une app classique installée via un store, une web app s'utilis
 ## Route administrateur
 
 1. [Création de nouvelles routes.](/routes)
-1. Bouton "Edit" permet de paramétrer la route, notamment d'uploader un fichier GPX. Une route peut être privée (faut être invité pour visualiser et publier), visible (faut être invité pour publier) ou ouverte (suffit d'être connecté pour publier).
+1. Bouton "Edit" permet de paramétrer la route, notamment d'uploader un fichier GPX. Une route peut être privée (faut être invité pour visualiser et publier), semi-privée (faut être invité pour publier) ou ouverte (suffit d'être connecté pour publier).
 1. Pour inviter des spectateurs ou des aventuriers faut leur envoyer les liens affichés sous le champ "Status".
 1. Possibilité de connecter la route à Telegram.
 1. Possibilité de purger ou détruire une route.
@@ -52,11 +52,9 @@ On peut lier à un groupe Telegram à une route de façon que les géolocalisati
 
 1. Créer un [compte Telegram](https://telegram.org/apps).
 1. Rejoindre le groupe Telegram de la route (lien invitation envoyé par le créateur du groupe).
-1. Saisir "/geogram" pour ouvrir une conversation privée avec le bot (cliquer sur le lien qui s'affiche.)
-1. Une fois dans la chat privé, cliquer en bas de l'écran sur le bouton START.
-1. Après quelques secondes, un lien de connexion à {GEONAME} s'affiche.
-1. Les nouveaux utilisateurs de {GEONAME} doivent se connecter via Google ou avec leur email.
-1. Depuis les groupes Telegram, se géolocaliser au moins une fois avant d'envoyer des messages et des photos. Ces messages peuvent être automatiquement détruit après publication en fonction de la stratégie mise en place par l'administrateur de la route. 
+1. Quand vous vous localisez pour la première fois, peu importe votre localisation, un compte Geogram est créé pour vous.
+1. La commande /mail votre_email affecte un mail valide à votre compte, ce qui vous permet aussi d'utiliser [la web app](/).
+1. Vos messages peuvent être automatiquement détruit après publication en fonction de la stratégie mise en place par l'administrateur de la route. 
 
 ### Administrateur
 

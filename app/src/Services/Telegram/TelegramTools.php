@@ -3,7 +3,7 @@
 namespace App\Services\Telegram;
 use App\Utils\Tools;
 
-class TelegramTools 
+class TelegramTools
 {
 
     public static function MyDateFormat($timestampInput, $route, $justhour=false){
@@ -42,6 +42,11 @@ class TelegramTools
         if(!TELEGRAM_ShortLivedMessage) {
             return false;
         }
+        return self::ImportantShortLivedMessage($telegram, $chatid, $msg, $timeout);
+
+    }
+
+    public static function ImportantShortLivedMessage($telegram, $chatid, $msg, $timeout=2){
         $timeout = max(1, min(10, $timeout));
         $response = $telegram->sendMessage(['chat_id' => $chatid, 'text' => $msg, 'disable_notification' => true]);
         virtual_finish();

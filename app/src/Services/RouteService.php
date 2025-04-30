@@ -432,18 +432,6 @@ class RouteService
         return ['status' => 'error', 'message' => $this->error];
     }
 
-    // public function isConnected($userid, $routeid) {
-    //     $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM connectors WHERE conuserid = ? AND conrouteid = ?");
-    //     $stmt->bind_param("ii", $userid, $routeid);
-    //     $stmt->execute();
-    //     if($result = $stmt->get_result()){
-    //         $row = $result->fetch_assoc();
-    //         $stmt->close();
-    //         return $row['count'];
-    //     }
-    //     return false;
-    // }
-
     public function isConnected($userid, $routeid) {
         $stmt = $this->db->prepare("SELECT constatus FROM connectors WHERE conuserid = ? AND conrouteid = ? LIMIT 1");
         $stmt->bind_param("ii", $userid, $routeid);
