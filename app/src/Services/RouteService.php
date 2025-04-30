@@ -73,7 +73,7 @@ class RouteService
     public function getpublicroutes() {
         lecho("getpublicroutes");
         
-        $query = "SELECT * FROM routes WHERE routestatus <2";
+        $query = "SELECT * FROM routes WHERE routestatus <2 AND gpx = 1";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         $result = $stmt->get_result();
