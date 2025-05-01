@@ -128,6 +128,7 @@ class TelegramService
                 lecho($this->user['userid'] . " status with route " . $this->channel["routeid"] . ": $constatus");
                 // Force connexion beacause on Route Telegram Channel
                 $this->route->connect($this->user['userid'], $this->channel["routeid"], 2);
+                $this->user['userroute'] = $this->channel["routeid"];
             }
 
         }

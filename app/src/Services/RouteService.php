@@ -343,6 +343,11 @@ class RouteService
     
     public function connect($userid, $routeid, $status = 2) {
         lecho("connect", $userid, $routeid);
+
+        // Affecter la route à l'utilisateur
+        if (!$this->userService->set_user_route($userid,$routeid)) {
+            return false;
+        }
     
         // Requête SQL avec ON DUPLICATE KEY UPDATE pour mettre à jour le statut uniquement s'il est supérieur
         $insertQuery = "INSERT INTO connectors (conrouteid, conuserid, constatus) VALUES (?, ?, ?)
