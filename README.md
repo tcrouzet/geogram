@@ -1,23 +1,22 @@
 # Geogram
 
-Geogram tracks adventures with Telegram Messenger.
+Geogram is a web app to tracks adventures.
 
 Look an implementation at [geo.zefal.com](https://geo.zefal.com/).
 
-You have to import geogram.sql in a MySQL database, create a Telegram Bot with a Token, a Weather API Token, then set admin/secret-model.php and rename as admin/secret.php.
+You have to import app/database/schema.sql in a MySQL database, then set app/config/config.php file.
 
-Finaly you have to open webhook.php from the web to activate your bot webhook.
 
 ### Telegram (optional)
 
 1. Open @BotFather
 2. In BotFather, /setdomain@YourBotName yourWebApp (/setdomain@GeoBikepacking_bot https://geo.zefal.com/api/?view=telegram)
 
+Finaly you have to open webhook.php from the web to activate your bot webhook.
+
 ### To Do
 
 Cron task for weather and cities…
 Factorize popup and story, add tools to edit, delete…
 Last x days, API side
-Telegram mode
-Logo
 Debugs :-)
