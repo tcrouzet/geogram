@@ -1,6 +1,6 @@
 # Geogram
 
-Geogram is a web app to tracks adventures.
+Geogram is a web app to track adventures.
 
 Look an implementation at [geo.zefal.com](https://geo.zefal.com/).
 
