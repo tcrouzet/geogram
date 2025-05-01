@@ -118,7 +118,7 @@
                 <div>
                     <div class="list-header">
                         <div class="sortable-col" @click="sortBy('username')">
-                            <span x-text="`${logs.length} adventurers`"></span>
+                            <span x-text="`${logs.length} ${getAdventurerLabel()}`"></span>
                             <i class="fas" :class="{
                                 'fa-sort': sortField !== 'username',
                                 'fa-sort-up': sortField === 'username' && sortDirection === 'asc',
@@ -1292,6 +1292,10 @@ document.addEventListener('alpine:init', () => {
             if(this.route.routestatus > 0 && this.user.constatus > 0) return true;
 
             return false;
+        },
+
+        getAdventurerLabel() {
+            return this.storyUser ? 'pings' : 'adventurers';
         },
 
     }));

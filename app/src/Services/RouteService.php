@@ -65,7 +65,7 @@ class RouteService
                 },
                 $routes
             );
-            return ['status' => 'success', 'routes' => $superchargedRoutes];
+            return ['status' => 'success', 'routes' => $superchargedRoutes, 'serverTimestamp' => time()];
         }
         return ['status' => 'error', 'message' => "Loading routes fail"];
     }
@@ -363,8 +363,8 @@ class RouteService
 
         lecho($_POST);
     
-        $routeid = $_POST['routeid'] ?? '';
-        if(empty($routeid)){
+        $routeid = intval($_POST['routeid'] ?? 0);
+        if($routeid == 0){
             return ['status' => 'error', 'message' => 'No route id'];
         }
 
@@ -378,43 +378,42 @@ class RouteService
             return ['status' => 'error', 'message' => 'Empty routename'];
         }
 
-        $routetelegram = $_POST['routetelegram'] ?? '';
+        $routetimediff = intval($_POST['routetimediff'] ?? 0);
+        lecho("routetimediff",$routetimediff);
+
+        $routetelegram = intval($_POST['routetelegram'] ?? 0);
         lecho("routetelegram",$routetelegram);
  
-        $routelastdays = $_POST['routelastdays'] ?? '';
+        $routelastdays = intval($_POST['routelastdays'] ?? 0);
  
-        $routestatus = $_POST['routestatus'] ?? '';
+        $routestatus = intval($_POST['routestatus'] ?? 0);
+
         $routerem = $_POST['routerem'] ?? '';
         lecho($routerem);
-        $routemode = $_POST['routemode'] ?? '';
-        // $routeclosed = $_POST['routeclosed'] === 'true' ? 1 : 0;
 
-        lecho($_POST);
+        $routemode = intval($_POST['routemode'] ?? 0);
 
-        if (!empty($_POST['routestart']) && $_POST['routestart'] !== 'null') {
-            $timestamp = strtotime($_POST['routestart']);
-            $routestart = $timestamp ? date('Y-m-d H:i:s', $timestamp) : null;
-        } else {
-            $routestart = null;
+        $routestart = $_POST['routestart'] ?? '0000-00-00 00:00:00';
+        if ($routestart === 'null' || $routestart === '') {
+            $routestart = '0000-00-00 00:00:00';
         }
-    
-        if (!empty($_POST['routestop']) && $_POST['routestop'] !== 'null') {
-            $timestamp = strtotime($_POST['routestop']);
-            $routestop = $timestamp ? date('Y-m-d H:i:s', $timestamp) : null;
-        } else {
-            $routestop = null;
+        
+        $routestop = $_POST['routestop'] ?? '0000-00-00 00:00:00';
+        if ($routestop === 'null' || $routestop === '') {
+            $routestop = '0000-00-00 00:00:00';
         }
 
         // Requête modifiée pour gérer explicitement NULL
         $query = "UPDATE routes SET 
             routename = ?,
             routerem = ?,
+            routetimediff = ?,
             routestatus = ?,
             routetelegram = ?,
             routemode = ?,
             routelastdays = ?,
-            routestart = CASE WHEN ? IS NULL THEN NULL ELSE ? END,
-            routestop = CASE WHEN ? IS NULL THEN NULL ELSE ? END
+            routestart = ?,
+            routestop = ?
             WHERE routeid = ?";
 
         $stmt = $this->db->prepare($query);
@@ -423,8 +422,14 @@ class RouteService
         }
         lecho("prepare done");
 
-        if($stmt->bind_param("ssiiiissssi", $routename, $routerem, $routestatus, $routetelegram, $routemode, $routelastdays, $routestart, $routestart, $routestop, $routestop, $routeid)){
-            if ($stmt->execute()){
+        $bindResult = $stmt->bind_param("ssiiiiissi", $routename, $routerem, $routetimediff, $routestatus, $routetelegram, $routemode, $routelastdays, $routestart, $routestop, $routeid);
+
+        if($bindResult){
+            lecho("Bind param done");
+
+            $executeResult = $stmt->execute();
+            
+            if ($executeResult){
                 lecho("success");
                 return ['status' => 'success', 'message' => 'Update done'];
             }else{

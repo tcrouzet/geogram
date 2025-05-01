@@ -40,6 +40,14 @@
                             <label>Description</label>
                             <input type="text" class="input-field" x-model="route.routerem" required minlength="10" maxlength="256" @change="updateRoute(route)">
 
+                            <label x-text="`UTC time difference (${defaultTimeDiff} minutes suggested)`"></label>
+                            <input type="number" 
+                                class="input-field" 
+                                x-model="route.routetimediff" 
+                                @change="updateRoute(route)"
+                                placeholder="Enter time difference"
+                                title="Difference in minutes between server time and user time">
+                                    
                             <label>Start date (optional)</label>
                             <input type="datetime-local" 
                                 class="input-field" 
@@ -181,6 +189,7 @@ document.addEventListener('alpine:init', () => {
         // Telegram
         telegramConnected: false,
         telegramChannels: [],
+        defaultTimeDiff: 120,
 
         async init(){
             log();
@@ -206,7 +215,21 @@ document.addEventListener('alpine:init', () => {
             if (data.status == 'success') {
                 log(data);
                 this.routes = data.routes;
+
+                if(data.serverTimestamp){
+                    this.defaultTimeDiff = this.timediff(data.serverTimestamp);
+                    log(this.defaultTimeDiff);
+                }
             }
+        },
+
+        timediff(serverTimestamp) {
+            log(serverTimestamp)
+            const serverTime = new Date(parseInt(serverTimestamp) * 1000);
+            const clientTime = new Date();
+            const diffMs = clientTime.getTime() - serverTime.getTime();
+            const timeDiffInMinutes = Math.round(diffMs / 60000);            
+            return timeDiffInMinutes + 120;
         },
 
         async loadPublicRoutes() {
@@ -302,6 +325,7 @@ document.addEventListener('alpine:init', () => {
                 routestart: route.routestart,
                 routestop: route.routestop,
                 routelastdays: route.routelastdays,
+                routetimediff: route.routetimediff,
             });
             if (data.status == 'success') {
                 console.log('Route updated successfully');
