@@ -16,7 +16,24 @@ class Tools
         } else {
             $timestamp = strtotime($timestampInput);
         }
-    
+
+        $now = time();
+        $diff = $now - $timestamp;
+        
+        // Si moins de 24 heures, afficher "X h Y min ago"
+        if ($diff < 86400 && $diff > 0) { // 86400 secondes = 24 heures
+            $hours = floor($diff / 3600);
+            $minutes = floor(($diff % 3600) / 60);
+            
+            if ($hours > 0) {
+                return $hours . "h" . $minutes . " ago";
+            } else {
+                return $minutes . "m ago";
+            }
+        }
+
+        $adjustedTimestamp = self::timezone($timestamp, $timediff);
+
         if($unit==1){
             //Emperial
             $format="g:ia";
@@ -26,7 +43,7 @@ class Tools
     
         if(!$justhour) $format.=" Y/n/j";
         
-        return date( $format, self::timezone($timestamp, $timediff) );    
+        return date( $format, $adjustedTimestamp);
     }
 
     public static function TimeDiff($routetimediff){
@@ -53,7 +70,7 @@ class Tools
     }
 
     public static function timezone($timestamp,$zone=0){
-        return $timestamp-$zone*3600;
+        return $timestamp+$zone*60;
     }
     
     public static function photo64decode($photofile){

@@ -798,9 +798,9 @@ textarea {
 }
 
 .log-comment {
-    padding: 0.5rem;
-    background: var(--color-G);
-    border-radius: 4px;
+    padding: 0rem;
+    /* background: var(--color-G); */
+    /* border-radius: 4px; */
     margin: 0;
 }
 

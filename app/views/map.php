@@ -235,15 +235,6 @@ document.addEventListener('alpine:init', () => {
             this.canPost = this.isPostPossible();
             this.mapFooter = this.getMapFooter();
 
-            // window.addEventListener('error', (event) => {
-            //     if (event.message && (
-            //         event.message.includes('_latLngToNewLayerPoint')
-            //     )) {
-            //         alert('Leaflet error detected, reloading...');
-            //         window.location.reload();
-            //     }
-            // });
-
             window.addEventListener('error', (event) => {
                 if (event.message && event.message.includes('_latLngToNewLayerPoint')) {
                     console.error('Leaflet zoom error details:', event);
