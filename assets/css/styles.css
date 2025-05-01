@@ -473,6 +473,8 @@ main {
 div.geoPopup {text-align: center;max-width: 8rem;padding:0}
 div.geoPopup button{margin: 0.2rem;}
 div.geoPopup img{max-width:inherit;height: auto;}
+div.geoPopup h3{margin-bottom: 0rem;}
+div.geoPopup h4{margin: 0rem;padding: 0rem;text-align: center;font-size: smaller;font-weight: normal;}
 .cross{
     position: absolute;
     top: 0.5rem;
@@ -667,6 +669,11 @@ textarea {
 
 .list-row:nth-child(even) {
     background: var(--color-G-light);
+}
+
+.list-date{
+    width:3rem;
+    overflow: hidden;
 }
 
 .user-col {

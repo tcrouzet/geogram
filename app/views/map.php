@@ -150,6 +150,7 @@
                             <div class="list-row" @click="showUserStory(entry)">
                                 <div class="user-col">
                                     <i class="fas fa-map-marker-alt" @click.stop="showUserOnMap(entry)"></i>
+                                    <span x-text="entry.date_formated" class="list-date"></span>
                                     <span x-text="entry.username"></span>
                                 </div>
                                 <div class="stats">
@@ -434,6 +435,7 @@ document.addEventListener('alpine:init', () => {
             const popupContent = `
                 <div class="geoPopup">
                     <h3>${entry.username_formated}</h3>
+                    <h4>${entry.date_formated}</h4>
                     ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
                     ${entry.logcomment ? `<p class="commentText">${entry.logcomment}</p>` : ''}
                     <div class="popup-actions">

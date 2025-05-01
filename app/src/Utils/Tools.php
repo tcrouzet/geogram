@@ -26,10 +26,14 @@ class Tools
             $minutes = floor(($diff % 3600) / 60);
             
             if ($hours > 0) {
-                return $hours . "h" . $minutes . " ago";
+                $minutesText = ($minutes > 0) ? $minutes : "";
+                return $hours . "h" . $minutesText;
             } else {
-                return $minutes . "m ago";
+                return $minutes . "m";
             }
+        }else{
+            $days = floor($diff / 86400);
+            return $days . "d";    
         }
 
         $adjustedTimestamp = self::timezone($timestamp, $timediff);
