@@ -44,7 +44,7 @@ class MapService
         return $this->get_map_data($this->routeid);
     }
 
-    public function get_map_data($routeid){
+    public function get_map_data($routeid, $storymode=false){
 
         lecho("get_map_data $routeid");
 
@@ -56,6 +56,12 @@ class MapService
         $start = $this->resetSQLdate($route["routestart"]);
         $stop = $this->resetSQLdate($route["routestop"]);
 
+        if (isset($route['routelastdays']) && $route['routelastdays'] > 0) {
+            $lastDaysTimestamp = date('Y-m-d H:i:s', time() - ($route['routelastdays'] * 86400));
+            if ($lastDaysTimestamp > $start) {
+                $start = $lastDaysTimestamp;
+            }
+        }
         lecho("Start: " . ($start ?: 'NULL') . " Stop: " . ($stop ?: 'NULL'));
 
         $hasStartFilter = !empty($start);
@@ -64,11 +70,14 @@ class MapService
         $query = "SELECT *
             FROM rlogs
             INNER JOIN users ON rlogs.loguser = users.userid
-            WHERE rlogs.logroute = ?
-            AND (rlogs.loguser, rlogs.logtime) IN (
-                SELECT loguser, MAX(logtime)
-                FROM rlogs
-                WHERE logroute = ?";
+            WHERE rlogs.logroute = ? ";
+
+        if(!$storymode){
+            $query .= "AND (rlogs.loguser, rlogs.logtime) IN (
+                    SELECT loguser, MAX(logtime)
+                    FROM rlogs
+                    WHERE logroute = rlogs.logroute";
+        }
 
         if ($hasStartFilter) {
             $query .= " AND logtime >= ?";
@@ -78,38 +87,49 @@ class MapService
             $query .= " AND logtime <= ?";
         }
 
-        $query .= " GROUP BY loguser) ORDER BY rlogs.logtime DESC";
+        if(!$storymode){
+            $query .= " GROUP BY loguser) ORDER BY rlogs.logtime DESC";
+        }else{
+            $query .= " ORDER BY rlogs.logtime ASC";   
+        }
         // lecho($query);
 
         $stmt = $this->db->prepare($query);
 
         if ($hasStartFilter && $hasStopFilter) {
-            $stmt->bind_param("iiss", 
-                $routeid, 
-                $routeid, 
+            $stmt->bind_param("iss", 
+                $routeid,
                 $start,
                 $stop, 
             );
         }else if($hasStartFilter){
-            $stmt->bind_param("iis", 
-                $routeid, 
+            $stmt->bind_param("is",
                 $routeid, 
                 $start,
             );
         }else if($hasStopFilter){
-            $stmt->bind_param("iis", 
-                $routeid, 
+            $stmt->bind_param("is",
                 $routeid, 
                 $stop,
             );
         }else{
-            $stmt->bind_param("ii", 
-                $routeid, 
+            $stmt->bind_param("i",
                 $routeid
             );
         }
 
-        return $this->format_map_data($stmt, $route); 
+        $data = $this->format_map_data($stmt, $route);
+
+        if($storymode){
+            $data['route'] = $route;
+        }
+        return $data;
+    }
+
+    public function story(){
+        lecho("story");
+        $routeid =  $_POST['routeid'] ?? '';
+        return $this->get_map_data($routeid, true);
     }
 
     public function format_map_data($stmt, $route){
@@ -308,40 +328,7 @@ class MapService
         return ['status' => 'error', 'message' => 'Comment error'];
     }
 
-    public function story(){
-        lecho("story");
-        $routeid =  $_POST['routeid'] ?? '';
 
-        if($routeid){
-
-            $route = (new RouteService())->get_route_by_id($routeid);
-
-            $start = $this->resetSQLdate($route["routestart"]);
-            $stop = $this->resetSQLdate($route["routestop"]); 
-    
-            $query = "SELECT *
-                FROM rlogs
-                INNER JOIN users ON rlogs.loguser = users.userid
-                WHERE rlogs.logroute = ?
-                AND (? IS NULL OR logtime >= ?)
-                AND (? IS NULL OR logtime <= ?)
-                ORDER BY rlogs.logtime ASC;";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("issss", 
-                $routeid, 
-                $start, 
-                $start,
-                $stop, 
-                $stop
-            );
-            $data = $this->format_map_data($stmt, $this->route->get_route_by_id($routeid));
-            $data['route'] = $route;
-            lecho($data);
-            return $data; 
-        }
-        return ['status' => 'error', 'message' => 'Unknown story'];
-    }
-    
     public function deleteLog() {
         lecho("DeleteLog");
 
