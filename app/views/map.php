@@ -515,8 +515,15 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            const startIcon = L.icon({
-                iconUrl: 'images/start.png',
+            // const startIcon = L.icon({
+            //     iconUrl: 'images/start.png',
+            //     iconSize: [30, 30],
+            //     iconAnchor: [15, 15],
+            // });
+
+            const startIcon = L.divIcon({
+                className: 'start-marker-unique',
+                html: '<img src="images/start.png" style="width:30px; height:30px;">',
                 iconSize: [30, 30],
                 iconAnchor: [15, 15],
             });
