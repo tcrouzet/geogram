@@ -178,6 +178,11 @@
         </div>
     </div>
 
+    <div x-show="showCustomPopup" class="custom-popup-modal">
+        <button @click="showCustomPopup = false" class="custom-popup-close">×</button>
+        <div class="custom-popup" x-html="customPopupContent"></div>
+    </div>
+
 </main>
 
 <script>
@@ -225,6 +230,9 @@ document.addEventListener('alpine:init', () => {
         sortDirection: 'desc',
         slogs: false,
         storyPhotoOnly: false,
+        //Popup
+        showCustomPopup: false,
+        customPopupContent: '',
 
         async init() {
             await initService.initComponent(this);
@@ -322,6 +330,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async userMarkers(userid){
+
             const data = await apiService.call('userMarkers', {
                 routeid: this.route.routeid,
                 loguser: userid
@@ -340,6 +349,8 @@ document.addEventListener('alpine:init', () => {
 
         updateMarkers(logs) {
             log();
+            this.showCustomPopup = false;
+
 
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
@@ -433,20 +444,23 @@ document.addEventListener('alpine:init', () => {
 
 
             const popupContent = `
-                <div class="geoPopup">
-                    <h3>${entry.username_formated}</h3>
-                    <h4>${entry.date_formated}</h4>
-                    ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
-                    ${entry.logcomment ? `<p class="commentText">${entry.logcomment}</p>` : ''}
-                    <div class="popup-actions">
-                        ${commentButton}
-                        ${deleteButton}
-                        ${actionButton}
-                        ${zoomButton}
-                    </div>
+                <h3>${entry.username_formated}</h3>
+                <h4>${entry.date_formated}</h4>
+                ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
+                ${entry.logcomment ? `<p class="commentText">${entry.comment_formated}</p>` : ''}
+                <div class="popup-actions">
+                    ${commentButton}
+                    ${deleteButton}
+                    ${actionButton}
+                    ${zoomButton}
                 </div>`;
-                            
-            marker.bindPopup(popupContent, {className: 'custom-popup-content'});
+   
+            marker.on('click', () => {
+                this.customPopupContent = popupContent;
+                // this.customPopupContent += `<p>${entry.logid}</p>`;
+                this.showCustomPopup = true;
+            });
+
         },
 
         async allUsersMarkers(){
@@ -515,18 +529,12 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            // const startIcon = L.icon({
-            //     iconUrl: 'images/start.png',
-            //     iconSize: [30, 30],
-            //     iconAnchor: [15, 15],
-            // });
-
-            const startIcon = L.divIcon({
-                className: 'start-marker-unique',
-                html: '<img src="images/start.png" style="width:30px; height:30px;">',
+            const startIcon = L.icon({
+                iconUrl: 'images/start.png',
                 iconSize: [30, 30],
                 iconAnchor: [15, 15],
             });
+
 
             let isFirstTrack = true;
             const map = this.map;
@@ -543,7 +551,11 @@ document.addEventListener('alpine:init', () => {
                         onEachFeature: function(feature, layer) {
                             const firstPointLatLng = [feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][0]];
                             if (isFirstTrack) {
-                                L.marker(firstPointLatLng, {icon: startIcon}).addTo(map);
+                                const startMarker = L.marker(firstPointLatLng, {
+                                    icon: startIcon,
+                                    zIndexOffset: 1000,
+                                    nonBubblingEvents: ['click', 'dblclick', 'mouseover', 'mouseout', 'contextmenu'],
+                                }).addTo(map);
                                 isFirstTrack = false;
                             }
                         }
@@ -752,6 +764,7 @@ document.addEventListener('alpine:init', () => {
 
         action_fitall() {
             log();
+            this.showCustomPopup = false;
             let bounds = null;
 
             // Inclure les limites des marqueurs
@@ -783,6 +796,7 @@ document.addEventListener('alpine:init', () => {
 
         action_fitgpx() {
             log();
+            this.showCustomPopup = false;
             if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
                 this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
             }
@@ -790,6 +804,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         fit_markers() {
+            this.showCustomPopup = false;
             if (this.cursors.length > 0) {
                 const markerBounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(markerBounds, { 
@@ -803,6 +818,7 @@ document.addEventListener('alpine:init', () => {
 
         action_map() {
             log();
+            this.showCustomPopup = false;
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
             this.mapFooter = this.getMapFooter();
@@ -814,6 +830,7 @@ document.addEventListener('alpine:init', () => {
 
         action_list() {
             log();
+            this.showCustomPopup = false;
             Alpine.store('headerActions').initTitle(this.buildStoryObj("list"));
             this.component = "list";
             this.mapFooter = this.getMapFooter();
@@ -860,6 +877,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_gallery() {
+            this.showCustomPopup = false;
             if(this.canPost){
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -1176,6 +1194,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         zoom_lastmarker(userid = null) {
+            this.showCustomPopup = false;
             let targetMarker = null;
 
             // this.map.closePopup();
@@ -1206,6 +1225,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async action_story(){
+            this.showCustomPopup = false;
             if(!this.slogs){
                 log();
                 this.loading = true;

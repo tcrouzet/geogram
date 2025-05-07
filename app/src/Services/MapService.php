@@ -152,7 +152,7 @@ class MapService
                 $row['date_formated'] = Tools::MyDateFormat($row['logtime'],$route);
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
                 $row['photolog'] = $this->fileManager->user_route_photo_web($row);
-                $row['comment_formated'] = Tools::formatMessage($row['logcomment']);
+                $row['comment_formated'] = Tools::formatMessage($row['logcomment']."test");
             }
 
             //lecho($logs);

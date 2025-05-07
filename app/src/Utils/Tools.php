@@ -241,6 +241,10 @@ class Tools
                 htmlspecialchars($url)
             );
         }, $message);
+
+        $formattedMessage = str_replace(["\r\n", "\r"], "\n", $formattedMessage);
+        $formattedMessage = preg_replace('/\n{3,}/', "\n\n", $formattedMessage);
+        $formattedMessage = str_replace("\n", "<br/>", $formattedMessage);
         
         return $formattedMessage;
     }
