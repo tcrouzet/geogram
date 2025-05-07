@@ -443,7 +443,7 @@ document.addEventListener('alpine:init', () => {
             const zoomButton = `<button @click="zoom_lastmarker(${entry.userid})">Zoom last</button>`;
 
 
-            const popupContent = `
+            const popupContent = `<div class="log-entry story-logs">
                 <h3>${entry.username_formated}</h3>
                 <h4>${entry.date_formated}</h4>
                 ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
@@ -453,7 +453,7 @@ document.addEventListener('alpine:init', () => {
                     ${deleteButton}
                     ${actionButton}
                     ${zoomButton}
-                </div>`;
+                </div></div>`;
    
             marker.on('click', () => {
                 this.customPopupContent = popupContent;
