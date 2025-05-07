@@ -201,6 +201,21 @@ class MapService
     public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $weather = null, $city = null){    
         lecho("NewLog UserId: $userid RouteId: $routeid");
 
+
+        // Vérifier les coordonnées invalides
+        if ($latitude == 0 && $longitude == 0) {
+            lecho("Coordonnées invalides (0,0) - Log ignoré");
+            $this->error = "Invalid coordinates (0,0)";
+            return false;
+        }
+        
+        // Vérifier les coordonnées vides ou non numériques
+        if (empty($latitude) || empty($longitude) || !is_numeric($latitude) || !is_numeric($longitude)) {
+            lecho("Coordonnées vides ou non numériques - Log ignoré");
+            $this->error = "Invalid coordinates";
+            return false;
+        }
+        
         $route = $this->route->get_route_by_id($routeid);
         if(!$this->isRouteActive($route)){
             $this->error = "Route closed";
