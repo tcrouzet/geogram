@@ -146,10 +146,14 @@ class AuthService
             $this->set_provider($providerName);
         
             // Obtenir l'access token
-            $token = $this->provider->getAccessToken('authorization_code', [
-                'code' => $_GET['code']
-            ]);
-    
+            if(isset($_GET['code'])){
+                $token = $this->provider->getAccessToken('authorization_code', [
+                    'code' => $_GET['code']
+                ]);
+            }else{
+                throw new \Exception('Code not found');
+            }
+            
             // Obtenir les informations utilisateur
             $userInfo = $this->provider->getResourceOwner($token)->toArray();
             lecho($userInfo);

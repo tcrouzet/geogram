@@ -204,6 +204,7 @@ document.addEventListener('alpine:init', () => {
         userroute: 0,
         routeid: 0,
         logs: [],
+        // Map
         map: [],
         cursors: Alpine.raw([]),
         geoJSON: null,
@@ -824,7 +825,9 @@ document.addEventListener('alpine:init', () => {
             this.mapFooter = this.getMapFooter();
 
             this.$nextTick(() => {
-                this.map.invalidateSize();
+                setTimeout(() => {
+                    this.map.invalidateSize({ animate: false, pan: false });
+                }, 50);
             });            
         },
 
