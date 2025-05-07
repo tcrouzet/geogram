@@ -54,6 +54,7 @@ class MapService
         }
 
         $start = $this->resetSQLdate($route["routestart"]);
+        lecho("Start: " . ($start ?: 'NULL'));
         $stop = $this->resetSQLdate($route["routestop"]);
 
         if (isset($route['routelastdays']) && $route['routelastdays'] > 0) {
@@ -64,7 +65,9 @@ class MapService
         }
         lecho("Start: " . ($start ?: 'NULL') . " Stop: " . ($stop ?: 'NULL'));
 
-        $hasStartFilter = !empty($start);
+        $currentDate = date('Y-m-d H:i:s');
+
+        $hasStartFilter = !empty($start) && ($start < $currentDate);
         $hasStopFilter = !empty($stop);
 
         $query = "SELECT *
@@ -152,7 +155,7 @@ class MapService
                 $row['date_formated'] = Tools::MyDateFormat($row['logtime'],$route);
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
                 $row['photolog'] = $this->fileManager->user_route_photo_web($row);
-                $row['comment_formated'] = Tools::formatMessage($row['logcomment']."test");
+                $row['comment_formated'] = Tools::formatMessage($row['logcomment']);
             }
 
             //lecho($logs);
