@@ -474,7 +474,11 @@ class RouteService
             if (!empty($link)){
                 lecho("link not roueid");
                 $route = $this->get_route_by_link($link);
-                $routeid = $route['routeid'];
+                if($route){
+                    $routeid = $route['routeid'];
+                }else{
+                    return ['status' => 'error', 'message' => 'Unknown route'];
+                }
             }
             lecho("routeid:",$routeid);
 
