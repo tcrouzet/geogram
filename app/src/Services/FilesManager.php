@@ -185,9 +185,9 @@ class FilesManager {
             return false;
     }
 
-    public function user_route_photo_web($log) {
+    public function user_route_photo_web($log,$index=1) {
         if($log['logphoto']){
-            $photo = $this->user_route_photo($log['loguser'], $log['logroute'], strtotime($log['logtime']), $log['logphoto']);
+            $photo = $this->user_route_photo($log['loguser'], $log['logroute'], strtotime($log['logtime']), $index);
             return $this->relativize($photo,$this->datadir);
         }else{
             return false;

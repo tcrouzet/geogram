@@ -156,6 +156,14 @@ class MapService
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
                 $row['photolog'] = $this->fileManager->user_route_photo_web($row);
                 $row['comment_formated'] = Tools::formatMessage($row['logcomment']);
+
+                $row['morephotologs'] = array();
+                if ($row['logphoto'] > 1) {
+                    for ($i = 2; $i <= $row['logphoto']; $i++) {
+                        $row['morephotologs'][] = $this->fileManager->user_route_photo_web($row, $i);
+                    }
+                }
+
             }
 
             //lecho($logs);

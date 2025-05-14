@@ -82,6 +82,13 @@
                                     <template x-if="log.photolog">
                                         <img :src="log.photolog" class="log-photo" alt="Adventure photo">
                                     </template>
+
+                                    <!-- Photos additionnelles du même endroit -->
+                                    <template x-if="log.morephotologs.length > 0">
+                                        <template x-for="additionalPhoto in log.morephotologs">
+                                            <img :src="additionalPhoto" class="log-photo" alt="Additional photo">
+                                        </template>
+                                    </template>
                                     
                                     <template x-if="log.comment_formated">
                                         <p class="log-comment" x-html="log.comment_formated"></p>
@@ -301,6 +308,7 @@ document.addEventListener('alpine:init', () => {
             this.updateMarkers(this.logs);
 
             if(this.storyUser){
+                log("storyUser",this.storyUser)
                 await this.userMarkers(this.storyUser);
             }
             if(this.page && this.page != "map"){
@@ -443,11 +451,19 @@ document.addEventListener('alpine:init', () => {
 
             const zoomButton = `<button @click="zoom_lastmarker(${entry.userid})">Zoom last</button>`;
 
+            let morePhotos = '';
+            if (entry.morephotologs && entry.morephotologs.length > 0) {
+                entry.morephotologs.forEach(photoUrl => {
+                    morePhotos += `<img src="${photoUrl}">`;
+                });
+            }
+
 
             const popupContent = `<div class="log-entry story-logs">
                 <h3>${entry.username_formated}</h3>
                 <h4>${entry.date_formated}</h4>
                 ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
+                ${morePhotos}
                 ${entry.logcomment ? `<p class="commentText">${entry.comment_formated}</p>` : ''}
                 <div class="popup-actions">
                     ${commentButton}

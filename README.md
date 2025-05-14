@@ -16,7 +16,6 @@ Finaly you have to open webhook.php from the web to activate your bot webhook.
 
 ### To Do
 
+Reclaim Telegram User when new user app side.
 Cron task for weather and cities…
-Factorize popup and story, add tools to edit, delete…
-Last x days, API side
 Debugs :-)
