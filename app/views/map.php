@@ -833,9 +833,25 @@ document.addEventListener('alpine:init', () => {
             this.action_map();
         },
 
-        action_map() {
+        action_map() {  
             log();
             this.showCustomPopup = false;
+
+            // Si nous avons un utilisateur sélectionné en mode story, recharger la page
+            if (this.storyUser) {
+                // Récupérer l'URL actuelle
+                const currentUrl = window.location.href;
+                
+                // Remplacer "story" ou "list" par "map" dans l'URL
+                const newUrl = currentUrl.replace(/\/(story|list)\//, '/map/');
+                
+                // Si l'URL a été modifiée, charger la nouvelle URL
+                if (newUrl !== currentUrl) {
+                    window.location.href = newUrl;
+                    return; // Arrêter l'exécution ici car la page va se recharger
+                }
+            }
+
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
             this.mapFooter = this.getMapFooter();
