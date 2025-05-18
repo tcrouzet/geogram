@@ -227,12 +227,20 @@ class TelegramService
 
     private function text(){
         if(isset($this->message["text"])){
+
+            // Format the current date and time as YYYY-MM-DD-HH:MM
+            $datetime = new \DateTime();
+            $datetime->setTimestamp( tools::timezone($this->timestamp, $this->channel['routetimediff']) );
+            $formattedDate = $datetime->format('Y-m-d-H:i');
+
+            $commentWithDate = "$formattedDate " . $this->message["text"];
+
             $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) 
                       WHERE logroute = ? AND loguser = ? 
                       AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
             
             $stmt = $this->db->prepare($query);
-            $stmt->bind_param("siiii", $this->message["text"], $this->user["routeid"], $this->user["userid"], $this->user["routeid"], $this->user["userid"]);
+            $stmt->bind_param("siiii", $commentWithDate, $this->user["routeid"], $this->user["userid"], $this->user["routeid"], $this->user["userid"]);
             
             if (!$stmt->execute()){
                 $this->error = "Error sql 2 - no log for the user";

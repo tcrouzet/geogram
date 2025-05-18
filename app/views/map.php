@@ -848,7 +848,7 @@ document.addEventListener('alpine:init', () => {
                 // Si l'URL a été modifiée, charger la nouvelle URL
                 if (newUrl !== currentUrl) {
                     window.location.href = newUrl;
-                    return; // Arrêter l'exécution ici car la page va se recharger
+                    return;
                 }
             }
 
