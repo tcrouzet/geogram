@@ -71,6 +71,7 @@ class TelegramService
         $this->chatid = TelegramTools::get_chatid($this->message);
         $this->userid = TelegramTools::get_userid($this->message);
 
+        //Comprend pas l'usage
         if($this->isPrivateChat())
             return true;
         
@@ -84,6 +85,7 @@ class TelegramService
 
         //Channel
         $this->channel = $this->getChannel( round($this->chatid) );
+        lecho("Channel",$this->channel);
         if(!$this->channel){
             $this->error = "Unknown channel $this->chatid $this->title";
             return false;
@@ -126,7 +128,7 @@ class TelegramService
             $constatus = $this->route->isConnected($this->user['userid'], $this->channel["routeid"]);
             if ($constatus == null or $constatus<2){
                 lecho($this->user['userid'] . " status with route " . $this->channel["routeid"] . ": $constatus");
-                // Force connexion beacause on Route Telegram Channel
+                // Force connexion on Route Telegram Channel
                 $this->route->connect($this->user['userid'], $this->channel["routeid"], 2);
                 $this->user['userroute'] = $this->channel["routeid"];
             }
@@ -240,7 +242,7 @@ class TelegramService
                       AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
             
             $stmt = $this->db->prepare($query);
-            $stmt->bind_param("siiii", $commentWithDate, $this->user["routeid"], $this->user["userid"], $this->user["routeid"], $this->user["userid"]);
+            $stmt->bind_param("siiii", $commentWithDate, $this->channel["routeid"], $this->user["userid"], $this->channel["routeid"], $this->user["userid"]);
             
             if (!$stmt->execute()){
                 $this->error = "Error sql 2 - no log for the user";
@@ -260,7 +262,7 @@ class TelegramService
         if( isset($this->message["photo"])){
             lecho("photo");
 
-            if (!$lastLog = $this->getLastLog($this->user["routeid"], $this->user["userid"])) {
+            if (!$lastLog = $this->getLastLog($this->channel["routeid"], $this->user["userid"])) {
                 TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
                 lecho("No last log");
                 return false;    
@@ -278,10 +280,10 @@ class TelegramService
                 $fileManager = new FilesManager();
 
                 $photoI = 1;
-                $target = $fileManager->user_route_photo($this->user["userid"], $this->user["routeid"], strtotime($lastLog['logtime']), $photoI);
+                $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], strtotime($lastLog['logtime']), $photoI);
                 while(file_exists($target)){
                     $photoI++;
-                    $target = $fileManager->user_route_photo($this->user["userid"], $this->user["routeid"], strtotime($lastLog['logtime']), $photoI);
+                    $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], strtotime($lastLog['logtime']), $photoI);
                 }
                 lecho($target);
 
@@ -322,8 +324,7 @@ class TelegramService
             lecho("Location find ",$this->userid);
 
             //No more than one location/10minutes except for real time
-            if ( $this->isAdmin() || $this->channel['routerealtime']==0 ){
-                // $query = "SELECT EXISTS(SELECT 1 FROM rlogs WHERE loguser = ? AND logtime > (UNIX_TIMESTAMP() - 600))";
+            if ( !$this->isAdmin() && $this->channel['routerealtime']==0 ){
                 $query = "SELECT EXISTS(
                     SELECT 1 
                     FROM rlogs 
@@ -350,7 +351,7 @@ class TelegramService
 
             $map = new MapService($this->user);
             //lecho($this->user);
-            $map->newlog($this->user["userid"], $this->user["routeid"], $latitude, $longitude);
+            $map->newlog($this->user["userid"], $this->channel["routeid"], $latitude, $longitude);
 
             if(isset($this->message["location"]["live_period"]) && $this->channel['routerealtime']==1){
                 //Real time
@@ -497,10 +498,21 @@ class TelegramService
         return false;
     }
 
+    // define('ADMIN_IPS', ['82.64.103.47']);
     private function isAdmin(){
+
+        // Vérifie si l'utilisateur est l'administrateur du canal
         if($this->channel["channel_admin"] == $this->userid){
+            lecho("IsAdmin Channel");
             return true;
         }
+
+        // Vérifie si l'IP de l'utilisateur est dans la liste des IPs d'administrateurs
+        if(in_array($this->userid, ADMIN_TELEGRAM)) {
+            lecho("IsAdmin Telegram");
+            return true;
+        }
+
         return false;
     }
 
