@@ -7,7 +7,7 @@ Les **spectateurs** suivent leur progression sur la carte.
 
 ## Web app
 
-Contrairement à une app classique installée via un store, une web app s'utilise dans le navigateur web du mobile. Pour une meilleure ergonomie, on ajoute la web app à l'écran d'accueil du mobile. Sur iOS, bouton de partage, menu "Sur l'écran d'accueil". Sur Android, clic sur les trois points et sélection "Écran d'accueil".
+Contrairement à une app classique installée via un store, une web app s'utilise dans le navigateur web du mobile. Pour une meilleure ergonomie, on ajoute la web app à l'écran d'accueil du mobile. Sur iOS, ouvrir {GEONAME} avec un navigateur, puis bouton de partage, menu "Sur l'écran d'accueil". Sur Android, ouvrir {GEONAME} avec un navigateur, puis clic sur les trois points et sélection "Écran d'accueil".
 
 ## Spectateurs (non enregistrés)
 
