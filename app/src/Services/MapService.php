@@ -270,6 +270,27 @@ class MapService
         return false;
     }
 
+    public function lastlog($userid, $routeid) {
+        lecho("LastLog - User: $userid, Route: $routeid");
+        
+        $query = "SELECT * FROM rlogs 
+                WHERE loguser = ? AND logroute = ? 
+                ORDER BY logtime DESC 
+                LIMIT 1";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ii", $userid, $routeid);
+        
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_assoc();
+            }
+        }
+        
+        return false;
+    }
+
     public function userMarkers() {
         lecho("userMarkersN");
     

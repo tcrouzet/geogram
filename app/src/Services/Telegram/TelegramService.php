@@ -228,93 +228,96 @@ class TelegramService
     }
 
     private function text(){
-        if(isset($this->message["text"])){
-
-            // Format the current date and time as YYYY-MM-DD-HH:MM
-            $datetime = new \DateTime();
-            $datetime->setTimestamp( tools::timezone($this->timestamp, $this->channel['routetimediff']) );
-            $formattedDate = $datetime->format('Y-m-d-H:i');
-
-            $commentWithDate = "$formattedDate " . $this->message["text"];
-
-            $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) 
-                      WHERE logroute = ? AND loguser = ? 
-                      AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
-            
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("siiii", $commentWithDate, $this->channel["routeid"], $this->user["userid"], $this->channel["routeid"], $this->user["userid"]);
-            
-            if (!$stmt->execute()){
-                $this->error = "Error sql 2 - no log for the user";
-                lecho($this->error);
-            }
-            
-            TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"], 1);
-            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
-            lecho("text");
-            return true;
+        if(!isset($this->message["text"])){
+            return false;
         }
-        return false;
+
+        // Format the current date and time as YYYY-MM-DD-HH:MM
+        $datetime = new \DateTime();
+        $datetime->setTimestamp( tools::timezone($this->timestamp, $this->channel['routetimediff']) );
+        $formattedDate = $datetime->format('Y-m-d-H:i');
+
+        $commentWithDate = "$formattedDate " . $this->message["text"];
+
+        $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) 
+                    WHERE logroute = ? AND loguser = ? 
+                    AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("siiii", $commentWithDate, $this->channel["routeid"], $this->user["userid"], $this->channel["routeid"], $this->user["userid"]);
+        
+        if (!$stmt->execute()){
+            $this->error = "Error sql 2 - no log for the user";
+            lecho($this->error);
+        }
+        
+        TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"], 1);
+        TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
+        lecho("text");
+        return true;
     }
 
     private function photo(){
 
-        if( isset($this->message["photo"])){
-            lecho("photo");
+        if( !isset($this->message["photo"])){
+            return false;
+        }
 
-            if (!$lastLog = $this->getLastLog($this->channel["routeid"], $this->user["userid"])) {
-                TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
-                lecho("No last log");
-                return false;    
-            }    
+        lecho("photo");
 
-            $result = false;
+        $map = new MapService($this->user);
+        $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"]);
+        lecho($lastLog);
+
+        if (!$lastLog) {
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
+            lecho("No last log");
+            return false;    
+        }    
+
+        $max_index = max(array_keys($this->message["photo"]));
+        $file_id = $this->message["photo"][$max_index]["file_id"];
+        $file = $this->telegram->getFile($file_id);
     
-            $max_index = max(array_keys($this->message["photo"]));
-            $file_id = $this->message["photo"][$max_index]["file_id"];
-            $file = $this->telegram->getFile($file_id);
-        
-            if($file["ok"]){
-                lecho("photo OK");
+        if($file["ok"]){
+            lecho("photo OK");
 
-                $fileManager = new FilesManager();
+            $fileManager = new FilesManager();
 
-                $photoI = 1;
-                $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], strtotime($lastLog['logtime']), $photoI);
-                while(file_exists($target)){
-                    $photoI++;
-                    $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], strtotime($lastLog['logtime']), $photoI);
-                }
-                lecho($target);
+            $now = time();
 
-                $tempFile = tempnam(sys_get_temp_dir(), 'img_') . '.jpg';
-                $this->telegram->downloadFile($file['result']['file_path'], $tempFile);
-        
-                if(file_exists($tempFile)){
-                    lecho("Photo OK 2");
-                    if(Tools::resizeImage($tempFile, $target, 1200)){
+            $photoI = 1;
+            $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], $now, $photoI);
+            while(file_exists($target)){
+                $photoI++;
+                $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], $now, $photoI);
+            }
+            lecho($target);
 
-                        $query = "UPDATE rlogs SET logphoto = ? WHERE logid = ?";
-                        $stmt = $this->db->prepare($query);
-                        $stmt->bind_param("ii", $photoI, $lastLog['logid']);                
-                        if (!$stmt->execute()) {
-                            $this->error = "Error sql 2 - no log for the user";
-                            lecho($this->error);
-                            return false;
-                        }
+            $tempFile = tempnam(sys_get_temp_dir(), 'img_') . '.jpg';
+            $this->telegram->downloadFile($file['result']['file_path'], $tempFile);
+    
+            if(file_exists($tempFile)){
+                lecho("Photo OK 2");
+                if(Tools::resizeImage($tempFile, $target, IMAGE_DEF)){
+
+                    if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'],"", $photoI, $now)) {
                         TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
                         TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!");
-                        lecho("photo");
+                        lecho("photolog done");
                         return true;
+                    } else {
+                        $this->error = "Impossible to add new log photo";
+                        lecho($this->error);
+                        return false;
                     }
+
                 }
             }
-            TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
-            if($result)
-                TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
-            lecho("Photo");
-            return true;
         }
+        TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
+        $this->error = "Photo files not found";
+        lecho($this->error);
         return false;
     }
 
@@ -322,34 +325,28 @@ class TelegramService
         if(isset($this->message["location"])){
 
             lecho("Location find ",$this->userid);
+            $map = new MapService($this->user);
 
             //No more than one location/10minutes except for real time
             if ( !$this->isAdmin() && $this->channel['routerealtime']==0 ){
-                $query = "SELECT EXISTS(
-                    SELECT 1 
-                    FROM rlogs 
-                    WHERE loguser = ? 
-                    AND logtime > DATE_SUB(NOW(), INTERVAL 10 MINUTE)
-                )";
-                $stmt_lastuser = $this->db->prepare($query);
-                $stmt_lastuser->bind_param("i", $this->user["userid"]);
-                $stmt_lastuser->execute();
-                $result = $stmt_lastuser->get_result()->fetch_row();
-                if ($result && $result[0]) {
-                    //Posted location during last 10 minutes
-                    if($this->channel['routerealtime']==0){
-                        $this->telegram->deleteMessage(array('chat_id' => $this->chatid,'message_id' => $this->message_id));
-                        TelegramTools::ShortLivedMessage($this->telegram, $this->chatid,"$this->username, you are too fast. Next localisation will be possible in 10 minutes.");
+                $last = $map->lastlog($this->user["userid"], $this->channel["routeid"]);
+                if($last){
+                    $timeDiff = time() - strtotime($last['logtime']);
+                    if ($timeDiff < 600) { // 10 minutes in seconds
+                        //Posted location during last 10 minutes
+                        if($this->channel['routerealtime']==0){
+                            $this->telegram->deleteMessage(array('chat_id' => $this->chatid,'message_id' => $this->message_id));
+                            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid,"$this->username, you are too fast. Next localisation will be possible in 10 minutes.");
+                        }
+                        lecho("Too fast");
+                        return true;
                     }
-                    lecho("Too fast");
-                    return true;
                 }
             }
 
             $latitude = $this->message["location"]["latitude"];
             $longitude = $this->message["location"]["longitude"];
 
-            $map = new MapService($this->user);
             //lecho($this->user);
             $map->newlog($this->user["userid"], $this->channel["routeid"], $latitude, $longitude);
 
@@ -476,24 +473,6 @@ class TelegramService
         $result = $stmt->get_result();
         if ($result && $result->num_rows > 0) {
             return $result->fetch_assoc();
-        }
-        return false;
-    }
-
-    private function getLastLog($chatid, $userid) {
-        $query = "SELECT * FROM rlogs 
-                WHERE logroute = ? AND loguser = ? 
-                ORDER BY logupdate DESC 
-                LIMIT 1";
-                
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $chatid, $userid);
-        
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            if ($result->num_rows > 0) {
-                return $result->fetch_assoc();
-            }
         }
         return false;
     }
