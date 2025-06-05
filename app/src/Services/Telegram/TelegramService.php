@@ -232,29 +232,27 @@ class TelegramService
             return false;
         }
 
-        // Format the current date and time as YYYY-MM-DD-HH:MM
-        $datetime = new \DateTime();
-        $datetime->setTimestamp( tools::timezone($this->timestamp, $this->channel['routetimediff']) );
-        $formattedDate = $datetime->format('Y-m-d-H:i');
+        lecho("text");
 
-        $commentWithDate = "$formattedDate " . $this->message["text"];
+        $map = new MapService($this->user);
+        $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"]);
 
-        $query = "UPDATE rlogs SET logcomment = CONCAT(COALESCE(logcomment, ''), '\n', ?) 
-                    WHERE logroute = ? AND loguser = ? 
-                    AND logupdate = (SELECT MAX(logupdate) FROM rlogs WHERE logroute = ? AND loguser = ?)";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("siiii", $commentWithDate, $this->channel["routeid"], $this->user["userid"], $this->channel["routeid"], $this->user["userid"]);
-        
-        if (!$stmt->execute()){
+        if (!$lastLog) {
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
+            lecho("No last log");
+            return false;    
+        }    
+
+        if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'], $this->message["text"])) {
+            TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"], 1);
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
+            lecho("text");
+            return true;
+        }else{
             $this->error = "Error sql 2 - no log for the user";
             lecho($this->error);
+            return false;
         }
-        
-        TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"], 1);
-        TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
-        lecho("text");
-        return true;
     }
 
     private function photo(){
@@ -267,7 +265,6 @@ class TelegramService
 
         $map = new MapService($this->user);
         $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"]);
-        lecho($lastLog);
 
         if (!$lastLog) {
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
@@ -287,10 +284,10 @@ class TelegramService
             $now = time();
 
             $photoI = 1;
-            $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], $now, $photoI);
+            $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], $this->timestamp, $photoI);
             while(file_exists($target)){
                 $photoI++;
-                $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], $now, $photoI);
+                $target = $fileManager->user_route_photo($this->user["userid"], $this->channel["routeid"], $this->timestamp, $photoI);
             }
             lecho($target);
 
@@ -301,7 +298,7 @@ class TelegramService
                 lecho("Photo OK 2");
                 if(Tools::resizeImage($tempFile, $target, IMAGE_DEF)){
 
-                    if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'],"", $photoI, $now)) {
+                    if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'],"", $photoI, $this->timestamp)) {
                         TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
                         TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!");
                         lecho("photolog done");
