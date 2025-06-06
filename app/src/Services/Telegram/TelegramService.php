@@ -238,14 +238,14 @@ class TelegramService
         $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"]);
 
         if (!$lastLog) {
-            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!", $this->channel["routeverbose"]);
             lecho("No last log");
             return false;    
         }    
 
         if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'], $this->message["text"])) {
             TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"], 1);
-            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!");
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!", $this->channel["routeverbose"]);
             lecho("text");
             return true;
         }else{
@@ -267,7 +267,7 @@ class TelegramService
         $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"]);
 
         if (!$lastLog) {
-            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!");
+            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!", $this->channel["routeverbose"]);
             lecho("No last log");
             return false;    
         }    
@@ -300,7 +300,7 @@ class TelegramService
 
                     if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'],"", $photoI, $this->timestamp)) {
                         TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
-                        TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!");
+                        TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!", $this->channel["routeverbose"]);
                         lecho("photolog done");
                         return true;
                     } else {
@@ -324,6 +324,12 @@ class TelegramService
             lecho("Location find ",$this->userid);
             $map = new MapService($this->user);
 
+            if(!isset($this->channel)){
+                $this->error = "No channel";
+                lecho($this->error);
+                return false;
+            }
+
             //No more than one location/10minutes except for real time
             if ( !$this->isAdmin() && $this->channel['routerealtime']==0 ){
                 $last = $map->lastlog($this->user["userid"], $this->channel["routeid"]);
@@ -333,7 +339,7 @@ class TelegramService
                         //Posted location during last 10 minutes
                         if($this->channel['routerealtime']==0){
                             $this->telegram->deleteMessage(array('chat_id' => $this->chatid,'message_id' => $this->message_id));
-                            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid,"$this->username, you are too fast. Next localisation will be possible in 10 minutes.");
+                            TelegramTools::ShortLivedMessage($this->telegram, $this->chatid,"$this->username, you are too fast. Next localisation will be possible in 10 minutes.", $this->channel["routeverbose"]);
                         }
                         lecho("Too fast");
                         return true;
@@ -352,7 +358,7 @@ class TelegramService
             }else{
                 //Normal
                 TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],2);
-                TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your are on the map!");
+                TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your are on the map!", $this->channel["routeverbose"]);
             }
             lecho("End location");
             return true;

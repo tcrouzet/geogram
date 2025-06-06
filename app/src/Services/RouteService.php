@@ -383,6 +383,9 @@ class RouteService
 
         $routetelegram = intval($_POST['routetelegram'] ?? 0);
         lecho("routetelegram",$routetelegram);
+
+        $routeverbose = intval($_POST['routeverbose'] ?? 0);
+        lecho("routeteverbose",$routeverbose);
  
         $routelastdays = intval($_POST['routelastdays'] ?? 0);
  
@@ -413,7 +416,8 @@ class RouteService
             routemode = ?,
             routelastdays = ?,
             routestart = ?,
-            routestop = ?
+            routestop = ?,
+            routeverbose = ?
             WHERE routeid = ?";
 
         $stmt = $this->db->prepare($query);
@@ -422,7 +426,7 @@ class RouteService
         }
         lecho("prepare done");
 
-        $bindResult = $stmt->bind_param("ssiiiiissi", $routename, $routerem, $routetimediff, $routestatus, $routetelegram, $routemode, $routelastdays, $routestart, $routestop, $routeid);
+        $bindResult = $stmt->bind_param("ssiiiiissii", $routename, $routerem, $routetimediff, $routestatus, $routetelegram, $routemode, $routelastdays, $routestart, $routestop, $routeverbose, $routeid);
 
         if($bindResult){
             lecho("Bind param done");

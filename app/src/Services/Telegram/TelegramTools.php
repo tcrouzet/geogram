@@ -38,8 +38,8 @@ class TelegramTools
         return trim($username);
     }
     
-    public static function ShortLivedMessage($telegram, $chatid, $msg, $timeout=2){
-        if(!TELEGRAM_ShortLivedMessage) {
+    public static function ShortLivedMessage($telegram, $chatid, $msg, $verbose=1, $timeout=2){
+        if($verbose==0) {
             return false;
         }
         return self::ImportantShortLivedMessage($telegram, $chatid, $msg, $timeout);

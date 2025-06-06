@@ -98,6 +98,16 @@
                                         <span class="map-link" @click.stop="showUserOnMap(log)">
                                             <i class="fas fa-map-marker-alt"></i>
                                         </span>
+                                        <template x-if="log.loguser === userid">
+                                            <span class="edit-comment-link" @click.stop="addComment(log.logid)">
+                                                <i class="fas fa-edit"></i>
+                                            </span>
+                                        </template>
+                                        <template x-if="log.loguser === userid && log.logphoto > 0">
+                                            <span class="rotate-image-link" @click.stop="rotateImage(log.logid)">
+                                                <i class="fas fa-redo-alt"></i>
+                                            </span>
+                                        </template>
                                         <span x-text="log.logkm_km + 'km'"></span>
                                         <span x-text="log.logdev + 'm+'"></span>
                                     </div>
@@ -534,7 +544,45 @@ document.addEventListener('alpine:init', () => {
                 this.showCommentModal = false;
                 this.newPhoto = true;
                 this.logs = data.logs;
+
+                // Mettre à jour aussi les données story si on est en mode story
+                if (this.component === 'story' && this.slogs) {
+                    // Trouver et mettre à jour l'entrée correspondante dans slogs
+                    const updatedLogIndex = this.slogs.findIndex(log => log.logid === this.currentLogId);
+                    if (updatedLogIndex !== -1) {
+                        const updatedMapLog = this.logs.find(log => log.logid === this.currentLogId);
+                        if (updatedMapLog) {
+                            this.slogs[updatedLogIndex] = { ...this.slogs[updatedLogIndex], ...updatedMapLog };
+                        }
+                    }
+                }
                 this.updateOneMarker(this.currentLogId);
+            }
+        },
+
+        async rotateImage(logId) {
+            const data = await apiService.call('rotateImage', {
+                logid: logId,
+                routeid: this.route.routeid,
+            });
+
+            if (data.status == 'success') {
+                // Mettre à jour les données map
+                this.logs = data.logs;
+                
+                // Mettre à jour les données story si on est en mode story
+                if (this.component === 'story' && this.slogs) {
+                    const updatedLogIndex = this.slogs.findIndex(log => log.logid === logId);
+                    if (updatedLogIndex !== -1) {
+                        const updatedMapLog = this.logs.find(log => log.logid === logId);
+                        if (updatedMapLog) {
+                            this.slogs[updatedLogIndex] = { ...this.slogs[updatedLogIndex], ...updatedMapLog };
+                        }
+                    }
+                }
+
+                // Mettre à jour les markers
+                this.updateOneMarker(logId);
             }
         },
 

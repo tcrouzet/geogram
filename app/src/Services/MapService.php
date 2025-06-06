@@ -375,6 +375,30 @@ class MapService
         return ['status' => 'error', 'message' => 'Comment error'];
     }
 
+    public function rotateImage(){
+        $logid = $_POST['logid'] ?? '';
+
+        if (empty($logid)) {
+            return ['status' => 'error', 'message' => 'Missing logid'];
+        }
+        
+        $userLog = $this->lastlog($this->userid, $this->routeid);
+        
+        if (!$userLog || $userLog['logphoto'] <= 0) {
+            return ['status' => 'error', 'message' => 'No image found or not authorized'];
+        }
+        
+        // Récupérer le timestamp depuis logtime
+        $timestamp = strtotime($userLog['logtime']);
+        
+        // Récupérer le chemin de l'image avec FileManager
+        $imagePath = $this->fileManager->user_route_photo($this->userid, $this->routeid, $timestamp, 1);
+        
+        if (!$imagePath || !file_exists($imagePath)) {
+            return ['status' => 'error', 'message' => 'Image file not found'];
+        }        
+    }
+
 
     public function deleteLog() {
         lecho("DeleteLog");

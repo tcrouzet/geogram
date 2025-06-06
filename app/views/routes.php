@@ -133,6 +133,13 @@
                                         <option value="1">Locations deleted</option>
                                         <option value="0">All messages deleted</option>
                                     </select>
+
+                                    <label>Verbose</label>
+                                    <select x-model="route.routeverbose" @change="updateRoute(route)">
+                                        <option value="1">Bot message on Telegram</option>
+                                        <option value="0">No bot message on Telegram</option>
+                                    </select>
+
                                 </div>
                             </template>
 
@@ -321,6 +328,7 @@ document.addEventListener('alpine:init', () => {
                 routerem: route.routerem,
                 routestatus: route.routestatus,
                 routetelegram: route.routetelegram,
+                routeverbose: route.routeverbose,
                 routemode: route.routemode,
                 routestart: route.routestart,
                 routestop: route.routestop,
