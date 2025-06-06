@@ -567,10 +567,22 @@ document.addEventListener('alpine:init', () => {
             });
 
             if (data.status == 'success') {
-                // Mettre à jour les données map
+                this.mapMode = false;
                 this.logs = data.logs;
-                
-                // Mettre à jour les données story si on est en mode story
+
+                // FORCER LE RECHARGEMENT DES IMAGES avec le logupdate retourné
+                const updatedLog = this.logs.find(log => log.logid === logId);
+                if (updatedLog && updatedLog.photolog) {
+                    const timestamp = new Date(updatedLog.logupdate).getTime();
+                    updatedLog.photolog = updatedLog.photolog.split('?')[0] + '?t=' + timestamp;
+                    if (updatedLog.morephotologs) {
+                        updatedLog.morephotologs = updatedLog.morephotologs.map(photo => 
+                            photo.split('?')[0] + '?t=' + timestamp
+                        );
+                    }
+                }
+
+                // Mettre à jour aussi les données story si on est en mode story
                 if (this.component === 'story' && this.slogs) {
                     const updatedLogIndex = this.slogs.findIndex(log => log.logid === logId);
                     if (updatedLogIndex !== -1) {
@@ -580,8 +592,6 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 }
-
-                // Mettre à jour les markers
                 this.updateOneMarker(logId);
             }
         },

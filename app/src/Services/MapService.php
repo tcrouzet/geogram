@@ -291,6 +291,32 @@ class MapService
         return false;
     }
 
+
+    public function thislog($logid) {
+        
+        $query = "SELECT * FROM rlogs WHERE logid = ?";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $logid);
+        
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_assoc();
+            }
+        }
+        
+        return false;
+    }
+
+    public function updatelogtime($logid) {
+        $updateQuery = "UPDATE rlogs SET logupdate = NOW() WHERE logid = ?";
+        $updateStmt = $this->db->prepare($updateQuery);
+        $updateStmt->bind_param("i", $logid);
+        
+        return $updateStmt->execute();
+    }
+
     public function userMarkers() {
         lecho("userMarkersN");
     
@@ -383,7 +409,7 @@ class MapService
             return ['status' => 'error', 'message' => 'Missing logid'];
         }
         
-        $userLog = $this->lastlog($this->userid, $this->routeid);
+        $userLog = $this->thislog($logid);
         
         if (!$userLog || $userLog['logphoto'] <= 0) {
             return ['status' => 'error', 'message' => 'No image found or not authorized'];
@@ -400,7 +426,9 @@ class MapService
         }
         
         if (Tools::rotateImageFile($imagePath)){
-            return true;
+            $this->updatelogtime($logid);
+            lecho("Image rotated successfully");
+            return $this->get_userMarkers($this->userid, $this->routeid);
         }
         return ['status' => 'error', 'message' => 'Rotate impossible'];
 
