@@ -143,14 +143,32 @@ class Tools
         imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
     
         // Sauvegarder
-        // imagejpeg($newImage, $targetfile, 60);
-        imagewebp($newImage, $targetfile, 60);
+        imagewebp($newImage, $targetfile, IMAGE_COMPRESS);
     
         // Libérer la mémoire
         imagedestroy($newImage);
         imagedestroy($sourceImage);
         TempFiles::getInstance()->cleanup();
         return true;
+    }
+
+
+    public static function rotateImageFile($imagePath) {
+        $image = imagecreatefromwebp($imagePath);
+        if (!$image) return false;
+        
+        $rotatedImage = imagerotate($image, -90, 0);
+        if (!$rotatedImage) {
+            imagedestroy($image);
+            return false;
+        }
+        
+        $success = imagewebp($rotatedImage, $imagePath, IMAGE_COMPRESS);
+        
+        imagedestroy($image);
+        imagedestroy($rotatedImage);
+        
+        return $success;
     }
     
     public static function slugify($text) {

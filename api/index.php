@@ -63,6 +63,7 @@ try {
         'logphoto' => [MapService::class, 'logphoto'],
         'submitComment' => [MapService::class, 'submitComment'],
         'deleteLog' => [MapService::class, 'deleteLog'],        
+        'rotateImage' => [MapService::class, 'rotateImage'],
         
         'getroutes' => [RouteService::class, 'getroutes'],
         'routeAction' => [RouteService::class, 'routeAction'],

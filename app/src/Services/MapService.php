@@ -376,6 +376,7 @@ class MapService
     }
 
     public function rotateImage(){
+        lecho("Rotate Image");
         $logid = $_POST['logid'] ?? '';
 
         if (empty($logid)) {
@@ -396,7 +397,13 @@ class MapService
         
         if (!$imagePath || !file_exists($imagePath)) {
             return ['status' => 'error', 'message' => 'Image file not found'];
-        }        
+        }
+        
+        if (Tools::rotateImageFile($imagePath)){
+            return true;
+        }
+        return ['status' => 'error', 'message' => 'Rotate impossible'];
+
     }
 
 
