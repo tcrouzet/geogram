@@ -108,6 +108,11 @@
                                                 <i class="fas fa-redo-alt"></i>
                                             </span>
                                         </template>
+                                        <template x-if="log.loguser === userid">
+                                            <span class="delete-log-link" @click.stop="deleteLog(log.logid)">
+                                                <i class="fas fa-trash"></i>
+                                            </span>
+                                        </template>
                                         <span x-text="log.logkm_km + 'km'"></span>
                                         <span x-text="log.logdev + 'm+'"></span>
                                     </div>
@@ -362,6 +367,9 @@ document.addEventListener('alpine:init', () => {
                 this.story ="map";
                 this.storyName = this.logs[0]['username'];
                 this.updateMarkers(this.logs);
+
+                await this.$nextTick();
+
                 this.fit_markers();
             }
         },
@@ -593,6 +601,37 @@ document.addEventListener('alpine:init', () => {
                     }
                 }
                 this.updateOneMarker(logId);
+            }
+        },
+
+        async deleteLog(logId) {
+            if (!confirm('Do you really want to delete this log?')) {
+                return;
+            }
+
+            const data = await apiService.call('deleteLog', {
+                logid: logId,
+                routeid: this.route.routeid,
+            });
+
+            if (data.status == 'success') {
+                // Supprimer le log des données locales
+                this.logs = this.logs.filter(log => log.logid !== logId);
+                
+                // Supprimer aussi des données story si on est en mode story
+                if (this.component === 'story' && this.slogs) {
+                    this.slogs = this.slogs.filter(log => log.logid !== logId);
+                }
+                
+                // Mettre à jour les markers
+                this.updateMarkers(this.logs);
+
+                // FORCER LE RE-RENDU comme dans rotateImage
+                this.updateOneMarker(logId);
+
+        
+           } else {
+                alert('Error deleting log: ' + (data.message || 'Unknown error'));
             }
         },
 
@@ -896,19 +935,19 @@ document.addEventListener('alpine:init', () => {
             this.showCustomPopup = false;
 
             // Si nous avons un utilisateur sélectionné en mode story, recharger la page
-            if (this.storyUser) {
-                // Récupérer l'URL actuelle
-                const currentUrl = window.location.href;
+            // if (this.storyUser) {
+            //     // Récupérer l'URL actuelle
+            //     const currentUrl = window.location.href;
                 
-                // Remplacer "story" ou "list" par "map" dans l'URL
-                const newUrl = currentUrl.replace(/\/(story|list)\//, '/map/');
+            //     // Remplacer "story" ou "list" par "map" dans l'URL
+            //     const newUrl = currentUrl.replace(/\/(story|list)\//, '/map/');
                 
-                // Si l'URL a été modifiée, charger la nouvelle URL
-                if (newUrl !== currentUrl) {
-                    window.location.href = newUrl;
-                    return;
-                }
-            }
+            //     // Si l'URL a été modifiée, charger la nouvelle URL
+            //     if (newUrl !== currentUrl) {
+            //         window.location.href = newUrl;
+            //         return;
+            //     }
+            // }
 
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
@@ -1193,7 +1232,7 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        async showUserOnMap(entry) {
+        async showUserOnMapOLD(entry) {
             this.component = 'map';
             this.mapFooter = this.getMapFooter();
 
@@ -1215,6 +1254,14 @@ document.addEventListener('alpine:init', () => {
                 this.map.setView(userMarker.getLatLng(), 12);
                 userMarker.openPopup();
             }
+        },
+
+        async showUserOnMap(entry) {
+            this.component = 'map';
+
+            await this.userMarkers(entry.userid);
+
+            this.map.setView([entry.loglatitude, entry.loglongitude], 12);
         },
 
         showUserStory(entry){

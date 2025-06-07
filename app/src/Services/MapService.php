@@ -447,7 +447,7 @@ class MapService
             $deleteStmt->bind_param("ii", $logid, $this->userid);
         
             if ($deleteStmt->execute() && $deleteStmt->affected_rows > 0) {
-                return ['status' => 'success', 'message' => 'Log not deleted'];
+                return ['status' => 'success', 'message' => 'Log deleted'];
             }
         
         }
