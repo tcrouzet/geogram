@@ -623,47 +623,6 @@ textarea {
     border-radius: 4px;
 }
 
-/* Big popup */
-
-div.custom-popup-modal {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: var(--footer-height);;
-    background-color: white;
-    z-index: 1000;
-    padding: 1rem;
-    overflow-y: auto;
-    border-top: 1px solid var(--color-e);
-    border-bottom: 1px solid var(--color-e);
-    text-align: center;
-}
-
-div.custom-popup img {
-    max-width: 100%;
-    max-height: 70vh;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto 1rem auto;
-}
-
-.custom-popup-close {
-    position: sticky;
-    top: 0.5rem;
-    float: right;
-    font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 1001;
-    margin-right: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-
 /* LIST */
 
 .longcontenair {
@@ -882,6 +841,11 @@ div.custom-popup img {
 
 .sort-btn i {
     font-size: 0.8rem;
+}
+
+.log-entry.highlighted {
+    background-color: #fff3cd;
+    transition: background-color 0.3s ease;
 }
 
 /* Suite */

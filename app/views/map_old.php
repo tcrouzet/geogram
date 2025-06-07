@@ -70,7 +70,7 @@
                             if (storyUser && log.loguser !== storyUser) return false;
                             return true;})" :key="log.logid">
 
-                            <div class="log-entry" :data-logid="log.logid">
+                            <div class="log-entry">
                                 <div class="log-header">
                                     <template x-if="!storyUser">
                                         <span class="log-author" x-text="log.username_formated" @click.stop="showUserStory(log)"></span>
@@ -200,6 +200,11 @@
         </div>
     </div>
 
+    <div x-show="showCustomPopup" class="custom-popup-modal">
+        <button @click="showCustomPopup = false" class="custom-popup-close">×</button>
+        <div class="custom-popup" x-html="customPopupContent"></div>
+    </div>
+
 </main>
 
 <script>
@@ -248,6 +253,9 @@ document.addEventListener('alpine:init', () => {
         sortDirection: 'desc',
         slogs: false,
         storyPhotoOnly: false,
+        //Popup
+        showCustomPopup: false,
+        customPopupContent: '',
 
         async init() {
             await initService.initComponent(this);
@@ -368,6 +376,8 @@ document.addEventListener('alpine:init', () => {
 
         updateMarkers(logs) {
             log();
+            this.showCustomPopup = false;
+
 
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
@@ -409,9 +419,8 @@ document.addEventListener('alpine:init', () => {
                         icon,
                      }).addTo(this.map);
 
-                    marker.on('click', () => {
-                        this.showMarkerStory(entry);
-                    });
+                    // Contenu du popup avec des boutons d'action
+                    this.markerPopup(marker, entry);
 
                     // Ajout des coordonnées du marqueur aux limites de la carte
                     this.markerBounds.extend(marker.getLatLng());
@@ -427,40 +436,66 @@ document.addEventListener('alpine:init', () => {
             }
             log("Fin Markers");
         },
-    
-
-        showMarkerStory(entry) {
-            if (!this.storyUser) {
-                // Mode général (tous les utilisateurs) - ouvrir story générale et scroller vers l'entrée
-                this.action_story().then(() => {
-                    this.scrollToLogEntry(entry.logid);
-                });
-            } else {
-                // Mode utilisateur spécifique - ouvrir story de l'utilisateur et scroller vers l'entrée
-                this.showUserStory(entry);
-                this.$nextTick(() => {
-                    this.scrollToLogEntry(entry.logid);
-                });
+        
+        // Mise à jour du marker
+        updateOneMarker(currentLogId){
+            const updatedLog = this.logs.find(log => log.logid === currentLogId);
+            if (updatedLog) {
+                const marker = this.cursors.find(marker => 
+                    marker.getLatLng().lat === updatedLog.loglatitude && 
+                    marker.getLatLng().lng === updatedLog.loglongitude
+                );
+                
+                if (marker) {
+                    // Recréer le popup avec le nouveau contenu
+                    this.markerPopup(marker, updatedLog);
+                    marker.openPopup();
+                }
             }
         },
 
-        scrollToLogEntry(logId) {
-            log();
-            this.$nextTick(() => {
-                log("Inside");
-                const logElement = document.querySelector(`[data-logid="${logId}"]`);
-                if (logElement) {
-                    logElement.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
-                    // Optionnel : ajouter un highlight temporaire
-                    logElement.classList.add('highlighted');
-                    // setTimeout(() => {
-                    //     logElement.classList.remove('highlighted');
-                    // }, 2000);
-                }
+        markerPopup(marker, entry){
+            const commentButton = entry.loguser === this.userid ? 
+                `<button @click="addComment(${entry.logid})">
+                    ${entry.logcomment ? 'Edit comment' : 'Add comment'}
+                </button>` : '';
+
+            const deleteButton = entry.loguser === this.userid ? 
+                `<button @click="deleteCursor(${entry.logid})">Delete</button>` : '';
+
+            const actionButton = this.mapMode ? 
+                `<button @click="userMarkers(${entry.userid})">User history</button>` :
+                `<button @click="allUsersMarkers()">All Users</button>`;
+
+            const zoomButton = `<button @click="zoom_lastmarker(${entry.userid})">Zoom last</button>`;
+
+            let morePhotos = '';
+            if (entry.morephotologs && entry.morephotologs.length > 0) {
+                entry.morephotologs.forEach(photoUrl => {
+                    morePhotos += `<img src="${photoUrl}">`;
+                });
+            }
+
+
+            const popupContent = `<div class="log-entry story-logs">
+                <h3>${entry.username_formated}</h3>
+                <h4>${entry.date_formated}</h4>
+                ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
+                ${morePhotos}
+                ${entry.logcomment ? `<p class="commentText">${entry.comment_formated}</p>` : ''}
+                <div class="popup-actions">
+                    ${commentButton}
+                    ${deleteButton}
+                    ${actionButton}
+                    ${zoomButton}
+                </div></div>`;
+   
+            marker.on('click', () => {
+                this.customPopupContent = popupContent;
+                // this.customPopupContent += `<p>${entry.logid}</p>`;
+                this.showCustomPopup = true;
             });
+
         },
 
         async allUsersMarkers(){
@@ -469,6 +504,33 @@ document.addEventListener('alpine:init', () => {
             this.fit_markers();
         },
 
+
+        async deleteCursor(logid) {
+            // Find the log and marker to delete
+
+            if (!confirm(' Do you really want to delete cursor?') ) {
+                    return;
+            }
+
+            const logIndex = this.logs.findIndex(log => log.logid === logid);
+
+            const data = await apiService.call('deleteLog', {
+                logid: logid,
+                routeid: this.routeid,
+            });
+            if (data.status == 'success') {
+
+                // Fermer tous les popups
+                this.map.closePopup();
+
+                this.action_map();
+        
+                await this.loadMapData();
+                this.updateMarkers(this.logs);
+                this.action_fitgpx()
+        
+            }
+        },
 
         addComment(logId) {
             this.currentLogId = logId;
@@ -502,6 +564,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 }
+                this.updateOneMarker(this.currentLogId);
             }
         },
 
@@ -537,6 +600,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 }
+                this.updateOneMarker(logId);
             }
         },
 
@@ -561,6 +625,9 @@ document.addEventListener('alpine:init', () => {
                 
                 // Mettre à jour les markers
                 this.updateMarkers(this.logs);
+
+                // FORCER LE RE-RENDU comme dans rotateImage
+                this.updateOneMarker(logId);
 
         
            } else {
@@ -811,6 +878,7 @@ document.addEventListener('alpine:init', () => {
 
         action_fitall() {
             log();
+            this.showCustomPopup = false;
             let bounds = null;
 
             // Inclure les limites des marqueurs
@@ -842,6 +910,7 @@ document.addEventListener('alpine:init', () => {
 
         action_fitgpx() {
             log();
+            this.showCustomPopup = false;
             if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
                 this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
             }
@@ -849,6 +918,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         fit_markers() {
+            this.showCustomPopup = false;
             if (this.cursors.length > 0) {
                 const markerBounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(markerBounds, { 
@@ -862,6 +932,22 @@ document.addEventListener('alpine:init', () => {
 
         action_map() {  
             log();
+            this.showCustomPopup = false;
+
+            // Si nous avons un utilisateur sélectionné en mode story, recharger la page
+            // if (this.storyUser) {
+            //     // Récupérer l'URL actuelle
+            //     const currentUrl = window.location.href;
+                
+            //     // Remplacer "story" ou "list" par "map" dans l'URL
+            //     const newUrl = currentUrl.replace(/\/(story|list)\//, '/map/');
+                
+            //     // Si l'URL a été modifiée, charger la nouvelle URL
+            //     if (newUrl !== currentUrl) {
+            //         window.location.href = newUrl;
+            //         return;
+            //     }
+            // }
 
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
@@ -876,6 +962,7 @@ document.addEventListener('alpine:init', () => {
 
         action_list() {
             log();
+            this.showCustomPopup = false;
             Alpine.store('headerActions').initTitle(this.buildStoryObj("list"));
             this.component = "list";
             this.mapFooter = this.getMapFooter();
@@ -922,6 +1009,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_gallery() {
+            this.showCustomPopup = false;
             if(this.canPost){
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -1061,6 +1149,7 @@ document.addEventListener('alpine:init', () => {
                                     );
                                     if (newMarker) {
                                         this.map.setView(newMarker.getLatLng(), 12);
+                                        newMarker.openPopup();
                                     }
                                 }
  
@@ -1098,6 +1187,12 @@ document.addEventListener('alpine:init', () => {
                     marker.getLatLng().lng === latestLog.loglongitude
                 );
 
+                //console.log("marker",userMarker);
+
+                if (userMarker) {
+                    //console.log("showPhoto2", userMarker);
+                    userMarker.openPopup();
+                }
             }
         },
 
@@ -1239,6 +1334,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         zoom_lastmarker(userid = null) {
+            this.showCustomPopup = false;
             let targetMarker = null;
 
             // this.map.closePopup();
@@ -1264,10 +1360,12 @@ document.addEventListener('alpine:init', () => {
             // Zoom to the target marker
             if (targetMarker) {
                 this.map.setView(targetMarker.getLatLng(), 15); // Adjust zoom level as necessary
+                targetMarker.openPopup(); // Optionally open the popup for the target marker
             }
         },
 
         async action_story(){
+            this.showCustomPopup = false;
             if(!this.slogs){
                 log();
                 this.loading = true;
