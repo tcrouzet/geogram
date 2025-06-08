@@ -914,7 +914,7 @@ document.addEventListener('alpine:init', () => {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
-                input.capture = 'environment';
+                input.capture = 'camera';
                 this.handleImageSelection(input);
             }else{
                 this.showAccessMessage();

@@ -53,7 +53,7 @@ On peut lier à un groupe Telegram à une route de façon que les géolocalisati
 1. Créer un [compte Telegram](https://telegram.org/apps).
 1. Rejoindre le groupe Telegram de la route (lien invitation envoyé par le créateur du groupe).
 1. Quand vous vous localisez pour la première fois, peu importe votre localisation, un compte Geogram est créé pour vous.
-1. La commande /mail votre_email affecte un mail valide à votre compte, ce qui vous permet aussi d'utiliser [la web app](/).
+1. La commande "/mail votre_email" affecte un mail valide à votre compte, ce qui vous permet aussi d'utiliser [la web app](/).
 1. Vos messages peuvent être automatiquement détruit après publication en fonction de la stratégie mise en place par l'administrateur de la route. 
 
 ### Administrateur
