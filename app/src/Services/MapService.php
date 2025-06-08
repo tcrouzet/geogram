@@ -270,16 +270,17 @@ class MapService
         return false;
     }
 
-    public function lastlog($userid, $routeid) {
+    public function lastlog($userid, $routeid, $hours=12) {
         lecho("LastLog - User: $userid, Route: $routeid");
         
         $query = "SELECT * FROM rlogs 
-                WHERE loguser = ? AND logroute = ? 
-                ORDER BY logtime DESC 
-                LIMIT 1";
+            WHERE loguser = ? AND logroute = ? 
+            AND logtime >= DATE_SUB(NOW(), INTERVAL ? HOUR)
+            ORDER BY logtime DESC 
+            LIMIT 1";
         
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $userid, $routeid);
+        $stmt->bind_param("iii", $userid, $routeid, $hours);
         
         if ($stmt->execute()) {
             $result = $stmt->get_result();

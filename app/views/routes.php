@@ -140,6 +140,15 @@
                                         <option value="0">No bot message on Telegram</option>
                                     </select>
 
+                                    <label x-text="`How many hours the last location can receive photos and comments`"></label>
+                                    <input type="number" 
+                                        class="input-field" 
+                                        x-model="route.routelocationduration" 
+                                        @change="updateRoute(route)"
+                                        placeholder="Enter haours"
+                                        title="Telegram location duration in hours">
+
+
                                 </div>
                             </template>
 
@@ -334,6 +343,7 @@ document.addEventListener('alpine:init', () => {
                 routestop: route.routestop,
                 routelastdays: route.routelastdays,
                 routetimediff: route.routetimediff,
+                routelocationduration: route.routelocationduration
             });
             if (data.status == 'success') {
                 console.log('Route updated successfully');

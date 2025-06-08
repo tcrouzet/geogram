@@ -235,7 +235,7 @@ class TelegramService
         lecho("text");
 
         $map = new MapService($this->user);
-        $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"]);
+        $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"], $this->channel["routelocationduration"]);
 
         if (!$lastLog) {
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!", $this->channel["routeverbose"]);
@@ -264,7 +264,7 @@ class TelegramService
         lecho("photo");
 
         $map = new MapService($this->user);
-        $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"]);
+        $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"], $this->channel["routelocationduration"]);
 
         if (!$lastLog) {
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!", $this->channel["routeverbose"]);
