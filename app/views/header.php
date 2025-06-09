@@ -59,11 +59,18 @@ document.addEventListener('alpine:init', () => {
         isLoggedIn: false,
         isOnRoute: false,
         storyUser: <?= json_encode($userid) ?>,
+        storyNowUser: <?= json_encode($user) ?>,
         component: 'splash',
         title: '',
 
         async init(reset=false) {
             log("***Initializing header");
+            log(this.page);
+            log(this.storyUser);
+            log(this.route);
+            log("this.storyNowUser:");
+            log(this.storyNowUser);
+            log("End init vars");
 
             this.initStore();
             
@@ -105,40 +112,61 @@ document.addEventListener('alpine:init', () => {
 
         initTitle(params = {}){
             log(params);
+
+            if (Object.keys(params).length === 0 && this.storyNowUser){
+                log("No params, using storyNowUser");
+                params = {story: this.page, storyUserName: this.storyNowUser.username, storyUser: this.storyNowUser.userid};
+                log(params);
+            }
+
             let title = '';
-            let link = '<?= BASE_URL ?>/';
+            const base = '<?= BASE_URL ?>/';
+            let link = ''
             let pageTitle = '<?= GEONAME ?>';
             if (this.route && this.route.routename){
+                log("Route found");
                 link += this.route.routeslug
                 title += `<a href="${link}">${this.route.routename}</a>`;
                 pageTitle += " - " + this.route.routename;
+
                 if(params && params.story){
+                    log("Story params:");
+                    log(params.story);
                     //Path
                     link += "/" + params.story;
-                    if(params.story != "map"){
+                    log(link);
+                    if(params.story != "map" || (params.story == "map" && params.storyUserName)){
                         title += ` &raquo; <a href="${link}">${params.story}</a>`;
                         pageTitle += " - " + params.story;
                     }
                     //User
-                    if(params.storyUserName && params.storyUserName){
+                    if(params.storyUserName && params.storyUser){
                         link += "/" + params.storyUser;
                         title += ` &raquo; <a href="${link}">${params.storyUserName}</a>`;
                         pageTitle += " - " + params.storyUserName;
                     }
+                    // else if (this.storyNowUser && this.storyNowUser.username) {
+                    //     link += "/" + this.storyNowUser.userid;
+                    //     title += ` &raquo; <a href="${link}">${this.storyNowUser.username}</a>`;
+                    //     pageTitle += " - " + this.storyNowUser.username;
+                    // }
                 }
             }
+            let reallink = "/" + link;
             log(title);
-            // if (document.readyState === 'complete' && title !== '' && link !== window.location.pathname) {
-            //     history.pushState({}, '', link);
-            //     document.title = pageTitle;
-            // }
+            log(link);
+            // log(reallink);
+            // log("wlink:");
+            // log(window.location.pathname);
             this.$nextTick(() => {
-                if (title !== '' && link !== window.location.pathname) {
-                    history.pushState({}, '', link);
+                if (title !== '' && reallink !== window.location.pathname) {
+                    log("Changing link");
+                    history.pushState({}, '', base + link);
                     document.title = pageTitle;
                 }
                 this.title = title;
             });
+            log("Title initialized");
         },
 
         initMode(){

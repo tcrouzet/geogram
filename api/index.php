@@ -48,7 +48,8 @@ try {
         'logout' => [AuthController::class, 'logout'],
 
         // 'createuser' => [UserService::class, 'createUser'],
-        'loadMapData' => [MapService::class, 'loadMapData'],
+        'loadMapData' => [MapService::class, 'loadMapData'],    //Deprecated
+        'loadData' => [MapService::class, 'loadData'],
         'userMarkers' => [MapService::class, 'userMarkers'],
         'story' => [MapService::class, 'story'],
 

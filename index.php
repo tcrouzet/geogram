@@ -38,6 +38,7 @@ list($route_slug,$page,$userid)=$parts;
 $routeid = "";
 $route = null;
 $pagename = "";
+$user = null;
 $OnMap = true;
 
 //dump($group);

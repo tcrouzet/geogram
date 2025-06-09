@@ -13,12 +13,13 @@ Contrairement à une app classique installée via un store, une web app s'utilis
 
 1. Même déconnecté de {GEONAME}, on peut suivre [les routes publiques](/routes).
 1. Une fois sur une route, on découvre la carte avec les dernières positions des aventuriers.
-1. Un clic sur l'icône d'un aventurier affiche ses commentaires et photos. Un bouton permet d'afficher sur la carte toutes les localisations de l'aventurier sur la route.
-1. <i class="fas fa-list"></i> affichage en mode liste, soit les dernières positions de tous les aventuriers, soit toutes les positions d'un aventurier.
-1. <i class="fas fa-map"></i> affiche la carte.
-1. <i class="fas fa-book"></i> affiche le mode story.
-1. <i class="fas fa-expand-arrows-alt"></i> affiche tous les aventuriers sur la carte.
-1. <i class="fas fa-compress"></i> zoome la carte sur la route (mode par défaut).
+1. <i class="fas fa-book"></i> affiche le mode story : détails de toutes les localisations. Les aventuriers peuvent éditer leurs commentaires ou les supprimmer.
+1. <i class="fas fa-list"></i> affichage en mode liste : par défaut, dernières positions de tous les aventuriers.
+1. En mode liste ou story, cliquer sur le nom d'un aventurier affiche son historique.
+1. <i class="fas fa-map-marker-alt"></i> renvoie sur la carte à la position exacte.
+1. <i class="fas fa-map"></i> retour à la carte soit de tous les aventuriers, soit de l'aenturier sélectionné.
+1. <i class="fas fa-expand-arrows-alt"></i> affiche la route et tous les aventuriers sur la carte (mode par défaut).
+1. <i class="fas fa-compress"></i> zoome uniquement sur les aventuriers ou toutes les positions de l'aventurier sélectionné.
 
 ## Spectateurs (enregistrés)
 

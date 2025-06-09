@@ -39,14 +39,33 @@ class MapService
         return $this->error;
     }
     
+    // Deprecated
     public function loadMapData(){
         lecho("load map data $this->routeid");
         return $this->get_map_data($this->routeid);
     }
 
+    public function loadData(){
+        $routeid = $_POST['routeid'] ?? '';
+        $nowuserid = filter_var($_POST['nowuserid'] ?? 0, FILTER_VALIDATE_INT);
+        $storymode = filter_var($_POST['storymode'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        lecho("loadData - RouteId: $routeid, NowUserId: $nowuserid, StoryMode: $storymode");
+        
+        if ($nowuserid>0) {
+            // Mode utilisateur spécifique
+            lecho("LoadData $nowuserid on route $routeid");
+            return $this->get_userMarkers($nowuserid, $routeid);
+        } else {
+            // Mode général (map ou story)
+            lecho("MapData");
+            return $this->get_map_data($routeid, $storymode);
+        }
+    }
+
     public function get_map_data($routeid, $storymode=false){
 
-        lecho("get_map_data $routeid");
+        lecho("get_map_data $routeid storymode $storymode");
 
         $route = $this->route->get_route_by_id($routeid);
         if(!$route){
@@ -76,6 +95,7 @@ class MapService
             WHERE rlogs.logroute = ? ";
 
         if(!$storymode){
+            lecho("Not Story Mode");
             $query .= "AND (rlogs.loguser, rlogs.logtime) IN (
                     SELECT loguser, MAX(logtime)
                     FROM rlogs
@@ -93,7 +113,7 @@ class MapService
         if(!$storymode){
             $query .= " GROUP BY loguser) ORDER BY rlogs.logtime DESC";
         }else{
-            $query .= " ORDER BY rlogs.logtime ASC";   
+            $query .= " ORDER BY rlogs.logtime DESC";   
         }
         // lecho($query);
 
@@ -329,7 +349,7 @@ class MapService
     public function get_userMarkers($userid, $routeid) {
         $route = $this->route->get_route_by_id($routeid);
     
-        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ? ORDER BY l.logupdate ASC";
+        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ? ORDER BY l.logtime DESC";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ii", $userid, $routeid);
     

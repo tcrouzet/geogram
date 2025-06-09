@@ -30,14 +30,14 @@
     <div  x-show="component === 'story'" id="storycontenair" class="longcontenair">
         <div id="story" class="long">
 
-            <template x-if="slogs.length === 0">
+            <template x-if="logs.length === 0">
                 <div class="empty-message">
                     <h1>No story yet</h1>
                     <p>Adventurers need to geolocalise…</p>
                 </div>
             </template>
 
-            <template x-if="slogs.length > 0">
+            <template x-if="logs.length > 0">
                 <div>
                     <div class="sort-controls">
                         <button @click="StorySortBy('logtime')" class="sort-btn">
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="story-logs">
-                        <template x-for="log in slogs.filter(log => {
+                        <template x-for="log in logs.filter(log => {
                             if (!storyPhotoOnly && storyUser === '') return true;    
                             if (storyPhotoOnly && log.logphoto <= 0) return false;                        
                             if (storyUser && log.loguser !== storyUser) return false;
@@ -200,6 +200,22 @@
         </div>
     </div>
 
+    <div x-show="showPopupFlag" id="popup" class="modal-overlay">
+        <div class="modal-content">
+            <div class="custom-popup">
+                <p x-html="popupMessage"></p>
+                <div>
+                    <template x-if="popupValidate">
+                        <button @click="showPopupFlag = false" class="modal-button">OK</button>
+                    </template>
+                    <template x-if="popupCancel">
+                        <button @click="showPopupFlag = false" class="modal-button">Cancel</button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 <script>
@@ -246,8 +262,14 @@ document.addEventListener('alpine:init', () => {
         storyName: '',
         sortField: 'logtime',
         sortDirection: 'desc',
-        slogs: false,
         storyPhotoOnly: false,
+        // Popup
+        showPopupFlag: false,
+        popupMessage: '',
+        popupValidate: false,
+        popupCancel: false,
+        popupOKCallback: null,
+        popupCancelCallback: null,
 
         async init() {
             await initService.initComponent(this);
@@ -284,11 +306,11 @@ document.addEventListener('alpine:init', () => {
                 }
             });
 
-            if(this.component == "story"){
-                await this.action_story();
-            }else if(this.component == "list"){
-                await this.action_list();
-            }
+            // if(this.component == "story"){
+            //     await this.action_story();
+            // }else if(this.component == "list"){
+            //     await this.action_list();
+            // }
 
             this.loading = false;
             log("Init Map ended");
@@ -301,7 +323,8 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        async initializeMap() {
+        // Deprecated
+        async initializeMapOld() {
             log();
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
@@ -318,6 +341,7 @@ document.addEventListener('alpine:init', () => {
                 log("storyUser",this.storyUser)
                 await this.userMarkers(this.storyUser);
             }
+
             if(this.page && this.page != "map"){
                 this.component = this.page;
             }
@@ -328,6 +352,30 @@ document.addEventListener('alpine:init', () => {
             log("end");
         },
 
+        async initializeMap() {
+            log();
+            log(this.page);
+            this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
+                // attribution: '',
+                maxZoom: 18,
+            }).addTo(this.map);
+
+            await this.loadData();
+
+            if(this.page && this.page != "map"){
+                this.component = this.page;
+            }
+
+            if(this.newPhoto){
+                this.showPhoto();
+            }
+            log("end");
+        },
+
+        // Deprecated
         async loadMapData() {
             log();
             const data = await apiService.call('loadMapData', {
@@ -366,6 +414,28 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+
+        async loadData() {
+            log();
+            const data = await apiService.call('loadData', {
+                routeid: this.route.routeid,
+                nowuserid: this.storyUser || 0,
+                storymode: this.page === 'Story',
+                routestatus: this.route.routestatus
+            });
+            
+            if (data.status == 'success') {
+                this.geoJSON = data.geojson;
+                this.updateGPX();
+                this.logs = data.logs;
+                this.updateMarkers(this.logs);
+                
+                if (this.storyUser) {
+                    this.fit_markers();
+                }
+            }
+        },
+
         updateMarkers(logs) {
             log();
 
@@ -380,11 +450,6 @@ document.addEventListener('alpine:init', () => {
             logs.forEach((entry, index) => {
 
                 if (entry.loglatitude && entry.loglongitude && entry.username_formated){
-
-                    // Vérification de la présence d'une image pour cet utilisateur
-                    // const statusIcon = entry.logphoto ? 
-                    //     '<i class="fa-solid fa-camera status-icon"></i>' : 
-                    //     (entry.logcomment ? '<i class="fa-solid fa-comment status-icon"></i>' : '');
 
                     const statusIcon = entry.logphoto ? 
                         '<div class="status-icon-photo"></div>' : 
@@ -490,18 +555,6 @@ document.addEventListener('alpine:init', () => {
                 this.showCommentModal = false;
                 this.newPhoto = true;
                 this.logs = data.logs;
-
-                // Mettre à jour aussi les données story si on est en mode story
-                if (this.component === 'story' && this.slogs) {
-                    // Trouver et mettre à jour l'entrée correspondante dans slogs
-                    const updatedLogIndex = this.slogs.findIndex(log => log.logid === this.currentLogId);
-                    if (updatedLogIndex !== -1) {
-                        const updatedMapLog = this.logs.find(log => log.logid === this.currentLogId);
-                        if (updatedMapLog) {
-                            this.slogs[updatedLogIndex] = { ...this.slogs[updatedLogIndex], ...updatedMapLog };
-                        }
-                    }
-                }
             }
         },
 
@@ -514,29 +567,6 @@ document.addEventListener('alpine:init', () => {
             if (data.status == 'success') {
                 this.mapMode = false;
                 this.logs = data.logs;
-
-                // FORCER LE RECHARGEMENT DES IMAGES avec le logupdate retourné
-                const updatedLog = this.logs.find(log => log.logid === logId);
-                if (updatedLog && updatedLog.photolog) {
-                    const timestamp = new Date(updatedLog.logupdate).getTime();
-                    updatedLog.photolog = updatedLog.photolog.split('?')[0] + '?t=' + timestamp;
-                    if (updatedLog.morephotologs) {
-                        updatedLog.morephotologs = updatedLog.morephotologs.map(photo => 
-                            photo.split('?')[0] + '?t=' + timestamp
-                        );
-                    }
-                }
-
-                // Mettre à jour aussi les données story si on est en mode story
-                if (this.component === 'story' && this.slogs) {
-                    const updatedLogIndex = this.slogs.findIndex(log => log.logid === logId);
-                    if (updatedLogIndex !== -1) {
-                        const updatedMapLog = this.logs.find(log => log.logid === logId);
-                        if (updatedMapLog) {
-                            this.slogs[updatedLogIndex] = { ...this.slogs[updatedLogIndex], ...updatedMapLog };
-                        }
-                    }
-                }
             }
         },
 
@@ -553,12 +583,7 @@ document.addEventListener('alpine:init', () => {
             if (data.status == 'success') {
                 // Supprimer le log des données locales
                 this.logs = this.logs.filter(log => log.logid !== logId);
-                
-                // Supprimer aussi des données story si on est en mode story
-                if (this.component === 'story' && this.slogs) {
-                    this.slogs = this.slogs.filter(log => log.logid !== logId);
-                }
-                
+                                
                 // Mettre à jour les markers
                 this.updateMarkers(this.logs);
 
@@ -653,10 +678,10 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        get_localisation() {
+        async get_localisation() {
             if (!navigator.geolocation) {
-                alert('Geolocation not supported');
-                return null;
+                this.showPopup('Geolocation not supported', true);
+                throw new Error('Geolocation not supported');
             }
 
             return new Promise((resolve, reject) => {
@@ -720,95 +745,56 @@ document.addEventListener('alpine:init', () => {
         },
 
         updatePopup(message, watchId, bestPosition, resolve, reject) {
-            const popup = document.getElementById('geoPopup');
-            if (popup) {
-                popup.querySelector('p').textContent = message;
-                if (!document.getElementById('confirmBtn')) {
-                    const button = document.createElement('button');
-                    button.id = 'confirmBtn';
-                    button.textContent = 'Validate';
-                    button.onclick = () => {
-                        navigator.geolocation.clearWatch(watchId);
-                        this.removePopup();
-                        resolve(bestPosition);
-                    };
-                    popup.appendChild(button);
+            this.showPopup(
+                message, 
+                true, // OK button
+                true, // Cancel button
+                () => { // OK callback
+                    navigator.geolocation.clearWatch(watchId);
+                    resolve(bestPosition);
+                },
+                () => { // Cancel callback
+                    navigator.geolocation.clearWatch(watchId);
+                    reject('Cancelled by user');
                 }
-                if (!document.getElementById('cancelBtn')) {
-                    const cancelButton = document.createElement('button');
-                    cancelButton.id = 'cancelBtn';
-                    cancelButton.textContent = 'Cancel';
-                    cancelButton.onclick = () => {
-                        navigator.geolocation.clearWatch(watchId);
-                        this.removePopup();
-                        reject('Cancelled by user');
-                    };
-                    popup.appendChild(cancelButton);
-                }
-            }
+            );
         },
 
-        showPopup(message, validate=false) {
-            let popup = document.getElementById('geoPopup');
-            if (!popup) {
-                let overlay;
-                
-                // Créer et ajouter l'overlay
-                if(validate) {
-                    overlay = document.createElement('div');
-                    overlay.id = 'popupOverlay';
-                    overlay.className = 'overlay';
-                    // Fermer quand on clique sur l'overlay
-                    overlay.addEventListener('click', () => {
-                        overlay.remove();
-                        popup.remove();
-                    });
-                }
-                
-                popup = document.createElement('div');
-                popup.id = 'geoPopup';
-                popup.className = 'geo-popup';
-                popup.innerHTML = `<div style="position: relative;">`;
-                if(validate) {
-                    // Utiliser une fonction au lieu d'un onclick inline
-                    popup.innerHTML += `<span class="cross">×</span>`;
-                }
-                popup.innerHTML += `<p>${message}</p></div>`;
-                popup.style.position = 'fixed';
-                popup.style.top = '50%';
-                popup.style.left = '50%';
-                popup.style.transform = 'translate(-50%, -50%)';
-                popup.style.backgroundColor = 'white';
-                popup.style.padding = '20px';
-                popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-                popup.style.zIndex = '1000';
+        showPopup(message, validate = false, cancel = false, okCallback = null, cancelCallback = null) {
+            log(message)
+            this.popupMessage = message;
+            this.popupValidate = validate;
+            this.popupCancel = cancel;
+            this.popupOKCallback = okCallback;
+            this.popupCancelCallback = cancelCallback;
+            this.showPopupFlag = true;
+        },
 
-                if(validate) {
-                    // Ajouter le gestionnaire d'événement pour la croix
-                    const cross = popup.querySelector('.cross');
-                    cross.addEventListener('click', () => {
-                        popup.remove();
-                        overlay.remove();
-                    });
-
-                    // Empêcher la propagation du clic sur le popup
-                    popup.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                    });
-                    document.body.appendChild(overlay);
-                }
-
-                document.body.appendChild(popup);
+        popupOKAction() {
+            if (this.popupOKCallback) {
+                this.popupOKCallback();
             }
+            this.removePopup();
+        },
+
+        popupCancelAction() {
+            if (this.popupCancelCallback) {
+                this.popupCancelCallback();
+            }
+            this.removePopup();
         },
 
         removePopup(){
-            const popup = document.getElementById('geoPopup');
-            if (popup) {
-                document.body.removeChild(popup);
-            }
+            log();
+            this.showPopupFlag = false;
+            this.popupMessage = '';
+            this.popupValidate = false;
+            this.popupOKCallback = null;
+            this.popupCancelCallback = null;
+            this.popupCancel = false;
         },
 
+        // Fit GPX and all markers
         action_fitall() {
             log();
             let bounds = null;
@@ -840,6 +826,7 @@ document.addEventListener('alpine:init', () => {
             this.action_map();
         },
 
+        // Fit GPX only
         action_fitgpx() {
             log();
             if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
@@ -848,7 +835,9 @@ document.addEventListener('alpine:init', () => {
             this.action_map();
         },
 
+        // Fit all markers
         fit_markers() {
+            log();
             if (this.cursors.length > 0) {
                 const markerBounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(markerBounds, { 
@@ -857,21 +846,22 @@ document.addEventListener('alpine:init', () => {
                     animate: false
                 });
             }
-            this.action_map();
+            // this.action_map();
         },
 
-        action_map() {  
+        async action_map() {  
             log();
+            log(this.storyUser);
 
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
 
             // Vérifier si on a les bonnes données pour l'utilisateur
             if (this.storyUser) {
-                // Si this.logs ne contient pas les données de cet utilisateur, les charger
-                if (!this.logs.length || this.logs[0].userid !== this.storyUser) {
-                    this.userMarkers(this.storyUser);
-                }
+                log("storyUser OK");
+                this.updateMarkers(this.logs);
+                this.fit_markers();
+                this.component = "map";
             }
 
             this.mapFooter = this.getMapFooter();
@@ -932,6 +922,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_gallery() {
+            log()
             if(this.canPost){
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -970,7 +961,7 @@ document.addEventListener('alpine:init', () => {
                                     this.uploadImage(file, position);
                                 })
                                 .catch(geoError => {
-                                    alert('No location available' + geoError );
+                                    // alert('No location available' + geoError );
                                     return;
                             });            
 
@@ -1026,6 +1017,8 @@ document.addEventListener('alpine:init', () => {
         uploadImage(file, gpsData) {
             return new Promise((resolve, reject) => {
                 try {
+                    this.showPopup("Processing image...");
+
                     const reader = new FileReader();
                     reader.readAsDataURL(file);
                     
@@ -1061,10 +1054,25 @@ document.addEventListener('alpine:init', () => {
                                 
                                 // Mettre à jour les markers
                                 this.updateMarkers(this.logs);
-                    
-                                // Si on trouve le nouveau log, ouvrir son popup
+ 
+                                // NOUVEAU : Passer en mode map et zoomer sur le nouveau log
                                 if (newLog) {
                                     log("New photo found", newLog);
+
+                                    this.storyUser = this.user.userid;
+                                    this.storyName = this.user.username;
+                                    
+                                    // Passer en mode map
+                                    this.component = 'map';
+                                    this.mapFooter = this.getMapFooter();
+
+                                    Alpine.store('headerActions').initTitle({
+                                        story: "map", 
+                                        storyUserName: this.user.username, // Nom de l'utilisateur qui prend la photo
+                                        storyUser: this.user.userid        // ID de l'utilisateur qui prend la photo
+                                    });
+                                    
+                                    // Zoomer sur le nouveau marker
                                     const newMarker = this.cursors.find(marker => 
                                         marker.getLatLng().lat === newLog.loglatitude && 
                                         marker.getLatLng().lng === newLog.loglongitude
@@ -1073,18 +1081,20 @@ document.addEventListener('alpine:init', () => {
                                         this.map.setView(newMarker.getLatLng(), 12);
                                     }
                                 }
- 
+                                this.removePopup();
                                 resolve(true);
                             }
-
+                            this.removePopup();
                             resolve(false);
                         } catch (error) {
+                            this.removePopup();
                             reject(error);
                         }
                     };
-                    
+                    this.removePopup();
                     reader.onerror = (error) => reject(error);
                 } catch (error) {
+                    this.removePopup();
                     reject(error);
                 }
             });
@@ -1155,12 +1165,16 @@ document.addEventListener('alpine:init', () => {
             this.map.setView([entry.loglatitude, entry.loglongitude], 12);
         },
 
-        showUserStory(entry){
+        async showUserStory(entry){
+            log(entry);
+            log("---after---");
             this.story = "story";
-            this.storyUser = entry.userid;
+            this.storyUser = entry.loguser;
+            log(this.storyUser);
             this.storyName = entry.username_formated;
+            log(this.storyName);
             this.storyPhotoOnly = false;
-            this.logs = this.slogs;
+            log(this.storyUser);
             this.action_story();
         },
 
@@ -1201,7 +1215,7 @@ document.addEventListener('alpine:init', () => {
                         <button @click="action_fitall()" class="small-bt">
                             <i class="fas fa-expand-arrows-alt"></i>
                         </button>
-                        <button @click="action_fitgpx()" class="small-bt">
+                        <button @click="fit_markers()" class="small-bt">
                             <i class="fas fa-compress"></i>
                         </button>
                         <button @click="action_gallery()" class="small-bt ${this.canPost ? '' : 'disabled-bt'}">
@@ -1255,14 +1269,15 @@ document.addEventListener('alpine:init', () => {
         },
 
         async action_story(){
-            if(!this.slogs){
+            log();
+            if(!this.logs){
                 log();
                 this.loading = true;
                 const data = await apiService.call('story', {
                     routeid: this.route.routeid,
                 });
                 if (data.status == 'success') {
-                    this.slogs = this.sortData(data.logs, this.sortField, this.sortDirection);
+                    this.logs = this.sortData(data.logs, this.sortField, this.sortDirection);
                 }else{
                     alert(data.message);
                     window.location.reload();
@@ -1302,7 +1317,7 @@ document.addEventListener('alpine:init', () => {
                 this.sortField = field;
                 this.sortDirection = 'desc';
             }
-            this.slogs = this.sortData(this.slogs, this.sortField, this.sortDirection);
+            this.logs = this.sortData(this.logs, this.sortField, this.sortDirection);
         },
 
         isRouteActive() {

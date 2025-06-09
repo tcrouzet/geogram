@@ -580,11 +580,14 @@ p.commentText {
     left: 0;
     right: 0;
     bottom: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1001;
+    z-index: 9999; /* Plus élevé */
+    -webkit-overflow-scrolling: touch;
 }
 
 .modal-content {
@@ -593,6 +596,11 @@ p.commentText {
     border-radius: 8px;
     width: 90%;
     max-width: 500px;
+    position: relative;
+    z-index: 10000;
+    /* Forcer l'affichage sur iOS */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 .modal-buttons {
@@ -849,7 +857,6 @@ textarea {
 }
 
 /* Suite */
-
 
 img.txt{width:100%;max-width: 60ch;height: auto;}
 img.weather{width: 2rem;height: 2rem;margin-left: 0.3rem;vertical-align: middle;}

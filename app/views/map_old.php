@@ -70,7 +70,7 @@
                             if (storyUser && log.loguser !== storyUser) return false;
                             return true;})" :key="log.logid">
 
-                            <div class="log-entry">
+                            <div class="log-entry" :data-logid="log.logid">
                                 <div class="log-header">
                                     <template x-if="!storyUser">
                                         <span class="log-author" x-text="log.username_formated" @click.stop="showUserStory(log)"></span>
@@ -200,9 +200,20 @@
         </div>
     </div>
 
-    <div x-show="showCustomPopup" class="custom-popup-modal">
-        <button @click="showCustomPopup = false" class="custom-popup-close">×</button>
-        <div class="custom-popup" x-html="customPopupContent"></div>
+    <div x-show="showPopupFlag" id="popup" class="modal-overlay">
+        <div class="modal-content">
+            <div class="custom-popup">
+                <p x-html="popupMessage"></p>
+                <div>
+                    <template x-if="popupValidate">
+                        <button @click="showPopupFlag = false" class="modal-button">OK</button>
+                    </template>
+                    <template x-if="popupCancel">
+                        <button @click="showPopupFlag = false" class="modal-button">Cancel</button>
+                    </template>
+                </div>
+            </div>
+        </div>
     </div>
 
 </main>
@@ -253,9 +264,13 @@ document.addEventListener('alpine:init', () => {
         sortDirection: 'desc',
         slogs: false,
         storyPhotoOnly: false,
-        //Popup
-        showCustomPopup: false,
-        customPopupContent: '',
+        // Popup
+        showPopupFlag: false,
+        popupMessage: '',
+        popupValidate: false,
+        popupCancel: false,
+        popupOKCallback: null,
+        popupCancelCallback: null,
 
         async init() {
             await initService.initComponent(this);
@@ -292,11 +307,11 @@ document.addEventListener('alpine:init', () => {
                 }
             });
 
-            if(this.component == "story"){
-                await this.action_story();
-            }else if(this.component == "list"){
-                await this.action_list();
-            }
+            // if(this.component == "story"){
+            //     await this.action_story();
+            // }else if(this.component == "list"){
+            //     await this.action_list();
+            // }
 
             this.loading = false;
             log("Init Map ended");
@@ -309,7 +324,8 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        async initializeMap() {
+        // Deprecated
+        async initializeMapOld() {
             log();
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
@@ -326,6 +342,7 @@ document.addEventListener('alpine:init', () => {
                 log("storyUser",this.storyUser)
                 await this.userMarkers(this.storyUser);
             }
+
             if(this.page && this.page != "map"){
                 this.component = this.page;
             }
@@ -336,6 +353,29 @@ document.addEventListener('alpine:init', () => {
             log("end");
         },
 
+        async initializeMap() {
+            log();
+            this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
+                // attribution: '',
+                maxZoom: 18,
+            }).addTo(this.map);
+
+            await this.loadData();
+
+            if(this.page && this.page != "map"){
+                this.component = this.page;
+            }
+
+            if(this.newPhoto){
+                this.showPhoto();
+            }
+            log("end");
+        },
+
+        // Deprecated
         async loadMapData() {
             log();
             const data = await apiService.call('loadMapData', {
@@ -374,10 +414,30 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+
+        async loadData() {
+            log();
+            const data = await apiService.call('loadData', {
+                routeid: this.route.routeid,
+                nowuserid: this.storyUser || 0,
+                storymode: this.page === 'Story',
+                routestatus: this.route.routestatus
+            });
+            
+            if (data.status == 'success') {
+                this.geoJSON = data.geojson;
+                this.updateGPX();
+                this.logs = data.logs;
+                this.updateMarkers(this.logs);
+                
+                if (this.storyUser) {
+                    this.fit_markers();
+                }
+            }
+        },
+
         updateMarkers(logs) {
             log();
-            this.showCustomPopup = false;
-
 
             // Suppression des marqueurs existants de la carte
             this.cursors.forEach(cursor => this.map.removeLayer(cursor));
@@ -390,11 +450,6 @@ document.addEventListener('alpine:init', () => {
             logs.forEach((entry, index) => {
 
                 if (entry.loglatitude && entry.loglongitude && entry.username_formated){
-
-                    // Vérification de la présence d'une image pour cet utilisateur
-                    // const statusIcon = entry.logphoto ? 
-                    //     '<i class="fa-solid fa-camera status-icon"></i>' : 
-                    //     (entry.logcomment ? '<i class="fa-solid fa-comment status-icon"></i>' : '');
 
                     const statusIcon = entry.logphoto ? 
                         '<div class="status-icon-photo"></div>' : 
@@ -419,8 +474,9 @@ document.addEventListener('alpine:init', () => {
                         icon,
                      }).addTo(this.map);
 
-                    // Contenu du popup avec des boutons d'action
-                    this.markerPopup(marker, entry);
+                    marker.on('click', () => {
+                        this.showMarkerStory(entry);
+                    });
 
                     // Ajout des coordonnées du marqueur aux limites de la carte
                     this.markerBounds.extend(marker.getLatLng());
@@ -436,66 +492,40 @@ document.addEventListener('alpine:init', () => {
             }
             log("Fin Markers");
         },
-        
-        // Mise à jour du marker
-        updateOneMarker(currentLogId){
-            const updatedLog = this.logs.find(log => log.logid === currentLogId);
-            if (updatedLog) {
-                const marker = this.cursors.find(marker => 
-                    marker.getLatLng().lat === updatedLog.loglatitude && 
-                    marker.getLatLng().lng === updatedLog.loglongitude
-                );
-                
-                if (marker) {
-                    // Recréer le popup avec le nouveau contenu
-                    this.markerPopup(marker, updatedLog);
-                    marker.openPopup();
-                }
+    
+
+        showMarkerStory(entry) {
+            if (!this.storyUser) {
+                // Mode général (tous les utilisateurs) - ouvrir story générale et scroller vers l'entrée
+                this.action_story().then(() => {
+                    this.scrollToLogEntry(entry.logid);
+                });
+            } else {
+                // Mode utilisateur spécifique - ouvrir story de l'utilisateur et scroller vers l'entrée
+                this.showUserStory(entry);
+                this.$nextTick(() => {
+                    this.scrollToLogEntry(entry.logid);
+                });
             }
         },
 
-        markerPopup(marker, entry){
-            const commentButton = entry.loguser === this.userid ? 
-                `<button @click="addComment(${entry.logid})">
-                    ${entry.logcomment ? 'Edit comment' : 'Add comment'}
-                </button>` : '';
-
-            const deleteButton = entry.loguser === this.userid ? 
-                `<button @click="deleteCursor(${entry.logid})">Delete</button>` : '';
-
-            const actionButton = this.mapMode ? 
-                `<button @click="userMarkers(${entry.userid})">User history</button>` :
-                `<button @click="allUsersMarkers()">All Users</button>`;
-
-            const zoomButton = `<button @click="zoom_lastmarker(${entry.userid})">Zoom last</button>`;
-
-            let morePhotos = '';
-            if (entry.morephotologs && entry.morephotologs.length > 0) {
-                entry.morephotologs.forEach(photoUrl => {
-                    morePhotos += `<img src="${photoUrl}">`;
-                });
-            }
-
-
-            const popupContent = `<div class="log-entry story-logs">
-                <h3>${entry.username_formated}</h3>
-                <h4>${entry.date_formated}</h4>
-                ${entry.photolog ? `<img src="${entry.photolog}">` : ''}
-                ${morePhotos}
-                ${entry.logcomment ? `<p class="commentText">${entry.comment_formated}</p>` : ''}
-                <div class="popup-actions">
-                    ${commentButton}
-                    ${deleteButton}
-                    ${actionButton}
-                    ${zoomButton}
-                </div></div>`;
-   
-            marker.on('click', () => {
-                this.customPopupContent = popupContent;
-                // this.customPopupContent += `<p>${entry.logid}</p>`;
-                this.showCustomPopup = true;
+        scrollToLogEntry(logId) {
+            log();
+            this.$nextTick(() => {
+                log("Inside");
+                const logElement = document.querySelector(`[data-logid="${logId}"]`);
+                if (logElement) {
+                    logElement.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                    // Optionnel : ajouter un highlight temporaire
+                    logElement.classList.add('highlighted');
+                    // setTimeout(() => {
+                    //     logElement.classList.remove('highlighted');
+                    // }, 2000);
+                }
             });
-
         },
 
         async allUsersMarkers(){
@@ -504,33 +534,6 @@ document.addEventListener('alpine:init', () => {
             this.fit_markers();
         },
 
-
-        async deleteCursor(logid) {
-            // Find the log and marker to delete
-
-            if (!confirm(' Do you really want to delete cursor?') ) {
-                    return;
-            }
-
-            const logIndex = this.logs.findIndex(log => log.logid === logid);
-
-            const data = await apiService.call('deleteLog', {
-                logid: logid,
-                routeid: this.routeid,
-            });
-            if (data.status == 'success') {
-
-                // Fermer tous les popups
-                this.map.closePopup();
-
-                this.action_map();
-        
-                await this.loadMapData();
-                this.updateMarkers(this.logs);
-                this.action_fitgpx()
-        
-            }
-        },
 
         addComment(logId) {
             this.currentLogId = logId;
@@ -564,7 +567,6 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 }
-                this.updateOneMarker(this.currentLogId);
             }
         },
 
@@ -600,7 +602,6 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 }
-                this.updateOneMarker(logId);
             }
         },
 
@@ -625,9 +626,6 @@ document.addEventListener('alpine:init', () => {
                 
                 // Mettre à jour les markers
                 this.updateMarkers(this.logs);
-
-                // FORCER LE RE-RENDU comme dans rotateImage
-                this.updateOneMarker(logId);
 
         
            } else {
@@ -720,10 +718,10 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        get_localisation() {
+        async get_localisation() {
             if (!navigator.geolocation) {
-                alert('Geolocation not supported');
-                return null;
+                this.showPopup('Geolocation not supported', true);
+                throw new Error('Geolocation not supported');
             }
 
             return new Promise((resolve, reject) => {
@@ -787,98 +785,58 @@ document.addEventListener('alpine:init', () => {
         },
 
         updatePopup(message, watchId, bestPosition, resolve, reject) {
-            const popup = document.getElementById('geoPopup');
-            if (popup) {
-                popup.querySelector('p').textContent = message;
-                if (!document.getElementById('confirmBtn')) {
-                    const button = document.createElement('button');
-                    button.id = 'confirmBtn';
-                    button.textContent = 'Validate';
-                    button.onclick = () => {
-                        navigator.geolocation.clearWatch(watchId);
-                        this.removePopup();
-                        resolve(bestPosition);
-                    };
-                    popup.appendChild(button);
+            this.showPopup(
+                message, 
+                true, // OK button
+                true, // Cancel button
+                () => { // OK callback
+                    navigator.geolocation.clearWatch(watchId);
+                    resolve(bestPosition);
+                },
+                () => { // Cancel callback
+                    navigator.geolocation.clearWatch(watchId);
+                    reject('Cancelled by user');
                 }
-                if (!document.getElementById('cancelBtn')) {
-                    const cancelButton = document.createElement('button');
-                    cancelButton.id = 'cancelBtn';
-                    cancelButton.textContent = 'Cancel';
-                    cancelButton.onclick = () => {
-                        navigator.geolocation.clearWatch(watchId);
-                        this.removePopup();
-                        reject('Cancelled by user');
-                    };
-                    popup.appendChild(cancelButton);
-                }
-            }
+            );
         },
 
-        showPopup(message, validate=false) {
-            let popup = document.getElementById('geoPopup');
-            if (!popup) {
-                let overlay;
-                
-                // Créer et ajouter l'overlay
-                if(validate) {
-                    overlay = document.createElement('div');
-                    overlay.id = 'popupOverlay';
-                    overlay.className = 'overlay';
-                    // Fermer quand on clique sur l'overlay
-                    overlay.addEventListener('click', () => {
-                        overlay.remove();
-                        popup.remove();
-                    });
-                }
-                
-                popup = document.createElement('div');
-                popup.id = 'geoPopup';
-                popup.className = 'geo-popup';
-                popup.innerHTML = `<div style="position: relative;">`;
-                if(validate) {
-                    // Utiliser une fonction au lieu d'un onclick inline
-                    popup.innerHTML += `<span class="cross">×</span>`;
-                }
-                popup.innerHTML += `<p>${message}</p></div>`;
-                popup.style.position = 'fixed';
-                popup.style.top = '50%';
-                popup.style.left = '50%';
-                popup.style.transform = 'translate(-50%, -50%)';
-                popup.style.backgroundColor = 'white';
-                popup.style.padding = '20px';
-                popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-                popup.style.zIndex = '1000';
+        showPopup(message, validate = false, cancel = false, okCallback = null, cancelCallback = null) {
+            log(message)
+            this.popupMessage = message;
+            this.popupValidate = validate;
+            this.popupCancel = cancel;
+            this.popupOKCallback = okCallback;
+            this.popupCancelCallback = cancelCallback;
+            this.showPopupFlag = true;
+        },
 
-                if(validate) {
-                    // Ajouter le gestionnaire d'événement pour la croix
-                    const cross = popup.querySelector('.cross');
-                    cross.addEventListener('click', () => {
-                        popup.remove();
-                        overlay.remove();
-                    });
-
-                    // Empêcher la propagation du clic sur le popup
-                    popup.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                    });
-                    document.body.appendChild(overlay);
-                }
-
-                document.body.appendChild(popup);
+        popupOKAction() {
+            if (this.popupOKCallback) {
+                this.popupOKCallback();
             }
+            this.removePopup();
+        },
+
+        popupCancelAction() {
+            if (this.popupCancelCallback) {
+                this.popupCancelCallback();
+            }
+            this.removePopup();
         },
 
         removePopup(){
-            const popup = document.getElementById('geoPopup');
-            if (popup) {
-                document.body.removeChild(popup);
-            }
+            log();
+            this.showPopupFlag = false;
+            this.popupMessage = '';
+            this.popupValidate = false;
+            this.popupOKCallback = null;
+            this.popupCancelCallback = null;
+            this.popupCancel = false;
         },
 
+        // Fit GPX and all markers
         action_fitall() {
             log();
-            this.showCustomPopup = false;
             let bounds = null;
 
             // Inclure les limites des marqueurs
@@ -908,17 +866,18 @@ document.addEventListener('alpine:init', () => {
             this.action_map();
         },
 
+        // Fit GPX only
         action_fitgpx() {
             log();
-            this.showCustomPopup = false;
             if (this.geoJsonLayer && this.map.hasLayer(this.geoJsonLayer)) {
                 this.map.fitBounds(this.geoJsonLayer.getBounds(), { padding: [0, 0], animate: false });
             }
             this.action_map();
         },
 
+        // Fit all markers
         fit_markers() {
-            this.showCustomPopup = false;
+            log();
             if (this.cursors.length > 0) {
                 const markerBounds = new L.LatLngBounds(this.cursors.map(cursor => cursor.getLatLng()));
                 this.map.fitBounds(markerBounds, { 
@@ -927,33 +886,28 @@ document.addEventListener('alpine:init', () => {
                     animate: false
                 });
             }
-            this.action_map();
+            // this.action_map();
         },
 
-        action_map() {  
+        async action_map() {  
             log();
-            this.showCustomPopup = false;
-
-            // Si nous avons un utilisateur sélectionné en mode story, recharger la page
-            // if (this.storyUser) {
-            //     // Récupérer l'URL actuelle
-            //     const currentUrl = window.location.href;
-                
-            //     // Remplacer "story" ou "list" par "map" dans l'URL
-            //     const newUrl = currentUrl.replace(/\/(story|list)\//, '/map/');
-                
-            //     // Si l'URL a été modifiée, charger la nouvelle URL
-            //     if (newUrl !== currentUrl) {
-            //         window.location.href = newUrl;
-            //         return;
-            //     }
-            // }
+            log(this.storyUser);
 
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
+
+            // Vérifier si on a les bonnes données pour l'utilisateur
+            if (this.storyUser) {
+                log("storyUser OK");
+                this.updateMarkers(this.logs);
+                this.fit_markers();
+                this.component = "map";
+            }
+
             this.mapFooter = this.getMapFooter();
 
             this.$nextTick(() => {
+  
                 setTimeout(() => {
                     this.map.invalidateSize({ animate: false, pan: false });
                 }, 50);
@@ -962,7 +916,6 @@ document.addEventListener('alpine:init', () => {
 
         action_list() {
             log();
-            this.showCustomPopup = false;
             Alpine.store('headerActions').initTitle(this.buildStoryObj("list"));
             this.component = "list";
             this.mapFooter = this.getMapFooter();
@@ -1001,7 +954,7 @@ document.addEventListener('alpine:init', () => {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
-                input.capture = 'environment';
+                input.capture = 'camera';
                 this.handleImageSelection(input);
             }else{
                 this.showAccessMessage();
@@ -1009,7 +962,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_gallery() {
-            this.showCustomPopup = false;
+            log()
             if(this.canPost){
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -1048,7 +1001,7 @@ document.addEventListener('alpine:init', () => {
                                     this.uploadImage(file, position);
                                 })
                                 .catch(geoError => {
-                                    alert('No location available' + geoError );
+                                    // alert('No location available' + geoError );
                                     return;
                             });            
 
@@ -1104,6 +1057,8 @@ document.addEventListener('alpine:init', () => {
         uploadImage(file, gpsData) {
             return new Promise((resolve, reject) => {
                 try {
+                    this.showPopup("Processing image...");
+
                     const reader = new FileReader();
                     reader.readAsDataURL(file);
                     
@@ -1139,31 +1094,47 @@ document.addEventListener('alpine:init', () => {
                                 
                                 // Mettre à jour les markers
                                 this.updateMarkers(this.logs);
-                    
-                                // Si on trouve le nouveau log, ouvrir son popup
+ 
+                                // NOUVEAU : Passer en mode map et zoomer sur le nouveau log
                                 if (newLog) {
                                     log("New photo found", newLog);
+
+                                    this.storyUser = this.user.userid;
+                                    this.storyName = this.user.username;
+                                    
+                                    // Passer en mode map
+                                    this.component = 'map';
+                                    this.mapFooter = this.getMapFooter();
+
+                                    Alpine.store('headerActions').initTitle({
+                                        story: "map", 
+                                        storyUserName: this.user.username, // Nom de l'utilisateur qui prend la photo
+                                        storyUser: this.user.userid        // ID de l'utilisateur qui prend la photo
+                                    });
+                                    
+                                    // Zoomer sur le nouveau marker
                                     const newMarker = this.cursors.find(marker => 
                                         marker.getLatLng().lat === newLog.loglatitude && 
                                         marker.getLatLng().lng === newLog.loglongitude
                                     );
                                     if (newMarker) {
                                         this.map.setView(newMarker.getLatLng(), 12);
-                                        newMarker.openPopup();
                                     }
                                 }
- 
+                                this.removePopup();
                                 resolve(true);
                             }
-
+                            this.removePopup();
                             resolve(false);
                         } catch (error) {
+                            this.removePopup();
                             reject(error);
                         }
                     };
-                    
+                    this.removePopup();
                     reader.onerror = (error) => reject(error);
                 } catch (error) {
+                    this.removePopup();
                     reject(error);
                 }
             });
@@ -1187,12 +1158,6 @@ document.addEventListener('alpine:init', () => {
                     marker.getLatLng().lng === latestLog.loglongitude
                 );
 
-                //console.log("marker",userMarker);
-
-                if (userMarker) {
-                    //console.log("showPhoto2", userMarker);
-                    userMarker.openPopup();
-                }
             }
         },
 
@@ -1232,30 +1197,6 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        async showUserOnMapOLD(entry) {
-            this.component = 'map';
-            this.mapFooter = this.getMapFooter();
-
-            if (this.slogs) {
-                this.logs = this.slogs;
-            }
-
-            await this.$nextTick();
-
-            this.updateMarkers(this.logs);
-
-            // Trouver et afficher le marker
-            const userMarker = this.cursors.find(marker => 
-                marker.getLatLng().lat === entry.loglatitude && 
-                marker.getLatLng().lng === entry.loglongitude
-            );
-
-            if (userMarker) {
-                this.map.setView(userMarker.getLatLng(), 12);
-                userMarker.openPopup();
-            }
-        },
-
         async showUserOnMap(entry) {
             this.component = 'map';
 
@@ -1264,11 +1205,18 @@ document.addEventListener('alpine:init', () => {
             this.map.setView([entry.loglatitude, entry.loglongitude], 12);
         },
 
-        showUserStory(entry){
+        async showUserStory(entry){
+            log(entry);
+            log("---after---");
             this.story = "story";
-            this.storyUser = entry.userid;
+            this.storyUser = entry.loguser;
+            log(this.storyUser);
             this.storyName = entry.username_formated;
+            log(this.storyName);
             this.storyPhotoOnly = false;
+            this.logs = this.slogs;
+            // await this.$nextTick();
+            log(this.storyUser);
             this.action_story();
         },
 
@@ -1309,7 +1257,7 @@ document.addEventListener('alpine:init', () => {
                         <button @click="action_fitall()" class="small-bt">
                             <i class="fas fa-expand-arrows-alt"></i>
                         </button>
-                        <button @click="action_fitgpx()" class="small-bt">
+                        <button @click="fit_markers()" class="small-bt">
                             <i class="fas fa-compress"></i>
                         </button>
                         <button @click="action_gallery()" class="small-bt ${this.canPost ? '' : 'disabled-bt'}">
@@ -1334,7 +1282,6 @@ document.addEventListener('alpine:init', () => {
         },
 
         zoom_lastmarker(userid = null) {
-            this.showCustomPopup = false;
             let targetMarker = null;
 
             // this.map.closePopup();
@@ -1360,12 +1307,11 @@ document.addEventListener('alpine:init', () => {
             // Zoom to the target marker
             if (targetMarker) {
                 this.map.setView(targetMarker.getLatLng(), 15); // Adjust zoom level as necessary
-                targetMarker.openPopup(); // Optionally open the popup for the target marker
             }
         },
 
         async action_story(){
-            this.showCustomPopup = false;
+            log();
             if(!this.slogs){
                 log();
                 this.loading = true;
