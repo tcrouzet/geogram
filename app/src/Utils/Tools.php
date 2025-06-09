@@ -104,6 +104,8 @@ class Tools
         $width = $imageInfo[0];
         $height = $imageInfo[1];
         $type = $imageInfo[2];
+
+        $orientation = self::need2rotate($sourcefile);
     
         // Calculer le ratio de redimensionnement
         $ratio = min($maxSize / $width, $maxSize / $height);
@@ -141,6 +143,10 @@ class Tools
         
         // Redimensionner l'image
         imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+        if ($orientation){
+            $newImage = imagerotate($newImage, $orientation, 0);
+        }
     
         // Sauvegarder
         imagewebp($newImage, $targetfile, IMAGE_COMPRESS);
@@ -152,12 +158,34 @@ class Tools
         return true;
     }
 
+    public static function need2rotate($imagePath) {
+        if (!function_exists('exif_read_data')) {
+            return false;
+        }
+        
+        $exif = @exif_read_data($imagePath);
+        
+        if ($exif && isset($exif['Orientation'])) {
+            lecho("EXIF Orientation found: " . $exif['Orientation']);
+            switch ($exif['Orientation']) {
+                case 3: // 180°
+                    return 180;
+                case 6: // 90° sens horaire
+                    return -90;
+                case 8: // 90° sens anti-horaire
+                    return 90;
+                default:
+                    return false;
+            }
+        }
+        return false;
+    }
 
-    public static function rotateImageFile($imagePath) {
+    public static function rotateImageFile($imagePath, $orientation=-90) {
         $image = imagecreatefromwebp($imagePath);
         if (!$image) return false;
         
-        $rotatedImage = imagerotate($image, -90, 0);
+        $rotatedImage = imagerotate($image, $orientation, 0);
         if (!$rotatedImage) {
             imagedestroy($image);
             return false;
@@ -170,7 +198,7 @@ class Tools
         
         return $success;
     }
-    
+
     public static function slugify($text) {
         // Translitération des caractères spéciaux en équivalents ASCII
         $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);

@@ -865,9 +865,19 @@ document.addEventListener('alpine:init', () => {
 
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
+
+            // Vérifier si on a les bonnes données pour l'utilisateur
+            if (this.storyUser) {
+                // Si this.logs ne contient pas les données de cet utilisateur, les charger
+                if (!this.logs.length || this.logs[0].userid !== this.storyUser) {
+                    this.userMarkers(this.storyUser);
+                }
+            }
+
             this.mapFooter = this.getMapFooter();
 
             this.$nextTick(() => {
+  
                 setTimeout(() => {
                     this.map.invalidateSize({ animate: false, pan: false });
                 }, 50);
@@ -1137,30 +1147,6 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        async showUserOnMapOLD(entry) {
-            this.component = 'map';
-            this.mapFooter = this.getMapFooter();
-
-            if (this.slogs) {
-                this.logs = this.slogs;
-            }
-
-            await this.$nextTick();
-
-            this.updateMarkers(this.logs);
-
-            // Trouver et afficher le marker
-            const userMarker = this.cursors.find(marker => 
-                marker.getLatLng().lat === entry.loglatitude && 
-                marker.getLatLng().lng === entry.loglongitude
-            );
-
-            if (userMarker) {
-                this.map.setView(userMarker.getLatLng(), 12);
-                userMarker.openPopup();
-            }
-        },
-
         async showUserOnMap(entry) {
             this.component = 'map';
 
@@ -1174,6 +1160,7 @@ document.addEventListener('alpine:init', () => {
             this.storyUser = entry.userid;
             this.storyName = entry.username_formated;
             this.storyPhotoOnly = false;
+            this.logs = this.slogs;
             this.action_story();
         },
 

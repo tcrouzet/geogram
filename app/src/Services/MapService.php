@@ -357,7 +357,7 @@ class MapService
         //lecho($target);
     
         if($target){
-            if(Tools::resizeImage($photosource, $target, 1200)){
+            if(Tools::resizeImage($photosource, $target, IMAGE_DEF)){
                 if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, 1, $timestamp)){
                     return $this->get_userMarkers($this->userid, $this->routeid);
                 }
