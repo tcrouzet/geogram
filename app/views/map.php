@@ -206,17 +206,15 @@
                 <p x-html="popupMessage"></p>
                 <div>
                     <template x-if="popupValidate">
-                        <button @click="showPopupFlag = false" class="modal-button">OK</button>
+                        <button @click="popupOKAction()" class="modal-button">OK</button>
                     </template>
                     <template x-if="popupCancel">
-                        <button @click="showPopupFlag = false" class="modal-button">Cancel</button>
+                        <button @click="popupCancelAction()" class="modal-button">Cancel</button>
                     </template>
                 </div>
             </div>
         </div>
     </div>
-
-</main>
 
 <script>
 
@@ -245,7 +243,6 @@ document.addEventListener('alpine:init', () => {
         geoJSON: null,
         geoJsonLayer: null,
         bestPosition: null,
-        mapMode: true,
         uploading: false,
         newPhoto: false,
         // Actions
@@ -260,7 +257,7 @@ document.addEventListener('alpine:init', () => {
         sortField: 'username',
         sortDirection: 'asc',
         //Story
-        storyUser: <?= json_encode($userid) ?>,
+        storyUser: parseInt(<?= json_encode($UserStoryId) ?>,10),
         storyName: '',
         sortField: 'logtime',
         sortDirection: 'desc',
@@ -401,7 +398,6 @@ document.addEventListener('alpine:init', () => {
 
         userMarkers(userid){
             log(userid);
-            this.mapMode = false;
             this.storyUser = userid;
             this.logs = this.getUserLogs(this.data.logs, this.storyUser);
             this.slogs = this.logs;
@@ -706,9 +702,8 @@ document.addEventListener('alpine:init', () => {
 
             });
             if (data.status == 'success') {
-                this.logs = data.logs;
-                this.updateMarkers(this.logs);
-                log('New location');
+                this.data = data;
+                this.chooseMarkers(this.userid);
                 this.zoom_lastmarker(this.userid);
             }
         },
@@ -825,13 +820,13 @@ document.addEventListener('alpine:init', () => {
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
 
-            // Vérifier si on a les bonnes données pour l'utilisateur
-            if (this.storyUser) {
-                log("storyUser OK");
-                this.updateMarkers(this.logs);
-                this.fit_markers();
-                this.component = "map";
-            }
+            // // Vérifier si on a les bonnes données pour l'utilisateur
+            // if (this.storyUser) {
+            //     log("storyUser OK");
+            //     this.updateMarkers(this.logs);
+            //     this.fit_markers();
+            //     this.component = "map";
+            // }
 
             this.mapFooter = this.getMapFooter();
 
@@ -842,6 +837,14 @@ document.addEventListener('alpine:init', () => {
                 }, 50);
             });            
         },
+
+        async action_story(){
+            log();
+            Alpine.store('headerActions').initTitle(this.buildStoryObj("story"));
+            this.component = "story";
+            this.mapFooter = this.getMapFooter();
+        },
+
 
         action_list() {
             log();
@@ -1010,46 +1013,12 @@ document.addEventListener('alpine:init', () => {
                             });
 
                             if (data.status == 'success') {
-                                //this.newPhoto = true;
-                                this.mapMode = true;
-                                this.logs = data.logs;
-                                await this.$nextTick();
 
-                                const newLog = this.logs.reduce((latest, current) => {
-                                    const latestTime = latest ? new Date(latest.logupdate).getTime() : 0;
-                                    const currentTime = new Date(current.logupdate).getTime();
-                                    return (currentTime > latestTime) ? current : latest;
-                                }, null);
-                                
-                                // Mettre à jour les markers
-                                this.updateMarkers(this.logs);
- 
-                                // NOUVEAU : Passer en mode map et zoomer sur le nouveau log
-                                if (newLog) {
-                                    log("New photo found", newLog);
+                                this.data = data;
+                                this.chooseMarkers(this.userid);
+                                this.action_map();
+                                this.zoom_lastmarker(this.userid);
 
-                                    this.storyUser = this.user.userid;
-                                    this.storyName = this.user.username;
-                                    
-                                    // Passer en mode map
-                                    this.component = 'map';
-                                    this.mapFooter = this.getMapFooter();
-
-                                    Alpine.store('headerActions').initTitle({
-                                        story: "map", 
-                                        storyUserName: this.user.username, // Nom de l'utilisateur qui prend la photo
-                                        storyUser: this.user.userid        // ID de l'utilisateur qui prend la photo
-                                    });
-                                    
-                                    // Zoomer sur le nouveau marker
-                                    const newMarker = this.cursors.find(marker => 
-                                        marker.getLatLng().lat === newLog.loglatitude && 
-                                        marker.getLatLng().lng === newLog.loglongitude
-                                    );
-                                    if (newMarker) {
-                                        this.map.setView(newMarker.getLatLng(), 12);
-                                    }
-                                }
                                 this.removePopup();
                                 resolve(true);
                             }
@@ -1134,14 +1103,7 @@ document.addEventListener('alpine:init', () => {
 
         async showUserStory(entry){
             log(entry);
-            log("---after---");
-            this.story = "story";
-            this.storyUser = entry.loguser;
-            log(this.storyUser);
-            this.storyName = entry.username_formated;
-            log(this.storyName);
-            this.storyPhotoOnly = false;
-            log(this.storyUser);
+            this.chooseMarkers(entry.loguser);
             this.action_story();
         },
 
@@ -1233,13 +1195,6 @@ document.addEventListener('alpine:init', () => {
             if (targetMarker) {
                 this.map.setView(targetMarker.getLatLng(), 15); // Adjust zoom level as necessary
             }
-        },
-
-        async action_story(){
-            log();
-            Alpine.store('headerActions').initTitle(this.buildStoryObj("story"));
-            this.component = "story";
-            this.mapFooter = this.getMapFooter();
         },
 
         sortData(data, field, direction) {

@@ -38,116 +38,6 @@ class MapService
     public function getError() {
         return $this->error;
     }
-    
-    // Deprecated
-    // public function loadMapData(){
-    //     lecho("load map data $this->routeid");
-    //     return $this->get_map_data($this->routeid);
-    // }
-
-    // public function loadData(){
-    //     $routeid = $_POST['routeid'] ?? '';
-    //     $nowuserid = filter_var($_POST['nowuserid'] ?? 0, FILTER_VALIDATE_INT);
-    //     $storymode = filter_var($_POST['storymode'] ?? false, FILTER_VALIDATE_BOOLEAN);
-
-    //     lecho("loadData - RouteId: $routeid, NowUserId: $nowuserid, StoryMode: $storymode");
-        
-    //     if ($nowuserid>0) {
-    //         // Mode utilisateur spécifique
-    //         lecho("LoadData $nowuserid on route $routeid");
-    //         return $this->get_userMarkers($nowuserid, $routeid);
-    //     } else {
-    //         // Mode général (map ou story)
-    //         lecho("MapData");
-    //         return $this->get_map_data($routeid, $storymode);
-    //     }
-    // }
-
-    // public function get_map_data($routeid, $storymode=false){
-
-    //     lecho("get_map_data $routeid storymode $storymode");
-
-    //     $route = $this->route->get_route_by_id($routeid);
-    //     if(!$route){
-    //         return ['status' => 'error', 'message' => 'Unknown route'];
-    //     }
-
-    //     $start = $this->resetSQLdate($route["routestart"]);
-    //     lecho("Start: " . ($start ?: 'NULL'));
-    //     $stop = $this->resetSQLdate($route["routestop"]);
-
-    //     if (isset($route['routelastdays']) && $route['routelastdays'] > 0) {
-    //         $lastDaysTimestamp = date('Y-m-d H:i:s', time() - ($route['routelastdays'] * 86400));
-    //         if ($lastDaysTimestamp > $start) {
-    //             $start = $lastDaysTimestamp;
-    //         }
-    //     }
-    //     lecho("Start: " . ($start ?: 'NULL') . " Stop: " . ($stop ?: 'NULL'));
-
-    //     $currentDate = date('Y-m-d H:i:s');
-
-    //     $hasStartFilter = !empty($start) && ($start < $currentDate);
-    //     $hasStopFilter = !empty($stop);
-
-    //     $query = "SELECT *
-    //         FROM rlogs
-    //         INNER JOIN users ON rlogs.loguser = users.userid
-    //         WHERE rlogs.logroute = ? ";
-
-    //     if(!$storymode){
-    //         lecho("Not Story Mode");
-    //         $query .= "AND (rlogs.loguser, rlogs.logtime) IN (
-    //                 SELECT loguser, MAX(logtime)
-    //                 FROM rlogs
-    //                 WHERE logroute = rlogs.logroute";
-    //     }
-
-    //     if ($hasStartFilter) {
-    //         $query .= " AND logtime >= ?";
-    //     }
-
-    //     if ($hasStopFilter) {
-    //         $query .= " AND logtime <= ?";
-    //     }
-
-    //     if(!$storymode){
-    //         $query .= " GROUP BY loguser) ORDER BY rlogs.logtime DESC";
-    //     }else{
-    //         $query .= " ORDER BY rlogs.logtime DESC";   
-    //     }
-    //     // lecho($query);
-
-    //     $stmt = $this->db->prepare($query);
-
-    //     if ($hasStartFilter && $hasStopFilter) {
-    //         $stmt->bind_param("iss", 
-    //             $routeid,
-    //             $start,
-    //             $stop, 
-    //         );
-    //     }else if($hasStartFilter){
-    //         $stmt->bind_param("is",
-    //             $routeid, 
-    //             $start,
-    //         );
-    //     }else if($hasStopFilter){
-    //         $stmt->bind_param("is",
-    //             $routeid, 
-    //             $stop,
-    //         );
-    //     }else{
-    //         $stmt->bind_param("i",
-    //             $routeid
-    //         );
-    //     }
-
-    //     $data = $this->format_map_data($stmt, $route);
-
-    //     if($storymode){
-    //         $data['route'] = $route;
-    //     }
-    //     return $data;
-    // }
 
     public function getData($routeid=null){
         if(!$routeid){
@@ -255,13 +145,6 @@ class MapService
         }
         return ['status' => 'error', 'message' => 'Map format fail'];
     }
-
-
-    // public function story(){
-    //     lecho("story");
-    //     $routeid =  $_POST['routeid'] ?? '';
-    //     return $this->get_map_data($routeid, true);
-    // }
 
     public function sendgeolocation(){
         lecho("sendgeolocation");
@@ -451,7 +334,7 @@ class MapService
         if($target){
             if(Tools::resizeImage($photosource, $target, IMAGE_DEF)){
                 if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, 1, $timestamp)){
-                    return $this->get_userMarkers($this->userid, $this->routeid);
+                    return $this->getData($this->routeid);
                 }
             }
             lecho("resizeFail");

@@ -22,8 +22,7 @@ Debugs :-)
 
 ### Bugs
 
-Localisation et photo sur app.
-Chemins natifs
+Popup sur post photo iOS
 
 ### Done
 
