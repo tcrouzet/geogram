@@ -4,10 +4,6 @@ namespace App\Services;
 class FilesManager {
     public $absolute_path;
 
-    //OLD
-    //public $userimg;
-    //public $userimg_dir;
-
     //NEW
     public $datadir;
     public $datadir_abs;
@@ -19,66 +15,8 @@ class FilesManager {
         $this->datadir_abs = $this->absolute_path . $this->datadir;
     }
 
-    // public function chat_imgdir($chatid) {
-    //     return $this->userimg . (string)round($chatid) . "/";
-    // }
 
-    // public function chatWeb($chatObj, $absolute=true) {
-    //     $prefix = "";
-    //     if($absolute)
-    //         $prefix = BASE_URL;
-    //     return $prefix . "/". $chatObj['chatname'];
-    // }
-
-    //USER
-
-    // public function user_dir($chatid,$userid) {
-    //     return $this->chat_imgdir($chatid) . (string)round($userid) ."/";
-    // }
-
-    // public function userWeb($chatObj, $userid, $absolute=false) {
-    //     $prefix = "";
-    //     if($absolute)
-    //         $prefix = BASE_URL;
-    //     return $prefix . "/". $chatObj['chatname']."/user/".round($userid);
-    // }
-
-    // public function make_chat_dir($chatid) {
-    //     $path = $this->chat_imgdir($chatid);
-    //     if (!is_dir($path)) {
-    //         if(!mkdir($path, 0777, true)) {
-    //             lexit("make_userimg_dir BUG");
-    //         }
-    //     }
-    //     return true;
-    // }
-
-    // public function rename_chat_dir($oldid,$newid){
-    //     $old_path = $this->chat_imgdir($oldid);
-    //     if (!is_dir($old_path)) {
-    //         return $this->make_chat_dir($newid);
-    //     }else{
-    //         $new_path = $this->chat_imgdir($newid);
-    //         if(rename($old_path, $new_path))
-    //             return true;
-    //         else
-    //             return false;
-    //     }
-    // }
-
-    // public function delete_chat_dir($chatid){
-    //     $path = $this->chat_imgdir($chatid);
-    //     return $this->supDir($path);
-    // }
-
-    // public function delete_user_dir($chatid,$userid){
-    //     $dir = $this->user_dir($chatid,$userid);
-    //     return $this->supDir($dir);
-    // }
-
-    // TOOLS
-
-    function supDir($dossier) {
+    public function supDir($dossier) {
         if (is_dir($dossier)) {
             $objets = scandir($dossier);
             foreach ($objets as $objet) {
@@ -100,7 +38,37 @@ class FilesManager {
 
     // NEW
 
-    function purgeUserData($userid) {
+    public function transfertUserData($fromUserId, $toUserId){
+        lecho("Transferring user data from $fromUserId to $toUserId");
+        $fromDir = $this->user_dir2($fromUserId);
+        $toDir =  $this->user_dir2($toUserId);
+        
+        if (!is_dir($fromDir)) {
+            lecho("Source directory does not exist");
+            return true;
+        }
+        
+        if (!is_dir($toDir)) {
+            if (!mkdir($toDir, 0777, true)) {
+                lecho("Failed to create destination directory");
+                return false;
+            }
+        }
+        
+        // Utiliser une commande système pour copier (plus rapide pour de gros volumes)
+        $command = "cp -r " . escapeshellarg($fromDir . "*") . " " . escapeshellarg($toDir);
+        $result = shell_exec($command . " 2>&1");
+        
+        if ($result === null) {
+            lecho("Transfer completed successfully");
+            return true;
+        }else{
+            lecho("Transfer failed: " . $result);
+            return false;
+        }
+    }
+
+    public function purgeUserData($userid) {
         $dir = $this->user_dir2($userid);
 
         if ($dir) {
@@ -122,24 +90,6 @@ class FilesManager {
         return $this->supDir($dir);
     }
 
-
-    // CHAT PHOTO
-
-    // public function chatphoto($chatid) {
-    //     return $this->chat_imgdir($chatid) . "chatphoto.jpeg";
-    // }
-
-    // public function chatphotoWeb($chatObj,$timestamp=false,$absolute=false) {
-    //     $path = $this->chatphoto($chatObj['chatid']);
-    //     $prefix = "";
-    //     if($absolute){
-    //         $prefix = BASE_URL;
-    //     }
-    //     if($timestamp)
-    //         return $prefix . $this->relative($path) . "?" . strtotime(@$chatObj['last_update']);
-    //     else
-    //         return $prefix . $this->relative($path);
-    // }
 
     // NEW
 
@@ -194,30 +144,6 @@ class FilesManager {
             return false;
         }
     }
-
-
-    //GPX
-
-    // public function chatgpx($chatid) {
-    //     return $this->chat_imgdir($chatid) . "optimize.gpx";
-    // }
-
-    // public function chatgpx_source($chatid) {
-    //     return $this->chat_imgdir($chatid) . "source.gpx";        
-    // }
-
-    // public function chatgpxWeb($chatid,$timestamp=false) {
-    //     $gpx = $this->chatgpx($chatid);
-    //     if(file_exists($gpx)){
-    //         $gpx = $this->relative($gpx);
-    //         if($timestamp)
-    //             return $gpx .= "?" . strtotime($timestamp);
-    //         else
-    //             return $gpx;
-    //     }else
-    //         return 'v.gpx';
-        
-    // }
 
     //NEW
 
@@ -289,82 +215,6 @@ class FilesManager {
             return false;
         }
     }
-
-    //AVATAR
-
-    // public function avatarFile($chatid,$userid){
-    //     return $this->user_dir($chatid,$userid) ."avatar.jpeg";
-    // }
-
-    // public function avatarExists($chatid,$userid) {
-    //     $path = $this->avatarFile($chatid,$userid);
-    //     if (file_exists($path)){
-    //         //echo("exist: $path");
-    //         return $path;
-    //     }else{
-    //         return false;
-    //     }
-    // }
-
-    // public function avatar($chatid,$userid) {
-    //     $dir = $this->user_dir($chatid,$userid);
-    //     if(!is_dir($dir))
-    //         @mkdir($dir, 0777, true);
-    //     return $dir. "avatar.jpeg";
-    // }
-
-    // public function avatarWeb($chatObj,$userid, $timestamp=false, $absolute=false) {
-    //     $path = $this->avatarFile($chatObj['chatid'],$userid);
-    //     $prefix = "";
-    //     if($absolute)
-    //         $prefix = BASE_URL;
-    //     if($timestamp)
-    //         return $prefix . $this->relative($path) . "?" . strtotime(@$chatObj['last_update']);
-    //     else
-    //         return $prefix . $this->relative($path);
-    // }
-
-
-    // public function chatimg($chatid,$userid,$timestamp) {
-    //     $path= $this->chat_imgdir($chatid) . (string)round($userid). "/";
-    //     if (!is_dir($path)) {
-    //         if(!mkdir($path, 0777, true)) {
-    //             lexit("make_chatimg_dir BUG");
-    //         }
-    //     }
-
-    //     $imgpath_root = $path . $timestamp;
-        
-    //     $i = 0;
-    //     $indice = ".png";
-    //     while(file_exists($imgpath_root . $indice)){
-    //         lecho("Exist $i");
-    //         $i++;
-    //         $indice = "_$i.png";
-    //     }
-
-    //     if($i>0)
-    //         $pname = "_$i";
-    //     else
-    //         $pname = "";
-
-    //     return [
-    //         'full_path' => "/" . ltrim($imgpath_root,"/") . $indice,
-    //         'pname' => $timestamp.$pname,
-    //         'relative' => $this->relative($imgpath_root . $indice)
-    //     ];
-    // }
-
-    // public function relative($path){
-    //     $path = str_replace($this->absolute_path,"",$path);
-    //     $path = ltrim($path,"/");
-    //     if (substr($path, 0, 8) !== $this->userimg_dir) {
-    //         $path = "userimg" . "/" . $path;
-    //     }
-    //     return $path;
-    // }
-
-    //NEW
     
     public function relativize($path,$datadir){
         $path = str_replace($this->absolute_path,"",$path);
@@ -383,21 +233,5 @@ class FilesManager {
     public function help_admin(){
         return BASE_URL."help#help_admin";
     }
-
-    // public function old_chatphoto($chatid) {
-    //     return $this->userimg . "chatphoto/". (string)round($chatid) . ".jpeg";
-    // }
-
-    // public function old_chatgpx($chatid) {
-    //     return $this->userimg . "gpx/". (string)round($chatid) . ".gpx";
-    // }
-
-    // public function old_chatgpx_source($chatid) {
-    //     return $this->userimg . "gpx/". (string)round($chatid) . "-source.gpx";
-    // }
-
-    // public function old_avatar($userid) {
-    //     return $this->userimg . "avatars/" . (string)round($userid). ".jpeg";
-    // }
 
 }

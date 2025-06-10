@@ -180,23 +180,42 @@ class UserService
         }
     }
 
-    public function get_user_by_telegramid($userID) {
-        lecho("get_user_by_telegramid");
+    // public function get_user_by_telegramid($userID) {
+    //     lecho("get_user_by_telegramid");
+    //     $query = "SELECT * FROM users u
+    //         LEFT JOIN routes r ON u.userroute = r.routeid 
+    //         LEFT JOIN connectors c ON u.userid = c.conuserid 
+    //         WHERE u.usertelegram = ?";
+    
+    //     $stmt = $this->db->prepare($query);
+    //     $stmt->bind_param("i", $userID);    
+    //     $stmt->execute();
+    //     $result = $stmt->get_result();
+    
+    //     if ($result && $result->num_rows > 0) {
+    //         return $result->fetch_assoc();
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    public function get_users_by_telegramid($userID) {
+        lecho("get_users_by_telegramid");
         $query = "SELECT * FROM users u
             LEFT JOIN routes r ON u.userroute = r.routeid 
-            LEFT JOIN connectors c ON u.userid = c.conuserid 
             WHERE u.usertelegram = ?";
-    
+
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $userID);    
         $stmt->execute();
         $result = $stmt->get_result();
-    
-        if ($result && $result->num_rows > 0) {
-            return $result->fetch_assoc();
-        } else {
-            return false;
+
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
         }
+        
+        return $users;
     }
 
     public function get_user_by_route($routeid) {
@@ -261,6 +280,26 @@ class UserService
 
         if ($this->userid) {
             $telegram_id = intval($telegram["id"]);
+
+            //Search user with same $telegram_id
+            $existingUsers = $this->get_users_by_telegramid($telegram_id);
+
+            if ($existingUsers) {
+
+                foreach($existingUsers as $existingUser){
+                    lecho("Récup user");
+                    // Vérifier si c'est un mail de type id@telegram
+                    if ($this->isTelegramUserEmail($existingUser['useremail'])) {
+                        lecho("Existing user found with telegram_id: $telegram_id");
+                        //Récupérer cet utilisateur
+                        $this->mergeAccounts($existingUser['userid'], $this->userid);
+                    }else{
+                        return ['status' => 'error',  'message' => 'Telegram account already in use'];
+                    }
+                }
+
+            }
+
             //$telegram["photo_url"];
             if ($this->set_user_telegram($this->userid, $telegram_id) ){
                 $this->user['usertelegram'] = $telegram_id; 
@@ -270,6 +309,35 @@ class UserService
             }
         }
         return ['status' => 'error', 'message' => 'Unknown user'];    
+    }
+
+    private function mergeAccounts($fromUserId, $toUserId) {
+        lecho("Merging accounts: $fromUserId -> $toUserId");
+        
+        // Transférer les logs
+        $stmt = $this->db->prepare("UPDATE rlogs SET loguser = ? WHERE loguser = ?");
+        $stmt->bind_param("ii", $toUserId, $fromUserId);
+        $stmt->execute();
+        
+        // Transférer les connexions
+        $stmt = $this->db->prepare("UPDATE connectors SET conuserid = ? WHERE conuserid = ? AND NOT EXISTS (SELECT 1 FROM connectors c2 WHERE c2.conuserid = ? AND c2.conrouteid = connectors.conrouteid)");
+        $stmt->bind_param("iii", $toUserId, $fromUserId, $toUserId);
+        $stmt->execute();
+        
+        // Supprimer les connexions en doublon restantes
+        $stmt = $this->db->prepare("DELETE FROM connectors WHERE conuserid = ?");
+        $stmt->bind_param("i", $fromUserId);
+        $stmt->execute();
+        
+        // Transférer les fichiers si nécessaire
+        $this->fileManager->transfertUserData($fromUserId, $toUserId);
+        
+        // Supprimer l'ancien compte
+        $this->purgeuser($fromUserId);
+        $this->delete_user($fromUserId);
+        
+        lecho("Account merge completed");
+        return true;
     }
 
     public function getUserChannels(){
