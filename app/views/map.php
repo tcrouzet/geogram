@@ -500,7 +500,6 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-
         addComment(logId) {
             this.currentLogId = logId;
             const entry = this.logs.find(log => log.logid === logId);
@@ -631,6 +630,7 @@ document.addEventListener('alpine:init', () => {
                 this.action_map();
                 try {
                     const bestPosition = await this.get_localisation();
+                    this.removePopup();
                     if(bestPosition){
                         this.bestPosition = bestPosition;
                         this.sendgeolocation();
@@ -677,15 +677,41 @@ document.addEventListener('alpine:init', () => {
 
                         if (bestAccuracy < 20) {
                             navigator.geolocation.clearWatch(watchId);
-                            this.removePopup();
                             resolve(bestPosition);
                         } else if (bestAccuracy < 10000) {
-                            this.updatePopup(`Accuracy: ${bestAccuracy}m`, watchId, bestPosition, resolve, reject);
+                            // Afficher popup avec boutons OK/Cancel
+                            this.showPopup(
+                                `Accuracy: ${bestAccuracy}m`,
+                                true,  // OK button
+                                true,  // Cancel button
+                                () => { // OK callback
+                                    navigator.geolocation.clearWatch(watchId);
+                                    resolve(bestPosition);
+                                },
+                                () => { // Cancel callback
+                                    navigator.geolocation.clearWatch(watchId);
+                                    reject('Cancelled by user');
+                                }
+                            );
                         }
                     },
                     error => {
-                        this.updatePopup('Geolocalisation Error:' + error, watchId, bestPosition, resolve, reject);
-                        reject(error);
+                        navigator.geolocation.clearWatch(watchId);
+                        this.showPopup(
+                            'Geolocalisation Error: ' + error.message,
+                            true,  // OK button
+                            true,  // Cancel button
+                            () => { // OK callback - utiliser la meilleure position disponible
+                                if (bestPosition) {
+                                    resolve(bestPosition);
+                                } else {
+                                    reject(error);
+                                }
+                            },
+                            () => { // Cancel callback
+                                reject('Cancelled by user');
+                            }
+                        );
                     },
                     options
                 );
@@ -708,22 +734,6 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        updatePopup(message, watchId, bestPosition, resolve, reject) {
-            this.showPopup(
-                message, 
-                true, // OK button
-                true, // Cancel button
-                () => { // OK callback
-                    navigator.geolocation.clearWatch(watchId);
-                    resolve(bestPosition);
-                },
-                () => { // Cancel callback
-                    navigator.geolocation.clearWatch(watchId);
-                    reject('Cancelled by user');
-                }
-            );
-        },
-
         showPopup(message, validate = false, cancel = false, okCallback = null, cancelCallback = null) {
             log(message)
             this.popupMessage = message;
@@ -737,15 +747,17 @@ document.addEventListener('alpine:init', () => {
         popupOKAction() {
             if (this.popupOKCallback) {
                 this.popupOKCallback();
+            }else{
+                this.removePopup();
             }
-            this.removePopup();
         },
 
         popupCancelAction() {
             if (this.popupCancelCallback) {
                 this.popupCancelCallback();
+            }else{
+                this.removePopup();
             }
-            this.removePopup();
         },
 
         removePopup(){
@@ -820,14 +832,6 @@ document.addEventListener('alpine:init', () => {
             Alpine.store('headerActions').initTitle(this.buildStoryObj("map"));
             this.component = "map";
 
-            // // Vérifier si on a les bonnes données pour l'utilisateur
-            // if (this.storyUser) {
-            //     log("storyUser OK");
-            //     this.updateMarkers(this.logs);
-            //     this.fit_markers();
-            //     this.component = "map";
-            // }
-
             this.mapFooter = this.getMapFooter();
 
             this.$nextTick(() => {
@@ -881,13 +885,13 @@ document.addEventListener('alpine:init', () => {
             this.map.once('click', clickHandler);
         },
 
-        action_photo() {
+        async action_photo() {
             if(this.canPost){
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
                 input.capture = 'camera';
-                this.handleImageSelection(input);
+                await this.handleImageSelection(input);
             }else{
                 this.showAccessMessage();
             }
@@ -905,43 +909,50 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        handleImageSelection(input) {
-            input.onchange = (e) => {
+        async handleImageSelection(input) {
+            input.onchange = async (e) => {
                 const files = e.target.files;
                 if (!files || files.length === 0) return;
-                
+
                 this.showPopup("Uploading…");
-                Array.from(files).forEach(file => {
-                    if (!file.type.startsWith('image/')) {
-                        alert('Please select only images');
-                        return;
-                    }
+                
+                try {
+                    for (const file of Array.from(files)) {
+                        if (!file.type.startsWith('image/')) {
+                            alert('Please select only images');
+                            continue;
+                        }
 
-                    // Lancer l'extraction EXIF
-                    this.getExifData(file)
-                        .then(gpsData => {
-                            log('GPS data:');
-                            this.uploadImage(file, gpsData);
-                        })
-                        .catch(error => {
-
+                        let gpsData = null;
+                        
+                        try {
+                            // Essayer d'abord les données EXIF
+                            gpsData = await this.getExifData(file);
+                            log('GPS data from EXIF');
+                        } catch (error) {
                             log('No GPS data in Exif:', error);
-                            // Si pas d'EXIF, utiliser la géolocalisation actuelle
-                            return this.get_localisation()
-                                .then(position => {
-                                    log("position OK");
-                                    this.uploadImage(file, position);
-                                })
-                                .catch(geoError => {
-                                    // alert('No location available' + geoError );
-                                    return;
-                            });            
+                            try {
+                                // Si pas d'EXIF, utiliser la géolocalisation
+                                gpsData = await this.get_localisation();
+                                log("Position from geolocation OK");
+                            } catch (geoError) {
+                                log('Geolocation failed:', geoError);
+                                continue; // Passer au fichier suivant
+                            }
+                        }
 
-                        });
-            
-                });
-                this.removePopup();
+                        if (gpsData) {
+                            this.showPopup("Uploading continue…",false, false);
+                            await this.uploadImage(file, gpsData);
+                        }
+                    }
+                } catch (error) {
+                    log('Error in handleImageSelection:', error);
+                } finally {
+                    this.removePopup();
+                }
             };
+            
             input.click();
         },
 
@@ -986,56 +997,45 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        uploadImage(file, gpsData) {
-            return new Promise((resolve, reject) => {
-                try {
-                    this.showPopup("Processing image...");
+        async uploadImage(file, gpsData) {
+            log();
+            try {
 
+                const base64Image = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    
-                    reader.onload = async (event) => {
-                        try {
-                            const base64Image = event.target.result;
-
-                            if(!gpsData){
-                               log('Error:', "No GPS Data");
-                                resolve(false);
-                            }
-                    
-                            const data = await apiService.call('logphoto', {
-                                userid: this.user.userid,
-                                routeid: this.route.routeid,
-                                photofile: base64Image,
-                                latitude: gpsData['latitude'],
-                                longitude: gpsData['longitude'],
-                                timestamp: gpsData['timestamp']
-                            });
-
-                            if (data.status == 'success') {
-
-                                this.data = data;
-                                this.chooseMarkers(this.userid);
-                                this.action_map();
-                                this.zoom_lastmarker(this.userid);
-
-                                this.removePopup();
-                                resolve(true);
-                            }
-                            this.removePopup();
-                            resolve(false);
-                        } catch (error) {
-                            this.removePopup();
-                            reject(error);
-                        }
-                    };
-                    this.removePopup();
+                    reader.onload = (event) => resolve(event.target.result);
                     reader.onerror = (error) => reject(error);
-                } catch (error) {
-                    this.removePopup();
-                    reject(error);
+                    reader.readAsDataURL(file);
+                });
+                log("base64 OK");
+                
+                if (!gpsData) {
+                    log('Error:', "No GPS Data");
+                    return false;
                 }
-            });
+
+                const data = await apiService.call('logphoto', {
+                    userid: this.user.userid,
+                    routeid: this.route.routeid,
+                    photofile: base64Image,
+                    latitude: gpsData['latitude'],
+                    longitude: gpsData['longitude'],
+                    timestamp: gpsData['timestamp']
+                });
+
+                if (data.status == 'success') {
+                    this.data = data;
+                    this.chooseMarkers(this.userid);
+                    this.action_map();
+                    this.zoom_lastmarker(this.userid);
+                    return true;
+                }
+                
+                return false;
+            } catch (error) {
+                log('Error uploading image:', error);
+                return false;
+            }
         },
 
         showPhoto() {
@@ -1098,7 +1098,7 @@ document.addEventListener('alpine:init', () => {
         async showUserOnMap(entry) {
             this.component = 'map';
             this.userMarkers(entry.userid);
-            this.map.setView([entry.loglatitude, entry.loglongitude], 12);
+            this.zoom_lastmarker(entry.userid, entry.logid);
         },
 
         async showUserStory(entry){
@@ -1168,16 +1168,31 @@ document.addEventListener('alpine:init', () => {
             return {story: story, storyUserName: this.storyName, storyUser: this.storyUser}
         },
 
-        zoom_lastmarker(userid = null) {
+        zoom_lastmarker(userid = null, logid = null) {
             let targetMarker = null;
 
-            // this.map.closePopup();
+                // Si un logid est spécifié, chercher ce marker en priorité
+            if (logid !== null) {
+                for (let i = 0; i < this.cursors.length; i++) {
+                    const cursor = this.cursors[i];
+                    const log = this.slogs.find(log => 
+                        log.loglatitude === cursor.getLatLng().lat && 
+                        log.loglongitude === cursor.getLatLng().lng &&
+                        log.logid === logid
+                    );
 
-            if (userid !== null) {
+                    if (log) {
+                        targetMarker = cursor;
+                        break;
+                    }
+                }
+            }
+            // Sinon, si un userid est spécifié, chercher le dernier marker de cet utilisateur
+            else if (userid !== null) {
                 // Find the last marker for the specified user
                 for (let i = this.cursors.length - 1; i >= 0; i--) {
                     const cursor = this.cursors[i];
-                    const log = this.logs.find(log => log.loglatitude === cursor.getLatLng().lat && log.loglongitude === cursor.getLatLng().lng);
+                    const log = this.slogs.find(log => log.loglatitude === cursor.getLatLng().lat && log.loglongitude === cursor.getLatLng().lng);
 
                     if (log && log.userid === userid) {
                         targetMarker = cursor;
@@ -1193,9 +1208,27 @@ document.addEventListener('alpine:init', () => {
 
             // Zoom to the target marker
             if (targetMarker) {
-                this.map.setView(targetMarker.getLatLng(), 15); // Adjust zoom level as necessary
+                this.highlightMarker(targetMarker);
+                this.map.setView(targetMarker.getLatLng(), 15);
             }
         },
+
+        highlightMarker(marker) {
+            // Sauvegarder l'icône originale
+            const originalIcon = marker.getIcon();
+            
+            // Créer une version agrandie et avec bordure rouge
+            const highlightIcon = L.divIcon({
+                className: 'custom-div-icon highlighted',
+                html: originalIcon.options.html.replace('class="marker"', 'class="marker highlighted"'),
+                iconSize: [50, 50], // Plus grand
+                iconAnchor: [25, 25]
+            });
+            
+            // Appliquer l'icône mise en évidence
+            marker.setIcon(highlightIcon);
+        },
+
 
         sortData(data, field, direction) {
             return [...data].sort((a, b) => {

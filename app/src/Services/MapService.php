@@ -293,23 +293,23 @@ class MapService
         return $updateStmt->execute();
     }
 
-    public function userMarkers() {
-        lecho("userMarkersN");
+    // public function userMarkers() {
+    //     lecho("userMarkersN");
     
-        $loguser = $_POST['loguser'] ?? '';
-        return $this->get_userMarkers($loguser, $this->routeid);
+    //     $loguser = $_POST['loguser'] ?? '';
+    //     return $this->get_userMarkers($loguser, $this->routeid);
 
-    }
+    // }
 
-    public function get_userMarkers($userid, $routeid) {
-        $route = $this->route->get_route_by_id($routeid);
+    // public function get_userMarkers($userid, $routeid) {
+    //     $route = $this->route->get_route_by_id($routeid);
     
-        $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ? ORDER BY l.logtime DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $userid, $routeid);
+    //     $query = "SELECT * FROM rlogs l INNER JOIN users u ON l.loguser = u.userid WHERE loguser = ? AND logroute = ? ORDER BY l.logtime DESC";
+    //     $stmt = $this->db->prepare($query);
+    //     $stmt->bind_param("ii", $userid, $routeid);
     
-        return $this->format_map_data($stmt, $route);
-    }
+    //     return $this->format_map_data($stmt, $route);
+    // }
 
     public function logphoto(){
         lecho("Route Photo Upload2");
