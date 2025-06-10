@@ -182,6 +182,7 @@ class Tools
     }
 
     public static function rotateImageFile($imagePath, $orientation=-90) {
+        lecho("rotateImageFile $orientation");
         $image = imagecreatefromwebp($imagePath);
         if (!$image) return false;
         
@@ -192,6 +193,7 @@ class Tools
         }
         
         $success = imagewebp($rotatedImage, $imagePath, IMAGE_COMPRESS);
+        lecho("rotateImageFile $success");
         
         imagedestroy($image);
         imagedestroy($rotatedImage);

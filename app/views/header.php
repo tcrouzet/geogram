@@ -58,8 +58,8 @@ document.addEventListener('alpine:init', () => {
         menuOpen: false,
         isLoggedIn: false,
         isOnRoute: false,
-        storyUser: <?= json_encode($userid) ?>,
-        storyNowUser: <?= json_encode($user) ?>,
+        storyUser: <?= json_encode($UserStoryId) ?>,
+        storyNowUser: <?= json_encode($UserStory) ?>,
         component: 'splash',
         title: '',
 

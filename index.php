@@ -34,11 +34,11 @@ $parts = array_pad($parts, 3, '');
 //dump($parts);exit();
 
 //Init
-list($route_slug,$page,$userid)=$parts;
+list($route_slug,$page,$UserStoryId)=$parts;
 $routeid = "";
 $route = null;
 $pagename = "";
-$user = null;
+$UserStory = null;
 $OnMap = true;
 
 //dump($group);
@@ -58,8 +58,8 @@ if (!empty($route_slug) && !in_array($route_slug, FORBIDDEN_SLUG)) {
     if($route){
         $pagename = $route['routename'];
     }
-    if($userid){
-        $user = $user_O->get_user($userid);
+    if($UserStoryId){
+        $UserStory = $user_O->get_user($UserStoryId);
     }
 }elseif(in_array($route_slug, FORBIDDEN_SLUG)){
     $OnMap = false;

@@ -30,14 +30,14 @@
     <div  x-show="component === 'story'" id="storycontenair" class="longcontenair">
         <div id="story" class="long">
 
-            <template x-if="logs.length === 0">
+            <template x-if="slogs.length === 0">
                 <div class="empty-message">
                     <h1>No story yet</h1>
                     <p>Adventurers need to geolocalise…</p>
                 </div>
             </template>
 
-            <template x-if="logs.length > 0">
+            <template x-if="slogs.length > 0">
                 <div>
                     <div class="sort-controls">
                         <button @click="StorySortBy('logtime')" class="sort-btn">
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="story-logs">
-                        <template x-for="log in logs.filter(log => {
+                        <template x-for="log in slogs.filter(log => {
                             if (!storyPhotoOnly && storyUser === '') return true;    
                             if (storyPhotoOnly && log.logphoto <= 0) return false;                        
                             if (storyUser && log.loguser !== storyUser) return false;
@@ -84,11 +84,11 @@
                                     </template>
 
                                     <!-- Photos additionnelles du même endroit -->
-                                    <template x-if="log.morephotologs.length > 0">
+                                    <!-- <template x-if="log.morephotologs.length > 0">
                                         <template x-for="additionalPhoto in log.morephotologs">
                                             <img :src="additionalPhoto" class="log-photo" alt="Additional photo">
                                         </template>
-                                    </template>
+                                    </template> -->
                                     
                                     <template x-if="log.comment_formated">
                                         <p class="log-comment" x-html="log.comment_formated"></p>
@@ -139,12 +139,12 @@
             <template x-if="logs.length > 0">
                 <div>
                     <div class="list-header">
-                        <div class="sortable-col" @click="sortBy('username')">
+                        <div class="sortable-col" @click="sortBy('logtime')">
                             <span x-text="`${logs.length} ${getAdventurerLabel()}`"></span>
                             <i class="fas" :class="{
-                                'fa-sort': sortField !== 'username',
-                                'fa-sort-up': sortField === 'username' && sortDirection === 'asc',
-                                'fa-sort-down': sortField === 'username' && sortDirection === 'desc'
+                                'fa-sort': sortField !== 'logtime',
+                                'fa-sort-up': sortField === 'logtime' && sortDirection === 'asc',
+                                'fa-sort-down': sortField === 'logtime' && sortDirection === 'desc'
                             }"></i>
                         </div>
                         <div class="stats">
@@ -229,6 +229,7 @@ document.addEventListener('alpine:init', () => {
         route: null,
         user: null,
         page: <?= json_encode($page) ?>,
+        data: null,
         //Calculated
         isLoggedIn: false,
         isOnRoute: false,
@@ -237,6 +238,7 @@ document.addEventListener('alpine:init', () => {
         userroute: 0,
         routeid: 0,
         logs: [],
+        slogs: [],
         // Map
         map: [],
         cursors: Alpine.raw([]),
@@ -275,6 +277,7 @@ document.addEventListener('alpine:init', () => {
             await initService.initComponent(this);
             
             if(this.component == 'map' || this.component == 'list' || this.component == 'story'){
+                await this.getData();
                 await new Promise(resolve => setTimeout(resolve, 100));
                 await this.initializeMap();
             }
@@ -306,12 +309,6 @@ document.addEventListener('alpine:init', () => {
                 }
             });
 
-            // if(this.component == "story"){
-            //     await this.action_story();
-            // }else if(this.component == "list"){
-            //     await this.action_list();
-            // }
-
             this.loading = false;
             log("Init Map ended");
         },
@@ -323,33 +320,16 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        // Deprecated
-        async initializeMapOld() {
+        async getData() {
             log();
-            this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
-                // attribution: '',
-                maxZoom: 18,
-            }).addTo(this.map);
-
-            await this.loadMapData();
-            this.updateMarkers(this.logs);
-
-            if(this.storyUser){
-                log("storyUser",this.storyUser)
-                await this.userMarkers(this.storyUser);
+            const data = await apiService.call('getData', {
+                routeid: this.route.routeid,
+            });
+            
+            if (data.status == 'success') {
+                log("Data loaded successfully");
+                this.data = data;
             }
-
-            if(this.page && this.page != "map"){
-                this.component = this.page;
-            }
-
-            if(this.newPhoto){
-                this.showPhoto();
-            }
-            log("end");
         },
 
         async initializeMap() {
@@ -363,7 +343,12 @@ document.addEventListener('alpine:init', () => {
                 maxZoom: 18,
             }).addTo(this.map);
 
-            await this.loadData();
+            if(this.data){
+                log("Data ready");
+                this.geoJSON = this.data.geojson;
+                this.updateGPX();
+                this.chooseMarkers(this.storyUser);
+            }
 
             if(this.page && this.page != "map"){
                 this.component = this.page;
@@ -375,66 +360,57 @@ document.addEventListener('alpine:init', () => {
             log("end");
         },
 
-        // Deprecated
-        async loadMapData() {
-            log();
-            const data = await apiService.call('loadMapData', {
-                userroute: this.userroute,
-                routeid: this.route.routeid,
-                // userstory: this.userstory,
-                routestatus: this.route.routestatus
-            });
-            if (data.status == 'success') {
-                this.geoJSON = data.geojson;
-                this.updateGPX();
-                this.mapMode = true;
-                this.logs = data.logs;
-                log(this.logs);
-            }
-        },
-
-        async userMarkers(userid){
-
-            const data = await apiService.call('userMarkers', {
-                routeid: this.route.routeid,
-                loguser: userid
-            });
-            if (data.status == 'success') {
-                this.mapMode = false;
-                this.logs = data.logs;
-                log(this.logs[0]['username']);
-                this.storyUser = this.logs[0]['userid'];
-                this.story ="map";
-                this.storyName = this.logs[0]['username'];
-                this.updateMarkers(this.logs);
-
-                await this.$nextTick();
-
-                this.fit_markers();
-            }
-        },
-
-
-        async loadData() {
-            log();
-            const data = await apiService.call('loadData', {
-                routeid: this.route.routeid,
-                nowuserid: this.storyUser || 0,
-                storymode: this.page === 'Story',
-                routestatus: this.route.routestatus
+        // Méthode pour obtenir le dernier log de chaque utilisateur
+        getLatestUserLogs(logs) {
+            const userLatestLogs = new Map();
+            
+            logs.forEach(log => {
+                const userId = log.loguser;
+                const logTime = new Date(log.logtime).getTime();
+                
+                if (!userLatestLogs.has(userId) || 
+                    logTime > new Date(userLatestLogs.get(userId).logtime).getTime()) {
+                    userLatestLogs.set(userId, log);
+                }
             });
             
-            if (data.status == 'success') {
-                this.geoJSON = data.geojson;
-                this.updateGPX();
-                this.logs = data.logs;
-                this.updateMarkers(this.logs);
-                
-                if (this.storyUser) {
-                    this.fit_markers();
-                }
+            return Array.from(userLatestLogs.values())
+                .sort((a, b) => new Date(b.logtime) - new Date(a.logtime));
+        },
+
+        // Méthode pour obtenir tous les logs d'un utilisateur spécifique
+        getUserLogs(logs, userId) {
+            return logs.filter(log => log.loguser === userId)
+                .sort((a, b) => new Date(b.logtime) - new Date(a.logtime));
+        },
+
+        chooseMarkers(storyUserID){
+            if (storyUserID) {
+                this.userMarkers(storyUserID);
+            }else{
+                this.mapMarkers();
             }
         },
+        
+        mapMarkers(){
+            log();
+            this.logs = this.getLatestUserLogs(this.data.logs)
+            this.slogs = this.data.logs;
+            this.updateMarkers(this.logs);
+        },
+
+        userMarkers(userid){
+            log(userid);
+            this.mapMode = false;
+            this.storyUser = userid;
+            this.logs = this.getUserLogs(this.data.logs, this.storyUser);
+            this.slogs = this.logs;
+            this.storyName = this.logs[0]['username'];
+            this.updateMarkers(this.logs);
+            this.fit_markers();
+            this.story = "map";
+        },
+
 
         updateMarkers(logs) {
             log();
@@ -528,12 +504,6 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        async allUsersMarkers(){
-            await this.loadMapData();
-            this.updateMarkers(this.logs);
-            this.fit_markers();
-        },
-
 
         addComment(logId) {
             this.currentLogId = logId;
@@ -551,10 +521,11 @@ document.addEventListener('alpine:init', () => {
                 routeid: this.route.routeid,
             });
             if (data.status == 'success') {
-                this.mapMode = false;
+                this.data = data;
+                this.chooseMarkers(this.storyUser);
                 this.showCommentModal = false;
-                this.newPhoto = true;
-                this.logs = data.logs;
+            }else{
+                log(data);
             }
         },
 
@@ -565,8 +536,10 @@ document.addEventListener('alpine:init', () => {
             });
 
             if (data.status == 'success') {
-                this.mapMode = false;
-                this.logs = data.logs;
+                this.data = data;
+                this.chooseMarkers(this.storyUser);
+            }else{
+                log(data);
             }
         },
 
@@ -582,14 +555,10 @@ document.addEventListener('alpine:init', () => {
 
             if (data.status == 'success') {
                 // Supprimer le log des données locales
-                this.logs = this.logs.filter(log => log.logid !== logId);
-                                
-                // Mettre à jour les markers
-                this.updateMarkers(this.logs);
-
-        
-           } else {
-                alert('Error deleting log: ' + (data.message || 'Unknown error'));
+                this.data = data;
+                this.chooseMarkers(this.storyUser);
+            }else{
+                log(data);
             }
         },
 
@@ -1159,9 +1128,7 @@ document.addEventListener('alpine:init', () => {
 
         async showUserOnMap(entry) {
             this.component = 'map';
-
-            await this.userMarkers(entry.userid);
-
+            this.userMarkers(entry.userid);
             this.map.setView([entry.loglatitude, entry.loglongitude], 12);
         },
 
@@ -1270,20 +1237,6 @@ document.addEventListener('alpine:init', () => {
 
         async action_story(){
             log();
-            if(!this.logs){
-                log();
-                this.loading = true;
-                const data = await apiService.call('story', {
-                    routeid: this.route.routeid,
-                });
-                if (data.status == 'success') {
-                    this.logs = this.sortData(data.logs, this.sortField, this.sortDirection);
-                }else{
-                    alert(data.message);
-                    window.location.reload();
-                }
-                this.loading = false;
-            }
             Alpine.store('headerActions').initTitle(this.buildStoryObj("story"));
             this.component = "story";
             this.mapFooter = this.getMapFooter();

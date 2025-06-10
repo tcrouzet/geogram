@@ -30,14 +30,14 @@
     <div  x-show="component === 'story'" id="storycontenair" class="longcontenair">
         <div id="story" class="long">
 
-            <template x-if="slogs.length === 0">
+            <template x-if="logs.length === 0">
                 <div class="empty-message">
                     <h1>No story yet</h1>
                     <p>Adventurers need to geolocalise…</p>
                 </div>
             </template>
 
-            <template x-if="slogs.length > 0">
+            <template x-if="logs.length > 0">
                 <div>
                     <div class="sort-controls">
                         <button @click="StorySortBy('logtime')" class="sort-btn">
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="story-logs">
-                        <template x-for="log in slogs.filter(log => {
+                        <template x-for="log in logs.filter(log => {
                             if (!storyPhotoOnly && storyUser === '') return true;    
                             if (storyPhotoOnly && log.logphoto <= 0) return false;                        
                             if (storyUser && log.loguser !== storyUser) return false;
@@ -262,7 +262,6 @@ document.addEventListener('alpine:init', () => {
         storyName: '',
         sortField: 'logtime',
         sortDirection: 'desc',
-        slogs: false,
         storyPhotoOnly: false,
         // Popup
         showPopupFlag: false,
@@ -355,6 +354,7 @@ document.addEventListener('alpine:init', () => {
 
         async initializeMap() {
             log();
+            log(this.page);
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -555,18 +555,6 @@ document.addEventListener('alpine:init', () => {
                 this.showCommentModal = false;
                 this.newPhoto = true;
                 this.logs = data.logs;
-
-                // Mettre à jour aussi les données story si on est en mode story
-                if (this.component === 'story' && this.slogs) {
-                    // Trouver et mettre à jour l'entrée correspondante dans slogs
-                    const updatedLogIndex = this.slogs.findIndex(log => log.logid === this.currentLogId);
-                    if (updatedLogIndex !== -1) {
-                        const updatedMapLog = this.logs.find(log => log.logid === this.currentLogId);
-                        if (updatedMapLog) {
-                            this.slogs[updatedLogIndex] = { ...this.slogs[updatedLogIndex], ...updatedMapLog };
-                        }
-                    }
-                }
             }
         },
 
@@ -579,29 +567,6 @@ document.addEventListener('alpine:init', () => {
             if (data.status == 'success') {
                 this.mapMode = false;
                 this.logs = data.logs;
-
-                // FORCER LE RECHARGEMENT DES IMAGES avec le logupdate retourné
-                const updatedLog = this.logs.find(log => log.logid === logId);
-                if (updatedLog && updatedLog.photolog) {
-                    const timestamp = new Date(updatedLog.logupdate).getTime();
-                    updatedLog.photolog = updatedLog.photolog.split('?')[0] + '?t=' + timestamp;
-                    if (updatedLog.morephotologs) {
-                        updatedLog.morephotologs = updatedLog.morephotologs.map(photo => 
-                            photo.split('?')[0] + '?t=' + timestamp
-                        );
-                    }
-                }
-
-                // Mettre à jour aussi les données story si on est en mode story
-                if (this.component === 'story' && this.slogs) {
-                    const updatedLogIndex = this.slogs.findIndex(log => log.logid === logId);
-                    if (updatedLogIndex !== -1) {
-                        const updatedMapLog = this.logs.find(log => log.logid === logId);
-                        if (updatedMapLog) {
-                            this.slogs[updatedLogIndex] = { ...this.slogs[updatedLogIndex], ...updatedMapLog };
-                        }
-                    }
-                }
             }
         },
 
@@ -618,12 +583,7 @@ document.addEventListener('alpine:init', () => {
             if (data.status == 'success') {
                 // Supprimer le log des données locales
                 this.logs = this.logs.filter(log => log.logid !== logId);
-                
-                // Supprimer aussi des données story si on est en mode story
-                if (this.component === 'story' && this.slogs) {
-                    this.slogs = this.slogs.filter(log => log.logid !== logId);
-                }
-                
+                                
                 // Mettre à jour les markers
                 this.updateMarkers(this.logs);
 
@@ -1214,8 +1174,6 @@ document.addEventListener('alpine:init', () => {
             this.storyName = entry.username_formated;
             log(this.storyName);
             this.storyPhotoOnly = false;
-            this.logs = this.slogs;
-            // await this.$nextTick();
             log(this.storyUser);
             this.action_story();
         },
@@ -1312,14 +1270,14 @@ document.addEventListener('alpine:init', () => {
 
         async action_story(){
             log();
-            if(!this.slogs){
+            if(!this.logs){
                 log();
                 this.loading = true;
                 const data = await apiService.call('story', {
                     routeid: this.route.routeid,
                 });
                 if (data.status == 'success') {
-                    this.slogs = this.sortData(data.logs, this.sortField, this.sortDirection);
+                    this.logs = this.sortData(data.logs, this.sortField, this.sortDirection);
                 }else{
                     alert(data.message);
                     window.location.reload();
@@ -1359,7 +1317,7 @@ document.addEventListener('alpine:init', () => {
                 this.sortField = field;
                 this.sortDirection = 'desc';
             }
-            this.slogs = this.sortData(this.slogs, this.sortField, this.sortDirection);
+            this.logs = this.sortData(this.logs, this.sortField, this.sortDirection);
         },
 
         isRouteActive() {

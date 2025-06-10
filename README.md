@@ -20,6 +20,11 @@ Reclaim Telegram User when new user app side.
 Cron task for weather and cities…
 Debugs :-)
 
+### Bugs
+
+Localisation et photo sur app.
+Chemins natifs
+
 ### Done
 
 2025-06-05 One log per action (location, text, photo…)

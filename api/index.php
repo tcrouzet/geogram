@@ -48,10 +48,11 @@ try {
         'logout' => [AuthController::class, 'logout'],
 
         // 'createuser' => [UserService::class, 'createUser'],
-        'loadMapData' => [MapService::class, 'loadMapData'],    //Deprecated
-        'loadData' => [MapService::class, 'loadData'],
-        'userMarkers' => [MapService::class, 'userMarkers'],
-        'story' => [MapService::class, 'story'],
+        // 'loadMapData' => [MapService::class, 'loadMapData'],    //Deprecated
+        // 'loadData' => [MapService::class, 'loadData'],
+        'getData' => [MapService::class, 'getData'],
+        // 'userMarkers' => [MapService::class, 'userMarkers'],
+        // 'story' => [MapService::class, 'story'],
 
         'getpublicroutes' => [RouteService::class, 'getpublicroutes'],
     ];
