@@ -22,7 +22,7 @@ Debugs :-)
 
 ### Bugs
 
-Popup sur post photo iOS
+Bien tester publier depuis galerie photo…
 
 ### Done
 

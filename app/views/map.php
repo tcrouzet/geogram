@@ -43,18 +43,18 @@
                         <button @click="StorySortBy('logtime')" class="sort-btn">
                             Date
                             <i class="fas" :class="{
-                                'fa-sort': sortField !== 'logtime',
-                                'fa-sort-up': sortField === 'logtime' && sortDirection === 'asc',
-                                'fa-sort-down': sortField === 'logtime' && sortDirection === 'desc'
+                                'fa-sort': storySortField !== 'logtime',
+                                'fa-sort-up': storySortField === 'logtime' && storySortDirection === 'asc',
+                                'fa-sort-down': storySortField === 'logtime' && storySortDirection === 'desc'
                             }"></i>
                         </button>
                         
                         <button @click="StorySortBy('logkm')" class="sort-btn">
                             Distance
                             <i class="fas" :class="{
-                                'fa-sort': sortField !== 'logkm',
-                                'fa-sort-up': sortField === 'logkm' && sortDirection === 'asc',
-                                'fa-sort-down': sortField === 'logkm' && sortDirection === 'desc'
+                                'fa-sort': storySortField !== 'logkm',
+                                'fa-sort-up': storySortField === 'logkm' && storySortDirection === 'asc',
+                                'fa-sort-down': storySortField === 'logkm' && storySortDirection === 'desc'
                             }"></i>
                         </button>
 
@@ -262,6 +262,8 @@ document.addEventListener('alpine:init', () => {
         sortField: 'logtime',
         sortDirection: 'desc',
         storyPhotoOnly: false,
+        storySortField: 'logtime',
+        storySortDirection: 'desc',
         // Popup
         showPopupFlag: false,
         popupMessage: '',
@@ -898,7 +900,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         action_gallery() {
-            log()
+            log("Gallery");
             if(this.canPost){
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -1252,13 +1254,13 @@ document.addEventListener('alpine:init', () => {
         },
 
         StorySortBy(field) {
-            if (this.sortField === field) {
-                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            if (this.storySortField === field) {
+                this.storySortDirection = this.storySortDirection === 'asc' ? 'desc' : 'asc';
             } else {
-                this.sortField = field;
-                this.sortDirection = 'desc';
+                this.storySortField = field;
+                this.storySortDirection = 'desc';
             }
-            this.logs = this.sortData(this.logs, this.sortField, this.sortDirection);
+            this.slogs = this.sortData(this.slogs, this.storySortField, this.storySortDirection);
         },
 
         isRouteActive() {

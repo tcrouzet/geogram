@@ -37,6 +37,14 @@ try {
     }
      
     lecho("View:",$view);
+
+    // Debug temporaire
+    // if ($view === 'logphoto') {
+    //     lecho("DEBUG logphoto:");
+    //     lecho("POST:", $_POST);
+    //     lecho("Headers:", getallheaders());
+    //     lecho("Session:", $_SESSION ?? 'No session');
+    // }
     
     // Routes publiques (pas besoin de token)
     $publicRoutes = [
@@ -48,11 +56,8 @@ try {
         'logout' => [AuthController::class, 'logout'],
 
         // 'createuser' => [UserService::class, 'createUser'],
-        // 'loadMapData' => [MapService::class, 'loadMapData'],    //Deprecated
-        // 'loadData' => [MapService::class, 'loadData'],
+
         'getData' => [MapService::class, 'getData'],
-        // 'userMarkers' => [MapService::class, 'userMarkers'],
-        // 'story' => [MapService::class, 'story'],
 
         'getpublicroutes' => [RouteService::class, 'getpublicroutes'],
     ];
