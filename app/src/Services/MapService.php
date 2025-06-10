@@ -128,15 +128,8 @@ class MapService
                     $row['username']='Unknown';
                 $row['date_formated'] = Tools::MyDateFormat($row['logtime'],$route);
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
-                $row['photolog'] = $this->fileManager->user_route_photo_web($row);
+                $row['photolog'] = $this->fileManager->user_route_photo_web($row, $row['logphoto']);
                 $row['comment_formated'] = Tools::formatMessage($row['logcomment']);
-
-                $row['morephotologs'] = array();
-                if ($row['logphoto'] > 1) {
-                    for ($i = 2; $i <= $row['logphoto']; $i++) {
-                        $row['morephotologs'][] = $this->fileManager->user_route_photo_web($row, $i);
-                    }
-                }
 
             }
 
@@ -179,11 +172,26 @@ class MapService
         }
         return true;
     }
-    
-    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $weather = null, $city = null){    
+
+    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $telegramid = 0, $weather = null, $city = null){    
         lecho("NewLog UserId: $userid RouteId: $routeid");
 
-
+        // Vérifier si c'est un doublon Telegram AVANT l'insertion
+        if ($telegramid > 0) {
+            $checkQuery = "SELECT COUNT(*) as count FROM rlogs WHERE logroute = ? and logtelegramid = ?";
+            $checkStmt = $this->db->prepare($checkQuery);
+            $checkStmt->bind_param("ii", $routeid, $telegramid);
+            $checkStmt->execute();
+            $result = $checkStmt->get_result();
+            $row = $result->fetch_assoc();
+            
+            if ($row['count'] > 0) {
+                lecho("Telegram message already exists: $telegramid");
+                $this->error = "Duplicate Telegram message";
+                return false;
+            }
+        }
+        
         // Vérifier les coordonnées invalides
         if ($latitude == 0 && $longitude == 0) {
             lecho("Coordonnées invalides (0,0) - Log ignoré");
@@ -224,19 +232,21 @@ class MapService
 
         // Conversion en date au format ISO 8601 (YYYY-MM-DD HH:MM:SS)
         if($timestamp){
-            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, logtelegramid, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiddiiisissi", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson, $timestamp);
+            $insertStmt->bind_param("iiiddiiisissi", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson, $timestamp);
         }else{
             lecho("No timestamp");
-            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, logtelegramid, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiddiiisiss", $routeid, $userid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson);
+            $insertStmt->bind_param("iiiddiiisiss", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson);
         }
         
         if ($insertStmt->execute() &&  $insertStmt->affected_rows > 0) {
             lecho("Insert ok");
             return true;
+        }else{
+            lecho("Insert Bug");
         }
         // lecho($insertStmt->error);
         // lecho($insertStmt->sqlstate);

@@ -82,13 +82,6 @@
                                     <template x-if="log.photolog">
                                         <img :src="log.photolog" class="log-photo" alt="Adventure photo">
                                     </template>
-
-                                    <!-- Photos additionnelles du même endroit -->
-                                    <!-- <template x-if="log.morephotologs.length > 0">
-                                        <template x-for="additionalPhoto in log.morephotologs">
-                                            <img :src="additionalPhoto" class="log-photo" alt="Additional photo">
-                                        </template>
-                                    </template> -->
                                     
                                     <template x-if="log.comment_formated">
                                         <p class="log-comment" x-html="log.comment_formated"></p>

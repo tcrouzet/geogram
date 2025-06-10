@@ -104,7 +104,7 @@ class Convert
                         }
                     }
 
-                    if($this->map->newlog($geoUser["userid"], $route['routeid'], $row['latitude'], $row['longitude'], $message, $photo, $timestamp, $weather, $city)){
+                    if($this->map->newlog($geoUser["userid"], $route['routeid'], $row['latitude'], $row['longitude'], $message, $photo, $timestamp, null, $weather, $city)){
                         echo("<pre>$message</pre>");
                     }else{
                         echo($this->map->getError());

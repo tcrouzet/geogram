@@ -241,9 +241,9 @@ class TelegramService
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!", $this->channel["routeverbose"]);
             lecho("No last log");
             return false;    
-        }    
+        }
 
-        if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'], $this->message["text"])) {
+        if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'], $this->message["text"],  0, null, $this->message_id)) {
             TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"], 1);
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your message is on the map!", $this->channel["routeverbose"]);
             lecho("text");
@@ -298,7 +298,7 @@ class TelegramService
                 lecho("Photo OK 2");
                 if(Tools::resizeImage($tempFile, $target, IMAGE_DEF)){
 
-                    if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'],"", $photoI, $this->timestamp)) {
+                    if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'],"", $photoI, $this->timestamp, $this->message_id)) {
                         TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
                         TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!", $this->channel["routeverbose"]);
                         lecho("photolog done");
@@ -351,7 +351,7 @@ class TelegramService
             $longitude = $this->message["location"]["longitude"];
 
             //lecho($this->user);
-            $map->newlog($this->user["userid"], $this->channel["routeid"], $latitude, $longitude);
+            $map->newlog($this->user["userid"], $this->channel["routeid"], $latitude, $longitude, null,  0, null, $this->message_id);
 
             if(isset($this->message["location"]["live_period"]) && $this->channel['routerealtime']==1){
                 //Real time

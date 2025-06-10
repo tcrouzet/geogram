@@ -17,7 +17,9 @@ Finaly you have to open webhook.php from the web to activate your bot webhook.
 ### To Do
 
 Reclaim Telegram User when new user app side.
+
 Cron task for weather and cities…
+
 Debugs :-)
 
 ### Bugs
@@ -26,4 +28,5 @@ Bien tester publier depuis galerie photo…
 
 ### Done
 
+2025-06-10 Beaucoup de changements partout (j'espère que c'est terminé les doublons de post via Télégram)
 2025-06-05 One log per action (location, text, photo…)
