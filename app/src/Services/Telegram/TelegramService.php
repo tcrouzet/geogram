@@ -102,7 +102,7 @@ class TelegramService
         }
 
         //User
-        if( !$this->user = $this->getUser( round($this->userid) )){
+        if( !$this->user = $this->getUserByTelegramId( round($this->userid) )){
 
             // Telegram user not in Geogram
 
@@ -419,7 +419,7 @@ class TelegramService
         $insertStmt = $this->db->prepare($insertQuery);
         $insertStmt->bind_param("iiss", $chatId, $userId, $title, $status);
         if ($insertStmt->execute()){
-            $user = $this->getUser($userId);
+            $user = $this->getUserByTelegramId($userId);
             if($user){
                 TelegramTools::SendMessage($this->telegram, $chatId, $user['username']." connected to ".BASE_URL.".");
             }else
@@ -468,7 +468,7 @@ class TelegramService
     }
 
     // Get User by Telegram userid
-    private function getUser($userid){
+    private function getUserByTelegramId($userid){
         $query = "SELECT * FROM users u LEFT JOIN routes r ON u.userroute = r.routeid WHERE u.usertelegram = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $userid);

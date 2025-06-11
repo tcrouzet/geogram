@@ -180,25 +180,6 @@ class UserService
         }
     }
 
-    // public function get_user_by_telegramid($userID) {
-    //     lecho("get_user_by_telegramid");
-    //     $query = "SELECT * FROM users u
-    //         LEFT JOIN routes r ON u.userroute = r.routeid 
-    //         LEFT JOIN connectors c ON u.userid = c.conuserid 
-    //         WHERE u.usertelegram = ?";
-    
-    //     $stmt = $this->db->prepare($query);
-    //     $stmt->bind_param("i", $userID);    
-    //     $stmt->execute();
-    //     $result = $stmt->get_result();
-    
-    //     if ($result && $result->num_rows > 0) {
-    //         return $result->fetch_assoc();
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
     public function get_users_by_telegramid($userID) {
         lecho("get_users_by_telegramid");
         $query = "SELECT * FROM users u
@@ -245,12 +226,29 @@ class UserService
         return $insertStmt->execute();
     }
 
+    public function purgeConnectors($userid){
+        $stmt = $this->db->prepare("DELETE FROM connectors WHERE conuserid = ?");
+        $stmt->bind_param("i", $userid);
+        $stmt->execute();
+        lecho("Connexions cleaned");
+        lecho($this->db->affected_rows);
+        return $this->db->affected_rows;
+    }
+
     public function delete_user($userid){
+        lecho("Delete User $userid");
         $query = "DELETE FROM users WHERE userid=?;";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $userid);
         $stmt->execute();
-        return $this->db->affected_rows;
+        lecho($this->db->affected_rows);
+
+        $this->purgeuser($userid);
+        $this->purgeConnectors($userid);
+
+        $dir = $this->fileManager->user_dir2($userid);
+        $this->fileManager->supDir($dir);
+        return true;
     }
 
     public function updateuser(){
@@ -311,29 +309,25 @@ class UserService
         return ['status' => 'error', 'message' => 'Unknown user'];    
     }
 
-    private function mergeAccounts($fromUserId, $toUserId) {
+    public function mergeAccounts($fromUserId, $toUserId) {
         lecho("Merging accounts: $fromUserId -> $toUserId");
         
         // Transférer les logs
         $stmt = $this->db->prepare("UPDATE rlogs SET loguser = ? WHERE loguser = ?");
         $stmt->bind_param("ii", $toUserId, $fromUserId);
         $stmt->execute();
+        lecho("log tranfered");
         
         // Transférer les connexions
         $stmt = $this->db->prepare("UPDATE connectors SET conuserid = ? WHERE conuserid = ? AND NOT EXISTS (SELECT 1 FROM connectors c2 WHERE c2.conuserid = ? AND c2.conrouteid = connectors.conrouteid)");
         $stmt->bind_param("iii", $toUserId, $fromUserId, $toUserId);
         $stmt->execute();
-        
-        // Supprimer les connexions en doublon restantes
-        $stmt = $this->db->prepare("DELETE FROM connectors WHERE conuserid = ?");
-        $stmt->bind_param("i", $fromUserId);
-        $stmt->execute();
-        
+        lecho("Connexion transfered");
+                
         // Transférer les fichiers si nécessaire
         $this->fileManager->transfertUserData($fromUserId, $toUserId);
         
         // Supprimer l'ancien compte
-        $this->purgeuser($fromUserId);
         $this->delete_user($fromUserId);
         
         lecho("Account merge completed");

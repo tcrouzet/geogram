@@ -36,34 +36,66 @@ class FilesManager {
         }
     }
 
-    // NEW
+    public function copyFolderContent($source, $destination) {
+        // Vérifier que le dossier source existe
+        if (!is_dir($source)) {
+            return false;
+        }
+        
+        // Créer le dossier destination s'il n'existe pas
+        if (!is_dir($destination)) {
+            if (!mkdir($destination, 0755, true)) {
+                return false;
+            }
+        }
+        
+        // Ouvrir le dossier source
+        $handle = opendir($source);
+        if (!$handle) {
+            return false;
+        }
+        
+        $success = true;
+        
+        // Parcourir tous les éléments du dossier source
+        while (($item = readdir($handle)) !== false) {
+            // Ignorer les références . et ..
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            
+            $sourcePath = $source . DIRECTORY_SEPARATOR . $item;
+            $destinationPath = $destination . DIRECTORY_SEPARATOR . $item;
+            
+            if (is_dir($sourcePath)) {
+                // Si c'est un dossier, appel récursif
+                if (!$this->copyFolderContent($sourcePath, $destinationPath)) {
+                    $success = false;
+                }
+            } else {
+                // Si c'est un fichier, copier seulement s'il n'existe pas déjà
+                if (!file_exists($destinationPath)) {
+                    if (!copy($sourcePath, $destinationPath)) {
+                        $success = false;
+                    }
+                }
+            }
+        }
+        
+        closedir($handle);
+        return $success;
+    }
 
     public function transfertUserData($fromUserId, $toUserId){
         lecho("Transferring user data from $fromUserId to $toUserId");
         $fromDir = $this->user_dir2($fromUserId);
         $toDir =  $this->user_dir2($toUserId);
-        
-        if (!is_dir($fromDir)) {
-            lecho("Source directory does not exist");
-            return true;
-        }
-        
-        if (!is_dir($toDir)) {
-            if (!mkdir($toDir, 0777, true)) {
-                lecho("Failed to create destination directory");
-                return false;
-            }
-        }
-        
-        // Utiliser une commande système pour copier (plus rapide pour de gros volumes)
-        $command = "cp -r " . escapeshellarg($fromDir . "*") . " " . escapeshellarg($toDir);
-        $result = shell_exec($command . " 2>&1");
-        
-        if ($result === null) {
+
+        if($this->copyFolderContent($fromDir, $toDir)){
             lecho("Transfer completed successfully");
             return true;
         }else{
-            lecho("Transfer failed: " . $result);
+            lecho("Transfer failed");
             return false;
         }
     }
