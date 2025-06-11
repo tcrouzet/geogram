@@ -1,5 +1,5 @@
 <?php
-// exit("test");
+exit("test");
 
 require_once __DIR__ . '/../../vendor/autoload.php';;
 require_once __DIR__ . '/../../app/config/config.php';
@@ -44,20 +44,14 @@ WHERE usertelegram IS NOT NULL
   AND usertelegram != 0
 GROUP BY usertelegram 
 HAVING COUNT(*) > 1;
+
+
+UPDATE users 
+SET usertelegram = NULL 
+WHERE usertelegram = 0;
 */
 
 /*
-1002476276858
-115
-whatilip
-whatilip@gmail.com
-6
+-1002476276858
 -1001669242626
-89
-lamy_bertrand
-lamy_bertrand@yahoo.com
-3
-
-
-
 */

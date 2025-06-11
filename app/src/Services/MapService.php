@@ -67,7 +67,9 @@ class MapService
         $hasStartFilter = !empty($start) && ($start < $currentDate);
         $hasStopFilter = !empty($stop);
 
-        $query = "SELECT *
+        $query = "SELECT 
+                logid, logroute, loguser, loglatitude, loglongitude, logkm, logdev, logtime, logupdate, logcomment, logphoto,
+                userid, username, userphoto, usercolor, userinitials, userupdate
             FROM rlogs
             INNER JOIN users ON rlogs.loguser = users.userid
             WHERE rlogs.logroute = ? ";
