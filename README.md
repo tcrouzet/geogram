@@ -18,11 +18,13 @@ Finaly you have to open webhook.php from the web to activate your bot webhook.
 
 Cron task for weather and cities…
 
-Debugs :-)
-
 ### Bugs
 
-Bien tester publier depuis galerie photo…
+Bien tester publier depuis galerie photo… Fonctionne sur iOS. Semble qu'il y a problème sur Andrtoid.
+
+### Warning
+
+Impossible de sauver les photos prise dans la webapp dans la galerie (interfaçage interdit pour raison de sécurité).
 
 ### Done
 
