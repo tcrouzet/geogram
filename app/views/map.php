@@ -77,6 +77,10 @@
                                     </template>
                                     <span class="log-date" x-text="log.date_formated"></span>
                                 </div>
+                                <template x-if="log.logcontext">
+                                    <div class="log-context" x-html="log.logcontext"></div>
+                                    <img :src="log.photolog" class="log-photo" alt="Adventure photo">
+                                </template>
 
                                 <div class="log-content">
                                     <template x-if="log.photolog">

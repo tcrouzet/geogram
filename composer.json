@@ -2,7 +2,7 @@
     "require": {
         "raiym/instagram-php-scraper": "^0.12.9",
         "phpfastcache/phpfastcache": "^8.1",
-        "symfony/var-dumper": "^5.4",
+        "symfony/var-dumper": "^7.3",
         "guzzlehttp/guzzle": "^7.0",
         "eleirbag89/telegrambotphp": "^1.4",
         "sibyx/phpgpx": "^1.2",

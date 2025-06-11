@@ -4,6 +4,7 @@
 namespace App\Services;
 
 use App\Services\Database;
+use App\Services\RouteService;
 use App\Utils\Tools;
 
 use maxh\Nominatim\Nominatim;
@@ -13,23 +14,34 @@ use Http\Factory\Guzzle\RequestFactory;
 use Http\Adapter\Guzzle7\Client as GuzzleAdapter;
 
 
-class ContextService 
-{
+class ContextService {
     private $db;
+    private $route;
     
-    public function __construct($user=null) 
-    {
+    public function __construct($user=null) {
         $this->db = Database::getInstance()->getConnection();
+        $this->route = new RouteService();
+    }
+
+    public function cron(){
+        $logs = $this->lastNlogs();
+        echo(count($logs));
+        foreach($logs as $log){
+            $context = $this->findContext($log['loglatitude'],$log['loglongitude']);
+            $this->updateLogContext($log['logid'], $context);
+            sleep(1);
+        }
     }
 
     public function weather($lat,$lon){
 
         $httpRequestFactory = new RequestFactory();
         $httpClient = GuzzleAdapter::createWithConfig([]);
+    
         $owm = new OpenWeatherMap(WEATHER_API, $httpClient, $httpRequestFactory);
         
         try {
-            //$weather = $owm->getWeather('Berlin', 'metric', 'de');
+            // $weather = $owm->getWeather('Paris', 'metric', 'de');
             $weather = $owm->getWeather(['lat' => $lat, 'lon' => $lon], 'metric', 'en');
         } catch(OWMException $e) {
             lecho('OpenWeatherMap exception: ' . $e->getMessage() . ' (Code ' . $e->getCode() . ').');
@@ -40,6 +52,115 @@ class ContextService
         }
         
         return $weather;
+    }
+
+    public function newContext($lat_grid, $lon_grid, $city_name, $weather_data){
+        
+        $weather_json = json_encode($weather_data, JSON_UNESCAPED_UNICODE);
+
+        $insertQuery = "INSERT IGNORE INTO context (lat_grid, lon_grid, city_name, weather_data) VALUES (?, ?, ?, ?)";
+        $insertStmt = $this->db->prepare($insertQuery);
+        $insertStmt->bind_param("ddss", $lat_grid, $lon_grid, $city_name, $weather_json);
+        if ($insertStmt->execute()) {
+            return true;
+        }else{
+            lecho("Error inserting context: " . $insertStmt->error);
+            return false;
+        }
+
+    }
+
+    public function findContext($lat,$lon){
+        // Grille fixe 0.02° = ~2.2km
+        $gridLat = round($lat / 0.02) * 0.02;
+        $gridLon = round($lon / 0.02) * 0.02;
+    
+        // Recherche existante
+        $query = "SELECT * FROM context WHERE lat_grid = ? AND lon_grid = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("dd", $gridLat, $gridLon);
+
+        if($stmt->execute()){
+            $result = $stmt->get_result();
+            $existing = $result->fetch_assoc();
+        
+            if ($existing) {
+                lecho("Context existing");
+                return json_decode($existing['weather_data']);;
+            }
+
+            if ($weather = $this->weather($lat,$lon)){
+                $this->newContext($gridLat, $gridLon, $weather->city->name, $weather);
+                return json_decode(json_encode($weather));
+            }
+        }
+
+        return false;
+    
+    }
+
+    public function updateLogContext($logid, $weather){
+        lecho("Update log context $logid");
+
+        // dump($weather->temperature->now);
+
+        $contextData = [
+            'city' => $weather->city->name,
+            'country' => $weather->city->country,
+            'temp' => round($weather->temperature->now->value),
+            'humidity' => round($weather->humidity->value),
+            'pressure' => round($weather->pressure->value),
+            'wind' => $weather->wind->speed->value,
+            'windd' => $weather->wind->direction->unit,
+            'cloud' => round($weather->clouds->value),
+            'cloudd' => $weather->clouds->description,
+            'rain' => round($weather->precipitation->value),
+            'raind' => $weather->precipitation->description,
+            'icon' => $weather->weather->icon
+        ];
+
+        $context_json = json_encode($contextData, JSON_UNESCAPED_UNICODE);
+
+        $updateQuery = "UPDATE rlogs SET logcontext = ? WHERE logid = ?";
+        $updateStmt = $this->db->prepare($updateQuery);
+        $updateStmt->bind_param("si", $context_json, $logid);
+        
+        return $updateStmt->execute();
+    }
+
+    public function lastNlogs($limit=0){
+        lecho("LastLog $limit");
+
+        $logs = [];
+
+        $query = "SELECT * FROM rlogs 
+            WHERE logcontext IS NULL 
+            AND logtime >= DATE_SUB(NOW(), INTERVAL 5 HOUR)
+            ORDER BY logtime DESC";
+
+        if($limit>0){
+            $query .= " LIMIT ?";
+        }
+            
+
+        $stmt = $this->db->prepare($query);
+        if($limit>0){
+           $stmt->bind_param("i", $limit);
+        }
+        if ($stmt->execute()) {
+
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $logs[] = $row;
+            }
+            lecho("LogTOContextFound: ".count($logs) );
+            
+        }else{
+            lecho("Error lastNlogs");
+        }
+
+        return $logs;
     }
 
     function city($latitude,$longitude){
@@ -60,7 +181,6 @@ class ContextService
             return false;
         }
     }
-    
     
     function citiesUpdate(){
         $query = " SELECT * FROM logs  WHERE JSON_EXTRACT(comment, '$.city') IS NULL;";
@@ -113,22 +233,10 @@ class ContextService
         return $this->cleanText($r);
     
     }
-    
-    public function weather_string($data){
-        $weather="";
-        $weather.=round($data->temperature->now->value).$data->temperature->now->unit;
-        $weather.=", ".round($data->humidity->value).$data->humidity->unit." humidity";
-        $weather.=", ".$data->weather->description;
-        $weather.=", ".$data->wind->speed->description." ". $data->wind->direction->description;
-        return $weather;    
-    }
 
     private function cleanText($msg){
         $msg=str_replace("u0027","’",$msg);
         return $msg;
     }
-    
-    
-    
     
 }

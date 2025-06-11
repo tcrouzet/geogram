@@ -16,7 +16,7 @@ Finaly you have to open webhook.php from the web to activate your bot webhook.
 
 ### To Do
 
-Cron task for weather and cities…
+…
 
 ### Bugs
 
@@ -28,5 +28,6 @@ Impossible de sauver les photos prise dans la webapp dans la galerie (interfaça
 
 ### Done
 
-2025-06-10 Beaucoup de changements partout (j'espère que c'est terminé les doublons de post via Télégram)
+2025-06-10 Add town and weather with cron every 10 minutes
+2025-06-10 Many many changes
 2025-06-05 One log per action (location, text, photo…)

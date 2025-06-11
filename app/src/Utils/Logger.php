@@ -9,9 +9,9 @@ class Logger
     private $logBuffer = [];
     private $logFile;
     private $errorLogFile;
+    private $loggingEnabled = true;
     
-    private function __construct() 
-    {
+    private function __construct() {
         $this->startTime = microtime(true);
         $this->logFile = ROOT_PATH . '/logs/robot.log';
         $this->errorLogFile = ROOT_PATH . '/logs/error_php.log';
@@ -43,8 +43,12 @@ class Logger
         }
     }
 
-    public function handleError($errno, $errstr, $errfile, $errline): bool 
-    {
+
+    public function disableLogging(): void{
+        $this->loggingEnabled = false;
+    }
+
+    public function handleError($errno, $errstr, $errfile, $errline): bool {
         if (!(error_reporting() & $errno)) {
             // Ce code d'erreur n'est pas inclus dans error_reporting()
             return false;
@@ -153,7 +157,7 @@ class Logger
     {
         if (!empty($this->logBuffer) && DEBUG) {
             $logContent = trim(implode('', $this->logBuffer)) . "\n";
-            if (!file_put_contents($this->logFile, $logContent, FILE_APPEND)) {
+            if ($this->loggingEnabled && !file_put_contents($this->logFile, $logContent, FILE_APPEND)) {
                 $error = error_get_last();
                 throw new \RuntimeException("LogError: " . $error['message']);
             }

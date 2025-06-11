@@ -68,7 +68,7 @@ class MapService
         $hasStopFilter = !empty($stop);
 
         $query = "SELECT 
-                logid, logroute, loguser, loglatitude, loglongitude, logkm, logdev, logtime, logupdate, logcomment, logphoto,
+                logid, logroute, loguser, loglatitude, loglongitude, logkm, logdev, logtime, logupdate, logcomment, logphoto, logcontext,
                 userid, username, userphoto, usercolor, userinitials, userupdate
             FROM rlogs
             INNER JOIN users ON rlogs.loguser = users.userid
@@ -132,6 +132,7 @@ class MapService
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
                 $row['photolog'] = $this->fileManager->user_route_photo_web($row, $row['logphoto']);
                 $row['comment_formated'] = Tools::formatMessage($row['logcomment']);
+                $row['logcontext'] = $this->contextToString($row['logcontext']);
 
             }
 
@@ -139,6 +140,27 @@ class MapService
             return ['status' => 'success', 'logs' => $logs, 'geojson' => $geojson, 'route' => $route];
         }
         return ['status' => 'error', 'message' => 'Map format fail'];
+    }
+
+    public function contextToString($logcontext) {
+        if (empty($logcontext)) {
+            return '';
+        }
+        
+        $context = json_decode($logcontext, true);
+        
+        if (!$context) {
+            return '';
+        }
+        
+        $city = $context['city'] ?? '';
+        $country = $context['country'] ?? '';
+        $temp = $context['temp'] ?? '';
+        $icon = $context['icon'] ?? '';
+        
+        $iconUrl = "https://openweathermap.org/img/wn/{$icon}.png";
+        
+        return "{$city} ({$country}) {$temp}°C <img src=\"{$iconUrl}\"/>";
     }
 
     public function sendgeolocation(){
@@ -175,7 +197,7 @@ class MapService
         return true;
     }
 
-    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $telegramid = 0, $weather = null, $city = null){    
+    public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $telegramid = 0){    
         lecho("NewLog UserId: $userid RouteId: $routeid");
 
         // Vérifier si c'est un doublon Telegram AVANT l'insertion
@@ -229,19 +251,16 @@ class MapService
             $dev = 0;
         }
     
-        $weatherJson = json_encode($weather);
-        $cityJson =  json_encode($city);
-
         // Conversion en date au format ISO 8601 (YYYY-MM-DD HH:MM:SS)
         if($timestamp){
-            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, logtelegramid, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, logtelegramid, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiiddiiisissi", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson, $timestamp);
+            $insertStmt->bind_param("iiiddiiisii", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $timestamp);
         }else{
             lecho("No timestamp");
-            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, logtelegramid, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logweather, logcity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, logtelegramid, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertStmt = $this->db->prepare($insertQuery);
-            $insertStmt->bind_param("iiiddiiisiss", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $weatherJson, $cityJson);
+            $insertStmt->bind_param("iiiddiiisi", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo);
         }
         
         if ($insertStmt->execute() &&  $insertStmt->affected_rows > 0) {

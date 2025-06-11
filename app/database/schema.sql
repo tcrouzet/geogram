@@ -61,7 +61,7 @@ CREATE TABLE `connectors` (
   `constatus` int(2) NOT NULL DEFAULT 0,
   PRIMARY KEY (`conid`),
   UNIQUE KEY `conrouteid` (`conrouteid`,`conuserid`)
-) ENGINE=InnoDB AUTO_INCREMENT=562 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=637 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,29 +81,6 @@ CREATE TABLE `gpx` (
   `track` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`chatid`,`point`,`track`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `logs`
---
-
-DROP TABLE IF EXISTS `logs`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `logs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `chatid` bigint(20) NOT NULL DEFAULT -1001534542906,
-  `userid` bigint(20) NOT NULL,
-  `username` varchar(100) DEFAULT NULL,
-  `timestamp` int(11) DEFAULT NULL,
-  `latitude` float DEFAULT NULL,
-  `longitude` float DEFAULT NULL,
-  `gpx_point` int(11) DEFAULT NULL,
-  `km` int(11) DEFAULT NULL,
-  `dev` int(11) NOT NULL,
-  `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7266 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -150,6 +127,7 @@ CREATE TABLE `rlogs` (
   `logid` bigint(20) NOT NULL AUTO_INCREMENT,
   `logroute` bigint(20) NOT NULL,
   `loguser` bigint(20) NOT NULL,
+  `logtelegramid` bigint(20) NOT NULL DEFAULT 0,
   `loglatitude` float DEFAULT NULL,
   `loglongitude` float DEFAULT NULL,
   `loggpxpoint` int(11) DEFAULT NULL,
@@ -164,7 +142,7 @@ CREATE TABLE `rlogs` (
   `logupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`logid`),
   UNIQUE KEY `logroute` (`logroute`,`loguser`,`loglatitude`,`loglongitude`,`logphoto`,`logtime`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4008 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5217 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,9 +176,11 @@ CREATE TABLE `routes` (
   `routemode` tinyint(1) NOT NULL DEFAULT 0,
   `routerealtime` tinyint(1) NOT NULL DEFAULT 0,
   `routetelegram` bigint(20) DEFAULT NULL,
+  `routeverbose` tinyint(4) NOT NULL DEFAULT 0,
+  `routelocationduration` tinyint(4) NOT NULL DEFAULT 12,
   PRIMARY KEY (`routeid`),
   UNIQUE KEY `routename` (`routename`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,7 +221,7 @@ CREATE TABLE `users` (
   `usertelegram` bigint(20) DEFAULT NULL,
   `usertoken` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=239 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -253,4 +233,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-17 11:53:49
+-- Dump completed on 2025-06-11  6:35:02
