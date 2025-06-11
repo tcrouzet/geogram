@@ -18,9 +18,6 @@ done
 sudo chmod 775 logs
 sudo chown apache:apache logs
 
-# sudo chmod 775 userimg
-# sudo chown -R apache:apache userimg
-
 sudo chmod 775 userdata
 sudo chown -R apache:apache userdata
 
