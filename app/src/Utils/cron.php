@@ -1,6 +1,6 @@
 <?php
 
-// /usr/bin/php /var/www/html/geogram/app/src/Utils/cron.php
+// crontab -e
 // */10 * * * * /usr/bin/php /var/www/html/geogram/app/src/Utils/cron.php
 
 
