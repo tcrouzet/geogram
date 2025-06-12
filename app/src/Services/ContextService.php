@@ -4,8 +4,8 @@
 namespace App\Services;
 
 use App\Services\Database;
-use App\Services\RouteService;
-use App\Utils\Tools;
+// use App\Services\RouteService;
+// use App\Utils\Tools;
 
 use maxh\Nominatim\Nominatim;
 use Cmfcmf\OpenWeatherMap;
@@ -16,21 +16,21 @@ use Http\Adapter\Guzzle7\Client as GuzzleAdapter;
 
 class ContextService {
     private $db;
-    private $route;
+    // private $route;
     
     public function __construct($user=null) {
         $this->db = Database::getInstance()->getConnection();
-        $this->route = new RouteService();
+        // $this->route = new RouteService();
     }
 
     public function cron(){
         $logs = $this->lastNlogs();
-        echo(count($logs));
         foreach($logs as $log){
             $context = $this->findContext($log['loglatitude'],$log['loglongitude']);
             $this->updateLogContext($log['logid'], $context);
             sleep(1);
         }
+        $this->purgeContext();
     }
 
     public function weather($lat,$lon){
@@ -163,6 +163,22 @@ class ContextService {
         return $logs;
     }
 
+    public function purgeContext() {
+        lecho("Purging contexts older than 5 hours");
+ 
+        $deleteQuery = "DELETE FROM context WHERE created_at < DATE_SUB(NOW(), INTERVAL 5 HOUR)";
+        $stmt = $this->db->prepare($deleteQuery);
+
+        if ($stmt->execute()) {
+            $deletedRows = $stmt->affected_rows;
+            lecho("Purged $deletedRows old contexts");
+            return $deletedRows;
+        } else {
+            lecho("Error purging contexts: " . $stmt->error);
+            return false;
+        }
+    }
+
     function city($latitude,$longitude){
 
         $url = "http://nominatim.openstreetmap.org/";
@@ -183,29 +199,6 @@ class ContextService {
     }
     
     function citiesUpdate(){
-        $query = " SELECT * FROM logs  WHERE JSON_EXTRACT(comment, '$.city') IS NULL;";
-    
-        $result = $this->db->query($query);
-        if(!$result){
-            lecho("Error sql");
-            return false;
-        }
-    
-        $up=0;
-        foreach ( $result as $row) {
-    
-            $city = json_encode( $this->city($row["latitude"],$row["longitude"]), JSON_UNESCAPED_UNICODE | JSON_HEX_APOS);
-            $weather =  json_encode( $this->weather($row["latitude"],$row["longitude"]), JSON_UNESCAPED_UNICODE | JSON_HEX_APOS);
-    
-            $query = "UPDATE logs SET comment = JSON_SET(comment, '$.city', '".$city."', '$.weather','".$weather."') WHERE id = ".$row['id'];
-            $cityr = $this->db->query($query);
-            if(!$cityr){
-                lecho("Error sql 4: $query");
-            }
-            $up++;
-    
-        }
-        //echo "$up city upade\n";
     }
 
     public function city_string($json){
