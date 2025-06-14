@@ -160,7 +160,7 @@ class MapService
         
         $iconUrl = "https://openweathermap.org/img/wn/{$icon}.png";
         
-        return "{$city} ({$country}) {$temp}°C <img src=\"{$iconUrl}\"/>";
+        return "{$city} {$temp}°C <img src=\"{$iconUrl}\"/>";
     }
 
     public function sendgeolocation(){

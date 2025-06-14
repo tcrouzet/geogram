@@ -72,9 +72,15 @@
 
                             <div class="log-entry" :data-logid="log.logid">
                                 <div class="log-header">
-                                    <template x-if="!storyUser">
-                                        <span class="log-author" x-text="log.username_formated" @click.stop="showUserStory(log)"></span>
-                                    </template>
+                                    <div class="marker markerStory" :style="userIconStyle">
+                                        <template x-if="!log.userphoto">
+                                            <span x-text="log.userinitials"></span>
+                                        </template>
+                                    </div>
+                                    <span class="log-author"
+                                        x-text="log.username_formated"
+                                        @click.stop="showUserStory(log)">
+                                    </span>
                                     <span class="log-date" x-text="log.date_formated"></span>
                                 </div>
                                 <template x-if="log.logcontext">
@@ -1300,6 +1306,12 @@ document.addEventListener('alpine:init', () => {
 
         getAdventurerLabel() {
             return this.storyUser ? 'pings' : 'adventurers';
+        },
+
+        get userIconStyle() {
+            $style = this.log.userphoto ? `background-image: url('/userdata/users/${this.log.userid}/photo.jpeg');`
+                : `background-color: ${this.log.usercolor};`;
+            return $style;
         },
 
     }));
