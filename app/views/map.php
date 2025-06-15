@@ -355,7 +355,7 @@ document.addEventListener('alpine:init', () => {
                     maxZoom: 18,
                 }),
                 "Vélo": L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors. Tiles style by CyclOSM',
+                    attribution: '© OpenStreetMap',
                     subdomains: 'abc',
                     maxZoom: 18,
                 }),
