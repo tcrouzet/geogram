@@ -247,7 +247,8 @@ document.addEventListener('alpine:init', () => {
         geoJsonLayer: null,
         bestPosition: null,
         uploading: false,
-        newPhoto: false,
+        baseMaps: null,
+        // newPhoto: false,
         // Actions
         canPost: false,
         mapFooter: '',
@@ -339,10 +340,37 @@ document.addEventListener('alpine:init', () => {
             log(this.page);
             this.map = Alpine.raw(L.map('map').setView([0, 0], 13)); // Carte non réactive
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
-                // attribution: '',
-                maxZoom: 18,
+            // Définir les fonds de carte
+            this.baseMaps = {
+                "Standard": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap',
+                    maxZoom: 18,
+                }),
+                "Terrain": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap',
+                    maxZoom: 18,
+                }),
+                "Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: '© Esri',
+                    maxZoom: 18,
+                }),
+                "Vélo": L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors. Tiles style by CyclOSM',
+                    subdomains: 'abc',
+                    maxZoom: 18,
+                }),
+                "Randonnée": L.tileLayer('https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png', {
+                    attribution: '© waymarkedtrails.org',
+                    maxZoom: 18,
+                })
+            };
+
+            this.baseMaps["Standard"].addTo(this.map);
+
+            // Ajouter le contrôle de couches
+            L.control.layers(this.baseMaps, null, {
+                position: 'topright',
+                collapsed: true
             }).addTo(this.map);
 
             if(this.data){
@@ -356,9 +384,9 @@ document.addEventListener('alpine:init', () => {
                 this.component = this.page;
             }
 
-            if(this.newPhoto){
-                this.showPhoto();
-            }
+            // if(this.newPhoto){
+            //     this.showPhoto();
+            // }
             log("end");
         },
 
@@ -1043,26 +1071,26 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        showPhoto() {
-            log();
-            this.newPhoto = false;
+        // showPhoto() {
+        //     log();
+        //     this.newPhoto = false;
             
-            // Trouver le log le plus récent
-            const latestLog = this.logs.reduce((latest, current) => {
-                return (!latest || current.logupdate > latest.logupdate) ? current : latest;
-            }, null);
+        //     // Trouver le log le plus récent
+        //     const latestLog = this.logs.reduce((latest, current) => {
+        //         return (!latest || current.logupdate > latest.logupdate) ? current : latest;
+        //     }, null);
 
 
-            if (latestLog) {
-                //console.log("showPhoto1",latestLog);
-                // Trouver le marker correspondant
-                const userMarker = this.cursors.find(marker => 
-                    marker.getLatLng().lat === latestLog.loglatitude && 
-                    marker.getLatLng().lng === latestLog.loglongitude
-                );
+        //     if (latestLog) {
+        //         //console.log("showPhoto1",latestLog);
+        //         // Trouver le marker correspondant
+        //         const userMarker = this.cursors.find(marker => 
+        //             marker.getLatLng().lat === latestLog.loglatitude && 
+        //             marker.getLatLng().lng === latestLog.loglongitude
+        //         );
 
-            }
-        },
+        //     }
+        // },
 
         showAccessMessage() {
             log();
