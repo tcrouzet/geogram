@@ -260,12 +260,23 @@ class TelegramService
         if( !isset($this->message["photo"])){
             return false;
         }
-
         lecho("photo");
+
+        if( !isset($this->user["userid"])){
+            $this->error = "No userid";
+            lecho($this->error);
+            return false;
+        }
+
+        if( !isset($this->channel["routeid"]) || !isset($this->channel["routelocationduration"])){
+            $this->error = "No channel id";
+            lecho($this->error);
+            return false;
+        }
 
         $map = new MapService($this->user);
         $lastLog = $map->lastlog($this->user["userid"],$this->channel["routeid"], $this->channel["routelocationduration"]);
-
+ 
         if (!$lastLog) {
             TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your need first to geolocalise!", $this->channel["routeverbose"]);
             lecho("No last log");

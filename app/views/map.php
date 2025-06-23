@@ -777,6 +777,20 @@ document.addEventListener('alpine:init', () => {
             this.showPopupFlag = true;
         },
 
+        async showError(message) {
+            return new Promise((resolve) => {
+                this.showPopup(
+                    message,
+                    true,  // OK button
+                    false, // No cancel
+                    () => {
+                        this.removePopup();
+                        resolve();
+                    }
+                );
+            });
+        },
+
         popupOKAction() {
             if (this.popupOKCallback) {
                 this.popupOKCallback();
@@ -936,6 +950,7 @@ document.addEventListener('alpine:init', () => {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
+                input.multiple = true;
                 this.handleImageSelection(input);
             }else{
                 this.showAccessMessage();
@@ -952,7 +967,7 @@ document.addEventListener('alpine:init', () => {
                 try {
                     for (const file of Array.from(files)) {
                         if (!file.type.startsWith('image/')) {
-                            alert('Please select only images');
+                            await this.showError('Please select only images');
                             continue;
                         }
 
@@ -969,6 +984,7 @@ document.addEventListener('alpine:init', () => {
                                 gpsData = await this.get_localisation();
                                 log("Position from geolocation OK");
                             } catch (geoError) {
+                                await this.showError('Location required for photo upload.');
                                 log('Geolocation failed:', geoError);
                                 continue; // Passer au fichier suivant
                             }
@@ -976,10 +992,19 @@ document.addEventListener('alpine:init', () => {
 
                         if (gpsData) {
                             this.showPopup("Uploading continue…",false, false);
-                            await this.uploadImage(file, gpsData);
+                            const uploadAnswer = await this.uploadImage(file, gpsData);
+                            if (uploadAnswer['status'] == 'success') {
+                                log(`Uploaded successfully`);
+                            } else {
+                                log(`Failed to upload image!!!`);
+                                log(uploadAnswer);
+                                await this.showError('Error: ' + uploadAnswer['message']);
+                            }
+        
                         }
                     }
                 } catch (error) {
+                    this.showPopup("Error in handleImageSelection",true);
                     log('Error in handleImageSelection:', error);
                 } finally {
                     this.removePopup();
@@ -989,7 +1014,7 @@ document.addEventListener('alpine:init', () => {
             input.click();
         },
 
-        async getExifData(file) {
+        async getExifDataOld(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -998,6 +1023,7 @@ document.addEventListener('alpine:init', () => {
                         //console.log('All EXIF tags:', tags);
                         
                         if (tags.GPSLatitude && tags.GPSLongitude) {
+
                             let latitude = tags.GPSLatitude[0] + 
                                         tags.GPSLatitude[1]/60 + 
                                         tags.GPSLatitude[2]/3600;
@@ -1030,6 +1056,97 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
+        async getExifData(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    EXIF.getData(file, function() {
+                        const tags = EXIF.getAllTags(this);
+                        log('All EXIF tags:', tags);
+                        
+                        if (tags.GPSLatitude && tags.GPSLongitude) {
+                            let latitude, longitude;
+                            
+                            // Format Android - Array avec dénominateur
+                            if (Array.isArray(tags.GPSLatitude)) {
+                                log('Android EXIF format detected');
+                                
+                                const latArray = tags.GPSLatitude;
+                                const lonArray = tags.GPSLongitude;
+                                
+                                // Gestion des fractions Android
+                                latitude = latArray[0] + 
+                                        latArray[1]/60 + 
+                                        latArray[2]/(latArray[3] || 3600);
+                                
+                                longitude = lonArray[0] + 
+                                        lonArray[1]/60 + 
+                                        lonArray[2]/(lonArray[3] || 3600);
+                            } 
+                            // Format iOS/Standard - Array simple
+                            else {
+                                log('iOS/Standard EXIF format detected');
+                                
+                                latitude = tags.GPSLatitude[0] + 
+                                        tags.GPSLatitude[1]/60 + 
+                                        tags.GPSLatitude[2]/3600;
+                                
+                                longitude = tags.GPSLongitude[0] + 
+                                        tags.GPSLongitude[1]/60 + 
+                                        tags.GPSLongitude[2]/3600;
+                            }
+                            
+                            // Gestion des directions
+                            if (tags.GPSLatitudeRef === 'S') latitude = -latitude;
+                            if (tags.GPSLongitudeRef === 'W') longitude = -longitude;
+
+                            // Gestion du timestamp
+                            let timestamp = Date.now();
+                            if (tags.DateTime) {
+                                try {
+                                    // Format EXIF ios : "2024:01:31 15:30:45"
+                                    // Format Android: "20240131_153045"
+                                    let dateString = tags.DateTime;
+
+                                    // Correction pour le format Android
+                                    if (/^\d{8}_\d{6}$/.test(dateString)) {
+                                        dateString = dateString.replace(
+                                            /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/,
+                                            "$1:$2:$3 $4:$5:$6"
+                                        );
+                                    }
+                                    log('Parsed DateTime:', dateString);
+
+                                    const [date, time] = dateString.split(' ');
+                                    const [year, month, day] = date.split(':');
+                                    const [hours, minutes, seconds] = time.split(':');
+                                    timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
+                                } catch (dateError) {
+                                    log('Error parsing DateTime:', dateError);
+                                    // Garder timestamp actuel en cas d'erreur
+                                }
+                            }
+                            timestamp = Math.floor(timestamp / 1000);
+
+                            log('GPS coordinates extracted:', { latitude, longitude, timestamp });
+                            resolve({ latitude, longitude, timestamp });
+                            
+                        } else {
+                            log('No GPS data found in EXIF');
+                            reject('No GPS data found in Exif');
+                        }
+                    });
+                };
+                
+                reader.onerror = (error) => {
+                    log('FileReader error:', error);
+                    reject('Error reading file for EXIF data');
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        },
+
         async uploadImage(file, gpsData) {
             log();
             try {
@@ -1044,7 +1161,7 @@ document.addEventListener('alpine:init', () => {
                 
                 if (!gpsData) {
                     log('Error:', "No GPS Data");
-                    return false;
+                    return { status: 'error', message: 'No GPS Data'};
                 }
 
                 const data = await apiService.call('logphoto', {
@@ -1056,41 +1173,25 @@ document.addEventListener('alpine:init', () => {
                     timestamp: gpsData['timestamp']
                 });
 
+                log("Image upload response:", data);
+
                 if (data.status == 'success') {
+                    log("Image uploaded successfully");
                     this.data = data;
                     this.chooseMarkers(this.userid);
                     this.action_map();
                     this.zoom_lastmarker(this.userid);
-                    return true;
+                }else{
+                    log("Image upload failed:", data);
                 }
                 
-                return false;
+                return data;
             } catch (error) {
                 log('Error uploading image:', error);
-                return false;
+                return { status: 'error', message: 'Upload exception: ' + error.message };
             }
         },
 
-        // showPhoto() {
-        //     log();
-        //     this.newPhoto = false;
-            
-        //     // Trouver le log le plus récent
-        //     const latestLog = this.logs.reduce((latest, current) => {
-        //         return (!latest || current.logupdate > latest.logupdate) ? current : latest;
-        //     }, null);
-
-
-        //     if (latestLog) {
-        //         //console.log("showPhoto1",latestLog);
-        //         // Trouver le marker correspondant
-        //         const userMarker = this.cursors.find(marker => 
-        //             marker.getLatLng().lat === latestLog.loglatitude && 
-        //             marker.getLatLng().lng === latestLog.loglongitude
-        //         );
-
-        //     }
-        // },
 
         showAccessMessage() {
             log();

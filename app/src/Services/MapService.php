@@ -198,7 +198,7 @@ class MapService
     }
 
     public function newlog($userid, $routeid, $latitude, $longitude, $message=null, $photo = 0, $timestamp = null, $telegramid = 0){    
-        lecho("NewLog UserId: $userid RouteId: $routeid");
+        lecho("NewLog UserId: $userid RouteId: $routeid Photo: $photo");
 
         // Vérifier si c'est un doublon Telegram AVANT l'insertion
         if ($telegramid > 0) {
@@ -253,6 +253,7 @@ class MapService
     
         // Conversion en date au format ISO 8601 (YYYY-MM-DD HH:MM:SS)
         if($timestamp){
+            lecho("Timestamp: $timestamp");
             $insertQuery = "INSERT IGNORE INTO rlogs (logroute, loguser, logtelegramid, loglatitude, loglongitude, loggpxpoint, logkm, logdev, logcomment, logphoto, logtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
             $insertStmt = $this->db->prepare($insertQuery);
             $insertStmt->bind_param("iiiddiiisii", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo, $timestamp);
@@ -263,15 +264,23 @@ class MapService
             $insertStmt->bind_param("iiiddiiisi", $routeid, $userid, $telegramid, $latitude, $longitude, $p, $km, $dev, $message, $photo);
         }
         
-        if ($insertStmt->execute() &&  $insertStmt->affected_rows > 0) {
-            lecho("Insert ok");
-            return true;
+        if ($insertStmt->execute()) {
+            if($insertStmt->affected_rows > 0){
+                lecho("Insert ok");
+                return true;
+            }else{
+                $this->error = "Duplicate log entry";
+                if ($photo > 0 && $timestamp) {
+                    $this->error .= " : Possible duplicate photo with same timestamp";
+                }
+                lecho($this->error);
+                return false;
+            }
         }else{
-            lecho("Insert Bug");
+            lecho("Insert Bug - Error: " . $insertStmt->errno . " - " . $insertStmt->error);
+            lecho("SQLSTATE: " . $insertStmt->sqlstate);
+            $this->error = "Database insert failed: " . $insertStmt->error;
         }
-        // lecho($insertStmt->error);
-        // lecho($insertStmt->sqlstate);
-        // lecho($insertStmt->errno);
         return false;
     }
 
@@ -367,8 +376,11 @@ class MapService
                 if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, 1, $timestamp)){
                     return $this->getData($this->routeid);
                 }
+            }else{
+                lecho("resizeFail");
+                return ['status' => 'error', 'message' => 'Resize fail'];
             }
-            lecho("resizeFail");
+
         }
     
         return ['status' => 'error', 'message' => 'Upload fail'];

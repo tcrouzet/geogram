@@ -1,27 +1,43 @@
 // apiService.js
 
-function log(message = '') {
+function log(...messages) {
     if (DEBUG) {
         try {
-            let functionName = new Error().stack?.split('\n')[2]?.trim()?.split(' ')[1] || 'unknown';
+            let functionName = new Error().stack?.split('\\n')[2]?.trim()?.split(' ')[1] || 'unknown';
             functionName = functionName.replace("Proxy.", "");
             
-            if (typeof message === 'object') {
-                console.log(functionName + ':');
-                console.log(message);
+            if (messages.length === 0) {
+                console.log(functionName);
+            } else if (messages.length === 1) {
+                // Comportement original pour un seul paramètre
+                const message = messages[0];
+                if (typeof message === 'object') {
+                    console.log(functionName + ':');
+                    console.log(message);
+                } else {
+                    console.log(`${functionName}${message ? ': ' + message : ''}`);
+                }
             } else {
-                console.log(`${functionName}${message ? ': ' + message : ''}`);
+                // Nouveau comportement pour plusieurs paramètres
+                console.log(functionName + ':');
+                messages.forEach((msg, index) => {
+                    if (typeof msg === 'object') {
+                        console.log(`  [${index}]:`, msg);
+                    } else {
+                        console.log(`  [${index}]: ${msg}`);
+                    }
+                });
             }
         } catch (e) {
-            if (typeof message === 'object') {
-                console.log(message);
+            // Fallback en cas d'erreur
+            if (messages.length === 0) {
+                console.log('log');
             } else {
-                console.log(message ? message : 'log');
+                console.log('log:', ...messages);
             }
         }
     }
 }
-
 
 const apiService = {
     async call(view, params = {}, options = {}) {
@@ -51,7 +67,7 @@ const apiService = {
 
             // Si session expirée et pas déjà réessayé
             if (data.status === 'error') {
-                log(data.message);
+                log("api call error: " + data.message);
                 return {status: 'error', message: data.message};
             }
 
