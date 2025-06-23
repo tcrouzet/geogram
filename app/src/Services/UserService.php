@@ -150,6 +150,10 @@ class UserService
             $query .= "u.useremail = ?";
         } else if ($isToken) {
             lecho("isToken");
+            if (!$this->is_token_valid($param)) {
+                lecho("Token expired");
+                return false;
+            }
             $query .= "u.usertoken = ?";
         } else {
             $query .= "u.userid = ?";
@@ -401,7 +405,7 @@ class UserService
             return false;
     }
 
-    public function is_token_valid($token, $expiration = 3600) {
+    public function is_token_valid($token, $expiration = TOKEN_EXPIRATION) {
         $parts = explode('_', $token);
         if (count($parts) !== 3) return false;
         

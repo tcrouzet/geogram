@@ -32,7 +32,7 @@ class RouteService
     }
 
     public function getroutes(): array {
-        lecho("getroutes");
+        lecho("getroutes user: $this->userid");
         
         $query = "SELECT *
             FROM connectors c
@@ -219,7 +219,6 @@ class RouteService
             return true;
         return false;
     }
-
 
     public function delete_all_logs($routeid){
         $stmt = $this->db->prepare("DELETE FROM rlogs WHERE logroute=?");
@@ -466,7 +465,6 @@ class RouteService
         $stmt->close();
         return null; // Retourne null si aucun enregistrement trouvé
     }
-
 
     public function routeconnect(){
         lecho("routeconnect");

@@ -107,6 +107,7 @@ try {
        $session = $authService->handleSession();
        
        if ($session['status'] === 'error') {
+            lecho("Session error:", $session['message']);
             $data = $session;
         } else {
             [$class, $method] = $protectedRoutes[$view];

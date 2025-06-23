@@ -52,6 +52,7 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('headerComponent', () => ({
 
+        TOKEN_EXPIRY_SECONDS: <?= TOKEN_EXPIRATION ?>,
         user: null,
         route: <?= json_encode($route) ?>,
         page: <?= json_encode($page) ?>,
@@ -70,6 +71,8 @@ document.addEventListener('alpine:init', () => {
             log(this.route);
             log("this.storyNowUser:");
             log(this.storyNowUser);
+            log("User");
+            log(this.user);
             log("End init vars");
 
             this.initStore();
@@ -212,7 +215,9 @@ document.addEventListener('alpine:init', () => {
             log();
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
-            log(token);
+            
+            log("=== DEBUG TOKEN LOGIN ===");
+            log("Token from URL:", token);
 
             const data = await apiService.call('loginToken', {token: token});
 
@@ -227,10 +232,18 @@ document.addEventListener('alpine:init', () => {
             const user = localStorage.getItem('user');
             if (user) {
                 try {
-                    return JSON.parse(user);
+                    const userData = JSON.parse(user);
+
+                    if (userData.usertoken && !this.isTokenValid(userData.usertoken)) {
+                        log('Token expiré, suppression des données');
+                        localStorage.removeItem('user');
+                        return null;
+                    }
+                    
+                    return userData;
                 } catch (e) {
-                    console.log('Error parsing JSON');
-                    console.log(user);
+                    log('Error parsing JSON');
+                    log(user);
                     return null;
                 }
             }
@@ -296,6 +309,16 @@ document.addEventListener('alpine:init', () => {
             localStorage.setItem('user', JSON.stringify(user));
             Alpine.store('headerActions').user = user;
             this.init(true);
+        },
+
+        isTokenValid(token) {
+            const parts = token.split('_');
+            if (parts.length !== 3) return false;
+            
+            const tokenTimestamp = parseInt(parts[1]);
+            const currentTime = Math.floor(Date.now() / 1000);
+            
+            return (currentTime - tokenTimestamp) < this.TOKEN_EXPIRY_SECONDS;
         },
 
     }));

@@ -167,9 +167,18 @@ class AuthService
     
             // Trouver ou créer l'utilisateur
             $user = $this->userService->findOrCreateUser($userInfo);
+            lecho("User found or created:");
             lecho($user);
     
             if ($user['status'] == "success") {
+                lecho("User found or created successfully");
+
+                // Update Token
+                $newToken = $this->userService->set_user_token($user['user']['userid']);
+                if ($newToken) {
+                    $user['user']['usertoken'] = $newToken;
+                }
+
                 // Stocker le userid dans un cookie ou session
                 setcookie('user_session', json_encode([
                     ...$userInfo,
