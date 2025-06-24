@@ -165,11 +165,12 @@ class FilesManager {
 
     public function user_route_photo($userid, $routeid, $timestamp, $logphoto) {
         $dir = $this->user_route_dir($userid, $routeid);
-        if($dir)
+        if($dir){
             return  $dir . "$timestamp" . "_" . "$logphoto" . ".webp";
-        else
+        } else {
             $this->error = "Could not create user route photo directory for user $userid and route $routeid";
             return false;
+        }
     }
 
     public function user_route_photo_web($log,$index=1) {
@@ -205,9 +206,10 @@ class FilesManager {
     public function user_route_dir($userid, $routeid){
         $userdir = $this->datadir_abs . "users/$userid/$routeid/";
         if (!is_dir($userdir)) {
-            if(!mkdir($userdir, 0777, true))
+            if(!mkdir($userdir, 0777, true)){
                 $this->error = "Could not create user route directory for user $userid and route $routeid";
                 return false;
+            }
         }
         return $userdir;
     }

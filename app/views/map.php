@@ -221,6 +221,41 @@
 
 <script>
 
+const convertCoordinate = (coordArray) => {
+    log('Converting coordinate array:', coordArray);
+
+    let degrees, minutes, seconds;
+
+    // Gestion des objets Number avec numerator/denominator
+    if (coordArray[0].numerator !== undefined) {
+        log("Standard EXIF for GPS coordinates");
+        degrees = coordArray[0].numerator / coordArray[0].denominator;
+        minutes = coordArray[1].numerator / coordArray[1].denominator;
+        seconds = coordArray[2].numerator / coordArray[2].denominator;
+                
+    } else {
+        const [deg, min, sec, denominator = 3600] = coordArray;
+        degrees = deg;
+        minutes = min;
+        seconds = sec / denominator;
+    }
+    
+    if (isNaN(degrees) || isNaN(minutes) || isNaN(seconds)) {
+        log("ERROR: NaN detected! "+degrees+" "+minutes+" "+seconds);
+        return false
+    }
+    
+    const result = degrees + minutes/60 + seconds/3600;
+    log(`Conversion result: ${result}`);
+    
+    if (isNaN(result)) {
+        log('ERROR: Final result is NaN!');
+        return false;
+    }
+    
+    return Math.round(result * 1000000) / 1000000;;
+};
+
 document.addEventListener('alpine:init', () => {
 
     Alpine.data('mapComponent', () => ({
@@ -707,7 +742,7 @@ document.addEventListener('alpine:init', () => {
                         }
                         log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
 
-                        if (bestAccuracy < 20) {
+                        if (bestAccuracy < 50) {
                             navigator.geolocation.clearWatch(watchId);
                             resolve(bestPosition);
                         } else if (bestAccuracy < 10000) {
@@ -971,25 +1006,36 @@ document.addEventListener('alpine:init', () => {
                         }
 
                         let gpsData = null;
+                        let trace = '';
                         
                         try {
-                            // Essayer d'abord les données EXIF
                             gpsData = await this.getExifData(file);
                             log('GPS data from EXIF');
                         } catch (error) {
-                            log('No GPS data in Exif:', error);
+                            await this.showError("Error in Exif "+error,true);
+                            continue;
+                        }
+                        log('GPS data from EXIF:', gpsData);
+
+                        if(gpsData["latitude"] === 0 && gpsData["longitude"] === 0){
+                            log('No valid GPS data in EXIF, using geolocation');
+                            // Si pas d'EXIF, utiliser la géolocalisation
+                            timestamp_source = gpsData["timestamp"];
                             try {
-                                // Si pas d'EXIF, utiliser la géolocalisation
                                 gpsData = await this.get_localisation();
                                 log("Position from geolocation OK");
                             } catch (geoError) {
                                 await this.showError('Location required for photo upload.');
                                 log('Geolocation failed:', geoError);
-                                continue; // Passer au fichier suivant
+                                continue;
                             }
+                            gpsData["timestamp"] = timestamp_source; // Conserver le timestamp de l'EXIF
+                            trace = "GPS data";
+                        }else{
+                            trace = "Exif data";
                         }
 
-                        if (gpsData) {
+                        if (gpsData["latitude"] != 0 && gpsData["longitude"] != 0) {
                             this.showPopup("Uploading continue…",false, false);
                             const uploadAnswer = await this.uploadImage(file, gpsData);
                             if (uploadAnswer['status'] == 'success') {
@@ -997,9 +1043,11 @@ document.addEventListener('alpine:init', () => {
                             } else {
                                 log(`Failed to upload image!!!`);
                                 log(uploadAnswer);
-                                await this.showError('Error: ' + uploadAnswer['message']);
+                                await this.showError('Error: ' + uploadAnswer['message'] + trace);
                             }
-        
+                        } else {
+                            log('Invalid GPS data:', gpsData);
+                            await this.showError('Invalid GPS data: ' + trace);
                         }
                     }
                 } catch (error) {
@@ -1013,22 +1061,9 @@ document.addEventListener('alpine:init', () => {
             input.click();
         },
 
-        convertCoordinate(coordArray){
-            log('Converting coordinate array:', coordArray);
-
-            if (!Array.isArray(coordArray) || coordArray.length < 3) {
-                throw new Error('Invalid coordinate array');
-            }
-            
-            const [degrees, minutes, seconds, denominator = 3600] = coordArray;
-            
-            log(`Conversion: ${degrees} + ${minutes}/60 + ${seconds}/${denominator}`);
-            
-            return degrees + minutes/60 + seconds/denominator;                    
-        },
-
         async getExifData(file) {
             return new Promise((resolve, reject) => {
+                const routeTimeDiff = this.data?.route?.routetimediff || 0;
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     EXIF.getData(file, function() {
@@ -1037,43 +1072,56 @@ document.addEventListener('alpine:init', () => {
                         
                         if (tags.GPSLatitude && tags.GPSLongitude) {
                             try {
-                                let latitude = this.convertCoordinate(tags.GPSLatitude);
-                                let longitude = this.convertCoordinate(tags.GPSLongitude);
+                                let latitude = convertCoordinate(tags.GPSLatitude);
+                                let longitude = convertCoordinate(tags.GPSLongitude);
+                                log('After convertCoordinate1:', { latitude, longitude });
 
                                 // Gestion des directions
-                                if (tags.GPSLatitudeRef === 'S') latitude = -latitude;
-                                if (tags.GPSLongitudeRef === 'W') longitude = -longitude;
+                                if(latitude) {
+                                    if(tags.GPSLatitudeRef === 'S') {
+                                        latitude = -latitude;
+                                    }
+                                }else{
+                                    latitude = 0;
+                                }
+                                if (longitude){
+                                    if(tags.GPSLongitudeRef === 'W') {
+                                        longitude = -longitude;
+                                    }
+                                }else{
+                                    longitude = 0;
+                                }
+                                log('After convertCoordinate2:', { latitude, longitude });
 
                                 // Gestion du timestamp
                                 let timestamp = Date.now();
                                 if (tags.DateTime) {
-                                    try {
-                                        // Format EXIF ios : "2024:01:31 15:30:45"
-                                        // Format Android: "20240131_153045"
-                                        let dateString = tags.DateTime;
+                                    // Format EXIF standard : "2024:01:31 15:30:45"
+                                    // Format Android parfois: "20240131_153045"
+                                    let dateString = tags.DateTime;
 
-                                        // Correction pour le format Android
-                                        if (/^\d{8}_\d{6}$/.test(dateString)) {
-                                            dateString = dateString.replace(
-                                                /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/,
-                                                "$1:$2:$3 $4:$5:$6"
-                                            );
-                                        }
-                                        log('Parsed DateTime:', dateString);
-
-                                        const [date, time] = dateString.split(' ');
-                                        const [year, month, day] = date.split(':');
-                                        const [hours, minutes, seconds] = time.split(':');
-                                        timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
-
+                                    // Correction pour le format Android
+                                    if (/^\d{8}_\d{6}$/.test(dateString)) {
+                                        dateString = dateString.replace(
+                                            /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/,
+                                            "$1:$2:$3 $4:$5:$6"
+                                        );
                                     }
-                                    catch (dateError) {
-                                        log('Error parsing DateTime:', dateError);
+                                    log('Parsed DateTime:', dateString);
+
+                                    const [date, time] = dateString.split(' ');
+                                    const [year, month, day] = date.split(':');
+                                    const [hours, minutes, seconds] = time.split(':');
+                                    timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
+
+                                    if (routeTimeDiff) {
+                                        log('Applying route time difference:', routeTimeDiff);
+                                        timestamp -= parseInt(routeTimeDiff)*60*1000;
                                     }
+ 
                                 }
                                 timestamp = Math.floor(timestamp / 1000);
-                                log('GPS coordinates extracted:', { latitude, longitude, timestamp });
-                                // resolve({ latitude, longitude, timestamp });
+                                log('After convertCoordinate2:', { latitude, longitude, timestamp });
                                 resolve({
                                     latitude: latitude,
                                     longitude: longitude,
@@ -1081,7 +1129,7 @@ document.addEventListener('alpine:init', () => {
                                 });
             
                             } catch (error) {
-                                log('Error validating GPS data:', error);
+                                log('Error validating EXIF data:', error);
                                 reject('Invalid GPS data format');
                                 return false;
                             } 

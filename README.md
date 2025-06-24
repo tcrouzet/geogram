@@ -28,6 +28,7 @@ Impossible de sauver les photos prise dans la webapp dans la galerie (interfaça
 
 ### Done
 
+2025-06-24 Android gallery optimisation and multiple images publication
 2025-06-10 Add town and weather with cron every 10 minutes
 2025-06-10 Many many changes
 2025-06-05 One log per action (location, text, photo…)
