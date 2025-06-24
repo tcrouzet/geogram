@@ -7,6 +7,7 @@ use App\Controllers\AuthController;
 use App\Services\UserService;
 use App\Services\MapService;
 use App\Services\RouteService;
+use App\Services\DebugService;
 use App\Services\AuthService;
 //use App\Services\Telegram\TelegramService;
 
@@ -60,6 +61,8 @@ try {
         'getData' => [MapService::class, 'getData'],
 
         'getpublicroutes' => [RouteService::class, 'getpublicroutes'],
+
+        'debug' => [DebugService::class, 'debug'],
     ];
     
     // Routes protégées (nécessitent un token valide)

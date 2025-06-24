@@ -39,6 +39,19 @@ function log(...messages) {
     }
 }
 
+async function debugLog(data, label = '') {
+    if (!DEBUG) return;
+    
+    try {
+        await apiService.call('debug', {
+            data: typeof data === 'object' ? JSON.stringify(data) : data,
+            label: label
+        });
+    } catch (error) {
+        console.log('Debug failed:', error);
+    }
+}
+
 const apiService = {
     async call(view, params = {}, options = {}) {
         log(view + " api call");
