@@ -16,7 +16,8 @@ class DebugService {
         $label = $_POST['label'] ?? '';
         
         if (empty($data)) {
-            return ['status' => 'error', 'message' => 'No data to debug'];
+            $this->error = ['status' => 'error', 'message' => 'No data to debug'];
+            return $this->error;
         }
 
         // Décoder les données JSON
