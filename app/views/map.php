@@ -246,9 +246,8 @@ document.addEventListener('alpine:init', () => {
         geoJSON: null,
         geoJsonLayer: null,
         bestPosition: null,
-        uploading: false,
+        // uploading: false,
         baseMaps: null,
-        // newPhoto: false,
         // Actions
         canPost: false,
         mapFooter: '',

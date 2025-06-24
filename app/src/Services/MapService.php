@@ -359,14 +359,18 @@ class MapService
         $longitude = $_POST['longitude'] ?? '';
         $timestamp = $_POST['timestamp'] ?? '';
         if(empty($latitude) || empty($longitude) || empty($timestamp)){
-            return ['status' => 'error', 'message' => 'GPS error'];
+            return ['status' => 'error', 'message' => 'GPS error (no latitude, longitude or timestamp)'];
         }
         
         $photofile = $_POST['photofile'] ?? '';
         if(empty($photofile)) {
             return ['status' => 'error', 'message' => 'Bad photo file'];
         }
-        $photosource = Tools::photo64decode($photofile);
+        $photo64 = Tools::photo64decode($photofile);
+        if($photo64['status'] != 'success'){
+            return ['status' => 'error', 'message' => $photo64['message']];
+        }
+        $photosource = $photo64['file'];
         
         $target = $this->fileManager->user_route_photo($this->userid, $this->routeid, $timestamp, 1);
         //lecho($target);
@@ -383,7 +387,7 @@ class MapService
 
         }
     
-        return ['status' => 'error', 'message' => 'Upload fail'];
+        return ['status' => 'error', 'message' => 'Upload fail - Target not found'];
     }
 
     private function random_geoloc(){

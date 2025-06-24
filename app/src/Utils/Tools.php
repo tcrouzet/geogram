@@ -77,22 +77,75 @@ class Tools
         return $timestamp+$zone*60;
     }
     
-    public static function photo64decode($photofile){
+    // public static function photo64decodeOLD($photofile){
 
-        // Extraction du type MIME (si présent)
-        $matches = [];
-        preg_match('/data:image\/(\w+);base64/', $photofile, $matches);
-        $imageType = $matches[1] ?? 'jpeg'; // Par défaut, on considère que c'est un JPEG
+    //     // Extraction du type MIME (si présent)
+    //     $matches = [];
+    //     preg_match('/data:image\/(\w+);base64/', $photofile, $matches);
+    //     $imageType = $matches[1] ?? 'jpeg'; // Par défaut, on considère que c'est un JPEG
     
-        // Suppression du préfixe
-        $base64_string = str_replace('data:image/' . $imageType . ';base64,', '', $photofile);
+    //     // Suppression du préfixe
+    //     $base64_string = str_replace('data:image/' . $imageType . ';base64,', '', $photofile);
     
-        // Décodage en base64
-        $data = base64_decode($base64_string);
+    //     // Décodage en base64
+    //     $data = base64_decode($base64_string);
     
-        // Enregistrement du fichier
-        return TempFiles::getInstance()->createTempFile('photo_', $data);    
+    //     // Enregistrement du fichier
+    //     return TempFiles::getInstance()->createTempFile('photo_', $data);    
+    // }
+
+    public static function photo64decode($photofile){
+        
+        if (empty($photofile)) {
+            lecho("Base64 error: Empty photo file");
+            return ['status' => 'error', 'message' => 'Base64 error: Empty photo file'];
+        }
+        
+        // 🚀 Une seule regex pour tout faire d'un coup
+        if (!preg_match('/^data:image\/(\w+);base64,(.+)$/', $photofile, $matches)) {
+            lecho("Base64 error: Invalid data URI format");
+            return ['status' => 'error', 'message' => 'Base64 error: Invalid data URI format'];
+        }
+        
+        $imageType = strtolower($matches[1]);
+        $base64_string = $matches[2];
+        
+        // Vérifier le type d'image
+        $allowedTypes = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
+        if (!in_array($imageType, $allowedTypes)) {
+            lecho("Base64 error: Unsupported image type: " . $imageType);
+            return ['status' => 'error', 'message' => 'Base64 error: Unsupported image type: ' . $imageType];
+        }
+        
+        // Décodage base64
+        $data = base64_decode($base64_string, true);
+        if ($data === false || empty($data)) {
+            lecho("Base64 error: Base64 decode failed");
+            return ['status' => 'error', 'message' => 'Base64 error: Base64 decode failed'];
+        }
+        
+        $dataSize = strlen($data);
+        if ($dataSize < 50) {
+            lecho("Base64 error: Image too small: " . $dataSize . " bytes");
+            return ['status' => 'error', 'message' => 'Base64 error: Image too small'];
+        }
+        
+        $imageInfo = @getimagesizefromstring($data);
+        if ($imageInfo === false) {
+            lecho("Base64 error: Invalid image data");
+            return ['status' => 'error', 'message' => 'Base64 error: Invalid image data'];
+        }
+        
+        $tempFile = TempFiles::getInstance()->createTempFile('photo_', $data);
+        if ($tempFile === false) {
+            lecho("Base64 error: Failed to create temporary file");
+            return ['status' => 'error', 'message' => 'Base64 error: Failed to create temporary file'];
+        }
+        
+        lecho("Base64 photo decoded successfully: " . $dataSize . " bytes, type: " . $imageType);
+        return ['status' => 'success', 'file' => $tempFile, 'type' => $imageType, 'size' => $dataSize];
     }
+
 
     public static function resizeImage($sourcefile, $targetfile, $maxSize) {
 
