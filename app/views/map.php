@@ -1036,14 +1036,14 @@ document.addEventListener('alpine:init', () => {
                         }
 
                         if (gpsData["latitude"] != 0 && gpsData["longitude"] != 0) {
-                            this.showPopup("Uploading continue…",false, false);
+                            this.showPopup("Uploading continue… "+trace,false, false);
                             const uploadAnswer = await this.uploadImage(file, gpsData);
                             if (uploadAnswer['status'] == 'success') {
                                 log(`Uploaded successfully`);
                             } else {
                                 log(`Failed to upload image!!!`);
                                 log(uploadAnswer);
-                                await this.showError('Error: ' + uploadAnswer['message'] + trace);
+                                await this.showError('Error: ' + uploadAnswer['message']);
                             }
                         } else {
                             log('Invalid GPS data:', gpsData);
@@ -1074,7 +1074,6 @@ document.addEventListener('alpine:init', () => {
                             try {
                                 let latitude = convertCoordinate(tags.GPSLatitude);
                                 let longitude = convertCoordinate(tags.GPSLongitude);
-                                log('After convertCoordinate1:', { latitude, longitude });
 
                                 // Gestion des directions
                                 if(latitude) {
@@ -1091,7 +1090,7 @@ document.addEventListener('alpine:init', () => {
                                 }else{
                                     longitude = 0;
                                 }
-                                log('After convertCoordinate2:', { latitude, longitude });
+                                log('After convertCoordinate1:', { latitude, longitude });
 
                                 // Gestion du timestamp
                                 let timestamp = Date.now();
