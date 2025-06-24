@@ -1013,46 +1013,18 @@ document.addEventListener('alpine:init', () => {
             input.click();
         },
 
-        async getExifDataOld(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    EXIF.getData(file, function() {
-                        const tags = EXIF.getAllTags(this);
-                        //console.log('All EXIF tags:', tags);
-                        
-                        if (tags.GPSLatitude && tags.GPSLongitude) {
+        convertCoordinate(coordArray){
+            log('Converting coordinate array:', coordArray);
 
-                            let latitude = tags.GPSLatitude[0] + 
-                                        tags.GPSLatitude[1]/60 + 
-                                        tags.GPSLatitude[2]/3600;
-                            let longitude = tags.GPSLongitude[0] + 
-                                        tags.GPSLongitude[1]/60 + 
-                                        tags.GPSLongitude[2]/3600;
-                            
-                            if (tags.GPSLatitudeRef === 'S') latitude = -latitude;
-                            if (tags.GPSLongitudeRef === 'W') longitude = -longitude;
-
-                            //console.log(tags.DateTime);
-                            let timestamp = Date.now();
-                            if (tags.DateTime) {
-                                // Format EXIF : "2024:01:31 15:30:45"
-                                const [date, time] = tags.DateTime.split(' ');
-                                const [year, month, day] = date.split(':');
-                                const [hours, minutes, seconds] = time.split(':');
-                                timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
-                            }
-                            timestamp = Math.floor(timestamp / 1000);
-                            log(timestamp);
-
-                            resolve({ latitude, longitude, timestamp });
-                        } else {
-                            reject('No GPS data found in Exif');
-                        }
-                    });
-                };
-                reader.readAsDataURL(file);  // Changé de readAsArrayBuffer à readAsDataURL
-            });
+            if (!Array.isArray(coordArray) || coordArray.length < 3) {
+                throw new Error('Invalid coordinate array');
+            }
+            
+            const [degrees, minutes, seconds, denominator = 3600] = coordArray;
+            
+            log(`Conversion: ${degrees} + ${minutes}/60 + ${seconds}/${denominator}`);
+            
+            return degrees + minutes/60 + seconds/denominator;                    
         },
 
         async getExifData(file) {
@@ -1064,71 +1036,55 @@ document.addEventListener('alpine:init', () => {
                         log('All EXIF tags:', tags);
                         
                         if (tags.GPSLatitude && tags.GPSLongitude) {
-                            let latitude, longitude;
-                            
-                            // Format Android - Array avec dénominateur
-                            if (Array.isArray(tags.GPSLatitude)) {
-                                log('Android EXIF format detected');
-                                
-                                const latArray = tags.GPSLatitude;
-                                const lonArray = tags.GPSLongitude;
-                                
-                                // Gestion des fractions Android
-                                latitude = latArray[0] + 
-                                        latArray[1]/60 + 
-                                        latArray[2]/(latArray[3] || 3600);
-                                
-                                longitude = lonArray[0] + 
-                                        lonArray[1]/60 + 
-                                        lonArray[2]/(lonArray[3] || 3600);
-                            } 
-                            // Format iOS/Standard - Array simple
-                            else {
-                                log('iOS/Standard EXIF format detected');
-                                
-                                latitude = tags.GPSLatitude[0] + 
-                                        tags.GPSLatitude[1]/60 + 
-                                        tags.GPSLatitude[2]/3600;
-                                
-                                longitude = tags.GPSLongitude[0] + 
-                                        tags.GPSLongitude[1]/60 + 
-                                        tags.GPSLongitude[2]/3600;
-                            }
-                            
-                            // Gestion des directions
-                            if (tags.GPSLatitudeRef === 'S') latitude = -latitude;
-                            if (tags.GPSLongitudeRef === 'W') longitude = -longitude;
+                            try {
+                                let latitude = this.convertCoordinate(tags.GPSLatitude);
+                                let longitude = this.convertCoordinate(tags.GPSLongitude);
 
-                            // Gestion du timestamp
-                            let timestamp = Date.now();
-                            if (tags.DateTime) {
-                                try {
-                                    // Format EXIF ios : "2024:01:31 15:30:45"
-                                    // Format Android: "20240131_153045"
-                                    let dateString = tags.DateTime;
+                                // Gestion des directions
+                                if (tags.GPSLatitudeRef === 'S') latitude = -latitude;
+                                if (tags.GPSLongitudeRef === 'W') longitude = -longitude;
 
-                                    // Correction pour le format Android
-                                    if (/^\d{8}_\d{6}$/.test(dateString)) {
-                                        dateString = dateString.replace(
-                                            /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/,
-                                            "$1:$2:$3 $4:$5:$6"
-                                        );
+                                // Gestion du timestamp
+                                let timestamp = Date.now();
+                                if (tags.DateTime) {
+                                    try {
+                                        // Format EXIF ios : "2024:01:31 15:30:45"
+                                        // Format Android: "20240131_153045"
+                                        let dateString = tags.DateTime;
+
+                                        // Correction pour le format Android
+                                        if (/^\d{8}_\d{6}$/.test(dateString)) {
+                                            dateString = dateString.replace(
+                                                /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/,
+                                                "$1:$2:$3 $4:$5:$6"
+                                            );
+                                        }
+                                        log('Parsed DateTime:', dateString);
+
+                                        const [date, time] = dateString.split(' ');
+                                        const [year, month, day] = date.split(':');
+                                        const [hours, minutes, seconds] = time.split(':');
+                                        timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
+
                                     }
-                                    log('Parsed DateTime:', dateString);
-
-                                    const [date, time] = dateString.split(' ');
-                                    const [year, month, day] = date.split(':');
-                                    const [hours, minutes, seconds] = time.split(':');
-                                    timestamp = Date.UTC(year, month - 1, day, hours, minutes, seconds);
-                                } catch (dateError) {
-                                    log('Error parsing DateTime:', dateError);
-                                    // Garder timestamp actuel en cas d'erreur
+                                    catch (dateError) {
+                                        log('Error parsing DateTime:', dateError);
+                                    }
                                 }
-                            }
-                            timestamp = Math.floor(timestamp / 1000);
-
-                            log('GPS coordinates extracted:', { latitude, longitude, timestamp });
-                            resolve({ latitude, longitude, timestamp });
+                                timestamp = Math.floor(timestamp / 1000);
+                                log('GPS coordinates extracted:', { latitude, longitude, timestamp });
+                                // resolve({ latitude, longitude, timestamp });
+                                resolve({
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                    timestamp: timestamp
+                                });
+            
+                            } catch (error) {
+                                log('Error validating GPS data:', error);
+                                reject('Invalid GPS data format');
+                                return false;
+                            } 
                             
                         } else {
                             log('No GPS data found in EXIF');
