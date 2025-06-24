@@ -7,6 +7,7 @@ class FilesManager {
     //NEW
     public $datadir;
     public $datadir_abs;
+    public $error = "";
 
     public function __construct() {
         $this->absolute_path = ROOT_PATH . "/";
@@ -15,6 +16,9 @@ class FilesManager {
         $this->datadir_abs = $this->absolute_path . $this->datadir;
     }
 
+    public function getError(){
+        return $this->error;
+    }
 
     public function supDir($dossier) {
         if (is_dir($dossier)) {
@@ -164,6 +168,7 @@ class FilesManager {
         if($dir)
             return  $dir . "$timestamp" . "_" . "$logphoto" . ".webp";
         else
+            $this->error = "Could not create user route photo directory for user $userid and route $routeid";
             return false;
     }
 
@@ -201,6 +206,7 @@ class FilesManager {
         $userdir = $this->datadir_abs . "users/$userid/$routeid/";
         if (!is_dir($userdir)) {
             if(!mkdir($userdir, 0777, true))
+                $this->error = "Could not create user route directory for user $userid and route $routeid";
                 return false;
         }
         return $userdir;

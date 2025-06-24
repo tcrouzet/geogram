@@ -26,8 +26,11 @@ class MapService
         $this->fileManager = new FilesManager();
         $this->route = new RouteService();
         $this->user = $user;
-        if($this->user)
+        if($this->user){
             $this->userid = $this->user['userid'];
+        }else{
+            $this->userid = $_POST['userid'] ?? null;
+        }
 
         $this->routeid = $_POST['routeid'] ?? '';
         if ($this->routeid < 1) {
@@ -352,16 +355,30 @@ class MapService
     // }
 
     public function logphoto(){
-        lecho("Route Photo Upload2");
+        lecho("logphoto user: $this->userid route: $this->routeid");
         //lecho($_POST);
     
         $latitude = $_POST['latitude'] ?? '';
         $longitude = $_POST['longitude'] ?? '';
-        $timestamp = $_POST['timestamp'] ?? '';
-        if(empty($latitude) || empty($longitude) || empty($timestamp)){
-            return ['status' => 'error', 'message' => 'GPS error (no latitude, longitude or timestamp)'];
+        $timestamp = $_POST['timestamp'] ?? 0;
+
+        $timestamp = $_POST['timestamp'] ?? 0;
+        $timestamp = intval($timestamp);
+
+        if ($timestamp <= 0) {
+            return ['status' => 'error', 'message' => "Invalid timestamp $timestamp"];
         }
-        
+
+        $thirtyDaysAgo = time() - (7 * 24 * 60 * 60);
+        if ($timestamp < $thirtyDaysAgo) {
+            return ['status' => 'error', 'message' => 'Timestamp too old (more than one week.)'];
+        }
+
+        if (empty($latitude) || empty($longitude) || !is_numeric($latitude) || !is_numeric($longitude)) {
+            lecho("GPS error (no latitude/longitude $latitude/$longitude)");
+            return ['status' => 'error', 'message' => "GPS error (no latitude/longitude $latitude/$longitude)"];
+        }
+
         $photofile = $_POST['photofile'] ?? '';
         if(empty($photofile)) {
             return ['status' => 'error', 'message' => 'Bad photo file'];
@@ -373,21 +390,24 @@ class MapService
         $photosource = $photo64['file'];
         
         $target = $this->fileManager->user_route_photo($this->userid, $this->routeid, $timestamp, 1);
-        //lecho($target);
-    
-        if($target){
-            if(Tools::resizeImage($photosource, $target, IMAGE_DEF)){
-                if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, 1, $timestamp)){
-                    return $this->getData($this->routeid);
-                }
-            }else{
-                lecho("resizeFail");
-                return ['status' => 'error', 'message' => 'Resize fail'];
-            }
-
+        if(!$target){
+            return ['status' => 'error', 'message' => 'No target - ' . $this->fileManager->getError()];
         }
-    
-        return ['status' => 'error', 'message' => 'Upload fail - Target not found'];
+
+        if(!Tools::resizeImage($photosource, $target, IMAGE_DEF)){
+            lecho("resizeFail");
+            return ['status' => 'error', 'message' => 'Resize fail'];
+        }
+
+        if($this->newlog($this->userid, $this->routeid, $latitude, $longitude, null, 1, $timestamp)){
+            lecho("New photo ok");
+            return $this->getData($this->routeid);
+        }else{
+            lecho("Newlog error");
+            return ['status' => 'error', 'message' => "Newlog error - $this->error"];
+        }
+   
+        return ['status' => 'error', 'message' => 'Strange bug'];
     }
 
     private function random_geoloc(){

@@ -76,23 +76,6 @@ class Tools
     public static function timezone($timestamp,$zone=0){
         return $timestamp+$zone*60;
     }
-    
-    // public static function photo64decodeOLD($photofile){
-
-    //     // Extraction du type MIME (si présent)
-    //     $matches = [];
-    //     preg_match('/data:image\/(\w+);base64/', $photofile, $matches);
-    //     $imageType = $matches[1] ?? 'jpeg'; // Par défaut, on considère que c'est un JPEG
-    
-    //     // Suppression du préfixe
-    //     $base64_string = str_replace('data:image/' . $imageType . ';base64,', '', $photofile);
-    
-    //     // Décodage en base64
-    //     $data = base64_decode($base64_string);
-    
-    //     // Enregistrement du fichier
-    //     return TempFiles::getInstance()->createTempFile('photo_', $data);    
-    // }
 
     public static function photo64decode($photofile){
         
