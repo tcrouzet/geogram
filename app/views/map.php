@@ -1069,7 +1069,7 @@ document.addEventListener('alpine:init', () => {
                     EXIF.getData(file, function() {
                         const tags = EXIF.getAllTags(this);
                         log('All EXIF tags:', tags);
-                        debugLog(tags, 'EXIF DATAs');
+                        // debugLog(tags, 'EXIF DATAs');
                         
                         if (tags.GPSLatitude && tags.GPSLongitude) {
                             try {
