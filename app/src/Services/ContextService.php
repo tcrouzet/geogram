@@ -4,8 +4,6 @@
 namespace App\Services;
 
 use App\Services\Database;
-// use App\Services\RouteService;
-// use App\Utils\Tools;
 
 use maxh\Nominatim\Nominatim;
 use Cmfcmf\OpenWeatherMap;
@@ -18,9 +16,8 @@ class ContextService {
     private $db;
     // private $route;
     
-    public function __construct($user=null) {
+    public function __construct() {
         $this->db = Database::getInstance()->getConnection();
-        // $this->route = new RouteService();
     }
 
     public function cron(){

@@ -24,3 +24,8 @@ function flushBuffer(): void
 {
     \App\Utils\Logger::getInstance()->flushBuffer();
 }
+
+function bactrace(string $label): void 
+{
+    \App\Utils\Logger::getInstance()->bactrace($label);
+}

@@ -190,4 +190,44 @@ class Logger
     {
         $this->log("microtime:", microtime(true) - $this->startTime, $msg);
     }
+
+    public function context() 
+    {
+        $this->log("Request info:");
+        $this->log("- REQUEST_URI:", $_SERVER['REQUEST_URI'] ?? 'not set');
+        $this->log("- SCRIPT_NAME:", $_SERVER['SCRIPT_NAME'] ?? 'not set');
+        $this->log("- HTTP_REFERER:", $_SERVER['HTTP_REFERER'] ?? 'not set');
+        $this->log("- REQUEST_METHOD:", $_SERVER['REQUEST_METHOD'] ?? 'not set');
+        $this->log("- SAPI:", php_sapi_name());
+        $this->log("- CLI:", php_sapi_name() === 'cli' ? 'YES' : 'NO');
+        $this->log("- Script:", $_SERVER['SCRIPT_FILENAME'] ?? 'unknown');
+    }
+
+    public function bactrace($label, $skipLevels = 2): void 
+    {
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $this->log("=== BACKTRACE $label ===");
+        
+        // Filtrer les niveaux non pertinents
+        $relevantTrace = array_slice($backtrace, $skipLevels);
+        
+        if (empty($relevantTrace)) {
+            $this->log("No relevant backtrace available");
+            $this->context();
+            return;
+        }
+        
+        $this->log("Relevant backtrace:");
+        foreach($relevantTrace as $i => $trace) {
+            $this->log("[" . ($i + $skipLevels) . "]", 
+                "File:", $trace['file'] ?? 'no file',
+                "Line:", $trace['line'] ?? 'no line', 
+                "Function:", $trace['function'] ?? 'no function',
+                "Class:", $trace['class'] ?? 'no class'
+            );
+        }
+
+        $this->context();
+
+    }
 }

@@ -136,7 +136,9 @@ class UserService
 
     // $param can be userid, useremail or token
     public function get_user($param) {
-        lecho("GetUser");
+        lecho("get_user");
+        lecho($param);
+        bactrace("get_user");
     
         $isEmail = strpos($param, '@') !== false;
         $isToken = preg_match('/^\d+_[a-f0-9]{128}$/', $param) === 1;
@@ -281,6 +283,9 @@ class UserService
         // lecho($telegram);
 
         if ($this->userid) {
+            if (!isset($telegram["id"]) || !is_numeric($telegram["id"])) {
+                return ['status' => 'error', 'message' => 'Invalid Telegram ID'];
+            }
             $telegram_id = intval($telegram["id"]);
 
             //Search user with same $telegram_id
