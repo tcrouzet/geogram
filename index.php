@@ -57,11 +57,11 @@ if (!empty($route_slug) && !in_array($route_slug, FORBIDDEN_SLUG)) {
     $route = $route_O->get_route_by_slug($route_slug);
     if($route){
         $pagename = $route['routename'];
-    }
-    if(in_array($page, OK_PAGES) && $UserStoryId && is_numeric($UserStoryId)){
-        $UserStory = $user_O->get_user($UserStoryId);
-    }else{
-        $UserStory = null;
+        if(in_array($page, OK_PAGES) && $UserStoryId && is_numeric($UserStoryId)){
+            $UserStory = $user_O->get_user($UserStoryId);
+        }else{
+            $UserStory = null;
+        }
     }
 }elseif(in_array($route_slug, FORBIDDEN_SLUG)){
     $OnMap = false;
