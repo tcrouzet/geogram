@@ -58,7 +58,7 @@ if (!empty($route_slug) && !in_array($route_slug, FORBIDDEN_SLUG)) {
     if($route){
         $pagename = $route['routename'];
     }
-    if($UserStoryId){
+    if($UserStoryId && is_numeric($UserStoryId)){
         $UserStory = $user_O->get_user($UserStoryId);
     }
 }elseif(in_array($route_slug, FORBIDDEN_SLUG)){
