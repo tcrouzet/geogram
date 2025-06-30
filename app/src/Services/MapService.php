@@ -29,10 +29,10 @@ class MapService
         if($this->user){
             $this->userid = $this->user['userid'];
         }else{
-            $this->userid = $_POST['userid'] ?? null;
+            $this->userid = tools::getRequestData('userid', null);
         }
 
-        $this->routeid = $_POST['routeid'] ?? '';
+        $this->routeid = tools::getRequestData('routeid', 0);
         if ($this->routeid < 1) {
             $this->error = ['status' => 'error', 'message' => "Route $this->routeid error"];
         }
@@ -356,14 +356,11 @@ class MapService
 
     public function logphoto(){
         lecho("logphoto user: $this->userid route: $this->routeid");
-        //lecho($_POST);
-    
-        $latitude = $_POST['latitude'] ?? '';
-        $longitude = $_POST['longitude'] ?? '';
-        $timestamp = $_POST['timestamp'] ?? 0;
-
-        $timestamp = $_POST['timestamp'] ?? 0;
-        $timestamp = intval($timestamp);
+        
+        $latitude = Tools::getRequestData('latitude');
+        $longitude = Tools::getRequestData('longitude');
+        $timestamp = intval(Tools::getRequestData('timestamp'));
+        $photofile = Tools::getRequestData('photofile');
 
         if ($timestamp <= 0) {
             return ['status' => 'error', 'message' => "Invalid timestamp $timestamp"];
@@ -379,7 +376,6 @@ class MapService
             return ['status' => 'error', 'message' => "GPS error (no latitude/longitude $latitude/$longitude)"];
         }
 
-        $photofile = $_POST['photofile'] ?? '';
         if(empty($photofile)) {
             return ['status' => 'error', 'message' => 'Bad photo file'];
         }
@@ -404,6 +400,8 @@ class MapService
             return $this->getData($this->routeid);
         }else{
             lecho("Newlog error");
+            //Delete file
+            unlink($target);
             return ['status' => 'error', 'message' => "Newlog error - $this->error"];
         }
    

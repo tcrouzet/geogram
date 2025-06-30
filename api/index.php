@@ -4,6 +4,7 @@ require_once '../app/config/config.php';
 require_once '../app/config/telegram.php';
 
 use App\Controllers\AuthController;
+use App\Utils\Tools;
 use App\Services\UserService;
 use App\Services\MapService;
 use App\Services\RouteService;
@@ -31,6 +32,10 @@ header('Content-Type: application/json');
 
 try {
     $view = $_POST['view'] ?? $_GET['view'] ?? '';
+
+    // if (empty($view)) {
+    //     $view = tools::getRequestData('view');
+    // }
 
     // Si c'est un callback Auth0, forcer la vue
     if ($_SERVER['REQUEST_METHOD'] === 'GET' && strpos($_SERVER['REQUEST_URI'], '/api/callback') !== false) {

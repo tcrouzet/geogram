@@ -25,7 +25,7 @@ function flushBuffer(): void
     \App\Utils\Logger::getInstance()->flushBuffer();
 }
 
-function bactrace(string $label): void 
+function backtrace(string $label): void 
 {
-    \App\Utils\Logger::getInstance()->bactrace($label);
+    \App\Utils\Logger::getInstance()->backtrace($label);
 }

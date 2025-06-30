@@ -242,7 +242,7 @@ const convertCoordinate = (coordArray) => {
     
     if (isNaN(degrees) || isNaN(minutes) || isNaN(seconds)) {
         log("ERROR: NaN detected! "+degrees+" "+minutes+" "+seconds);
-        return false
+        return 0
     }
     
     const result = degrees + minutes/60 + seconds/3600;
@@ -250,7 +250,7 @@ const convertCoordinate = (coordArray) => {
     
     if (isNaN(result)) {
         log('ERROR: Final result is NaN!');
-        return false;
+        return 0;
     }
     
     return Math.round(result * 1000000) / 1000000;;
@@ -1012,7 +1012,7 @@ document.addEventListener('alpine:init', () => {
                             gpsData = await this.getExifData(file);
                             log('GPS data from EXIF');
                         } catch (error) {
-                            await this.showError("Error in Exif "+error,true);
+                            await this.showError("Error in Exif: "+error,true);
                             continue;
                         }
                         log('GPS data from EXIF:', gpsData);
@@ -1051,8 +1051,8 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 } catch (error) {
-                    this.showPopup("Error in handleImageSelection",true);
                     log('Error in handleImageSelection:', error);
+                    await this.showError("Error in handleImageSelection");
                 } finally {
                     this.removePopup();
                 }
@@ -1125,25 +1125,43 @@ document.addEventListener('alpine:init', () => {
                                 resolve({
                                     latitude: latitude,
                                     longitude: longitude,
-                                    timestamp: timestamp
+                                    timestamp: timestamp,
+                                    error: ''
                                 });
             
                             } catch (error) {
-                                log('Error validating EXIF data:', error);
-                                reject('Invalid GPS data format');
-                                return false;
+                                error = 'Error validating EXIF data:' + error;
+                                log(error);
+                                resolve({
+                                    latitude: 0,
+                                    longitude: 0,
+                                    timestamp: Math.floor(Date.now() / 1000),
+                                    error: error
+                                });
                             } 
                             
                         } else {
-                            log('No GPS data found in EXIF');
-                            reject('No GPS data found in Exif');
+                            error = 'No GPS data found in EXIF';
+                            log(error);
+                            resolve({
+                                latitude: 0,
+                                longitude: 0,
+                                timestamp: Math.floor(Date.now() / 1000),
+                                error: error
+                            });
                         }
                     });
                 };
                 
                 reader.onerror = (error) => {
-                    log('FileReader error:', error);
-                    reject('Error reading file for EXIF data');
+                    error = 'FileReader error: ' + error;
+                    log(error);
+                    resolve({
+                        latitude: 0,
+                        longitude: 0,
+                        timestamp: Math.floor(Date.now() / 1000),
+                        error: error
+                    });
                 };
                 
                 reader.readAsDataURL(file);
@@ -1167,7 +1185,7 @@ document.addEventListener('alpine:init', () => {
                     return { status: 'error', message: 'No GPS Data'};
                 }
 
-                const data = await apiService.call('logphoto', {
+                const data = await apiService.uploadImage({
                     userid: this.user.userid,
                     routeid: this.route.routeid,
                     photofile: base64Image,
@@ -1326,16 +1344,27 @@ document.addEventListener('alpine:init', () => {
             }
             // Sinon, si un userid est spécifié, chercher le dernier marker de cet utilisateur
             else if (userid !== null) {
-                // Find the last marker for the specified user
-                for (let i = this.cursors.length - 1; i >= 0; i--) {
-                    const cursor = this.cursors[i];
-                    const log = this.slogs.find(log => log.loglatitude === cursor.getLatLng().lat && log.loglongitude === cursor.getLatLng().lng);
+                let mostRecentLog = null;
+                let mostRecentCursor = null;
 
-                    if (log && log.userid === userid) {
-                        targetMarker = cursor;
-                        break;
+                for (let i = 0; i < this.cursors.length; i++) {
+                    const cursor = this.cursors[i];
+                    const log = this.slogs.find(log => 
+                        log.loglatitude === cursor.getLatLng().lat && 
+                        log.loglongitude === cursor.getLatLng().lng &&
+                        log.userid === userid
+                    );
+
+                    if (log) {
+                        // Comparer les timestamps de logupdate
+                        if (!mostRecentLog || new Date(log.logupdate) > new Date(mostRecentLog.logupdate)) {
+                            mostRecentLog = log;
+                            mostRecentCursor = cursor;
+                        }
                     }
                 }
+
+                targetMarker = mostRecentCursor;
             }
 
             // If no specific user marker found, or no userid provided, use the last marker in general

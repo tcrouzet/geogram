@@ -53,6 +53,7 @@ async function debugLog(data, label = '') {
 }
 
 const apiService = {
+
     async call(view, params = {}, options = {}) {
         log(view + " api call");
 
@@ -88,6 +89,37 @@ const apiService = {
             return data;
         } catch (error) {
             console.error(`API Error (${view}):`, error);
+            throw error;
+        }
+    },
+
+    async uploadImage(imageData) {
+        log("uploadImage api call");
+
+        try {
+            const response = await fetch('/api/?view=logphoto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    view: 'logphoto',
+                    ...imageData
+                }),
+                credentials: 'same-origin',
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'error') {
+                log("uploadImage api error: " + data.message);
+                return {status: 'error', message: data.message};
+            }
+
+            log("uploadImage api success");
+            return data;
+        } catch (error) {
+            console.error('Image Upload API Error:', error);
             throw error;
         }
     }

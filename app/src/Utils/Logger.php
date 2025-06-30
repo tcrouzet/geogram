@@ -203,7 +203,7 @@ class Logger
         $this->log("- Script:", $_SERVER['SCRIPT_FILENAME'] ?? 'unknown');
     }
 
-    public function bactrace($label, $skipLevels = 2): void 
+    public function backtrace($label, $skipLevels = 2): void 
     {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $this->log("=== BACKTRACE $label ===");

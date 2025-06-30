@@ -337,4 +337,25 @@ class Tools
         return is_string($var) && (!ctype_digit($var) || strval(intval($var)) !== $var);
     }
 
+    public static function getRequestData($key, $default = '') {
+        // Essayer POST d'abord
+        if (isset($_POST[$key])) {
+            return $_POST[$key];
+        }
+        
+        // Essayer JSON si POST vide
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            static $jsonData = null;
+            if ($jsonData === null) {
+                $rawInput = file_get_contents("php://input");
+                $jsonData = $rawInput ? json_decode($rawInput, true) : false;
+            }
+            if ($jsonData && isset($jsonData[$key])) {
+                return $jsonData[$key];
+            }
+        }
+        
+        return $default;
+    }
+
 }

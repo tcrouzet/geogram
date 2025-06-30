@@ -138,7 +138,7 @@ class UserService
     public function get_user($param) {
         lecho("get_user");
         lecho($param);
-        bactrace("get_user");
+        // backtrace("get_user");
     
         $isEmail = strpos($param, '@') !== false;
         $isToken = preg_match('/^\d+_[a-f0-9]{128}$/', $param) === 1;
