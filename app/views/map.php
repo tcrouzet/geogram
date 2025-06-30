@@ -710,7 +710,7 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        async get_localisation() {
+        async get_localisation_old() {
             if (!navigator.geolocation) {
                 this.showPopup('Geolocation not supported', true);
                 throw new Error('Geolocation not supported');
@@ -764,26 +764,107 @@ document.addEventListener('alpine:init', () => {
                     },
                     error => {
                         navigator.geolocation.clearWatch(watchId);
-                        this.showPopup(
-                            'Geolocalisation Error: ' + error.message,
-                            true,  // OK button
-                            true,  // Cancel button
-                            () => { // OK callback - utiliser la meilleure position disponible
-                                if (bestPosition) {
-                                    resolve(bestPosition);
-                                } else {
-                                    reject(error);
-                                }
-                            },
-                            () => { // Cancel callback
-                                reject('Cancelled by user');
-                            }
-                        );
+                        this.showError('Geolocalisation Error: ' + error.message);
+                        reject('Cancelled by user');
                     },
                     options
                 );
             });
         },
+
+        async get_localisation() {
+            if (!navigator.geolocation) {
+                this.showPopup('Geolocation not supported', true);
+                throw new Error('Geolocation not supported');
+            }
+
+            return new Promise((resolve, reject) => {
+                this.showPopup("Looking for position...");
+
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 15000, // Plus long timeout
+                    maximumAge: 0
+                };
+
+                let bestPosition = null;
+                let bestAccuracy = Infinity;
+                let resolved = false; // Éviter les résolutions multiples
+
+                const watchId = navigator.geolocation.watchPosition(
+                    position => {
+                        if (resolved) return;
+
+                        const { latitude, longitude, accuracy } = position.coords;
+
+                        if (accuracy < bestAccuracy) {
+                            bestPosition = {
+                                latitude: latitude,
+                                longitude: longitude,
+                                timestamp: Math.floor(Date.now() / 1000)
+                            };
+                            bestAccuracy = Math.floor(accuracy);
+                        }
+                        
+                        log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
+
+                        // Mise à jour du message avec la précision actuelle
+                        this.showPopup(`Looking for position... Current accuracy: ${bestAccuracy}m`);
+
+                        if (bestAccuracy < 50) {
+                            resolved = true;
+                            navigator.geolocation.clearWatch(watchId);
+                            this.removePopup();
+                            resolve(bestPosition);
+                        } else if (bestAccuracy < 10000) {
+                            // Attendre un peu plus avant de proposer le choix
+                            // Vous pouvez ajuster cette logique selon vos besoins
+                        }
+                    },
+                    error => {
+                        if (resolved) return;
+                        
+                        navigator.geolocation.clearWatch(watchId);
+                        
+                        if (bestPosition) {
+                            // Si on a une position, même imprécise, la proposer
+                            resolved = true;
+                            this.removePopup();
+                            resolve(bestPosition);
+                        } else {
+                            resolved = true;
+                            this.showPopup('Geolocation failed: ' + error.message, true, false, () => {
+                                reject('Geolocation failed');
+                            });
+                        }
+                    },
+                    options
+                );
+
+                // Timeout personnalisé pour forcer un choix après X secondes
+                setTimeout(() => {
+                    if (!resolved && bestPosition) {
+                        // Proposer la meilleure position trouvée après 10 secondes
+                        this.showPopup(
+                            `Use current position? Accuracy: ${bestAccuracy}m`,
+                            true,  // OK
+                            true,  // Cancel
+                            () => {
+                                resolved = true;
+                                navigator.geolocation.clearWatch(watchId);
+                                resolve(bestPosition);
+                            },
+                            () => {
+                                resolved = true;
+                                navigator.geolocation.clearWatch(watchId);
+                                reject('Cancelled by user');
+                            }
+                        );
+                    }
+                }, 10000); // 10 secondes
+            });
+        },
+
 
         async sendgeolocation() {
             log();
