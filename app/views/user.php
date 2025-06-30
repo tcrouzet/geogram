@@ -47,8 +47,9 @@
                         async 
                         src="https://telegram.org/js/telegram-widget.js?22"
                         data-telegram-login="<?= TELEGRAM_BOT ?>"
+                        data-onauth="onTelegramAuth(user)"
                         data-size="large"
-                        data-auth-url="<?= TELEGRAM_AUTH ?>"
+                        data-userpic="false"
                         data-request-access="write"
                     ></script>
                 </div>
@@ -77,6 +78,28 @@
 </main>
 
 <script>
+
+// Fonction globale pour le callback Telegram
+window.onTelegramAuth = async function(telegram) {
+    log('Telegram auth');
+    log(telegram);
+    
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    log(user);
+
+    const data = await apiService.call('telegramConnect',{
+        userid: user.userid,
+        telegramid: telegram.id
+        });
+    
+    if (data.status === 'success') {
+        const userComponent = Alpine.$data(document.querySelector('[x-data="userComponent()"]'));
+        userComponent.user = data.user;
+        userComponent.telegramConnected = true;
+        userComponent.updateHeader(data.user);
+    }
+};
+
 document.addEventListener('alpine:init', () => {
     Alpine.data('userComponent', () => ({
 
@@ -112,6 +135,8 @@ document.addEventListener('alpine:init', () => {
                 if(this.user.usertelegram){
                     log("Telegram connected");
                     this.telegramConnected = true;
+                }else{
+                    log("Telegram disconnected");
                 }
             }
             log("userInit ended");
@@ -224,17 +249,20 @@ document.addEventListener('alpine:init', () => {
             Alpine.store('headerActions').init();
         },
 
-        disconnectTelegram() {
+        async disconnectTelegram() {
             if (confirm('Are you sure you want to disconnect Telegram?')) {
-                fetch('/api/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        view: "telegramDisconnect"
-                    })
+
+                log();
+                // 6254152278
+                const data = await apiService.call('telegramDisconnect', {
+                    userid: this.userid
                 });
+                if (data.status == 'success') {
+                    log('Telegram disconnected');
+                    this.user = data.user;
+                    this.telegramConnected = false;
+                    this.updateHeader(this.user);
+                }
             }
         },
 
@@ -265,6 +293,22 @@ document.addEventListener('alpine:init', () => {
                     return "Unknown status";
             }
         },
+
+        // clearTelegramSession() {
+        //     // Supprimer les cookies Telegram
+        //     document.cookie = "tgAuthResult=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.telegram.org";
+        //     document.cookie = "tgAuthResult=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            
+        //     // Vider le localStorage lié à Telegram
+        //     Object.keys(localStorage).forEach(key => {
+        //         if (key.includes('telegram') || key.includes('tg')) {
+        //             localStorage.removeItem(key);
+        //         }
+        //     });
+            
+        //     // Recharger la page pour réinitialiser le widget
+        //     window.location.reload();
+        // },
 
     }));
 });

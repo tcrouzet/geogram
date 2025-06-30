@@ -3,7 +3,7 @@
 function log(...messages) {
     if (DEBUG) {
         try {
-            let functionName = new Error().stack?.split('\\n')[2]?.trim()?.split(' ')[1] || 'unknown';
+            let functionName = new Error().stack?.split('\n')[2]?.trim()?.split(' ')[1] || 'unknown';
             functionName = functionName.replace("Proxy.", "");
             
             if (messages.length === 0) {

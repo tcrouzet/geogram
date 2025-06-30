@@ -19,6 +19,9 @@ class UserService
         $this->user = $user;
         if($this->user)
             $this->userid = $user["userid"];
+        else
+            $this->userid = tools::getRequestData('userid', null);
+
         $this->db = Database::getInstance()->getConnection();
         $this->fileManager = new FilesManager();
     }
@@ -316,6 +319,32 @@ class UserService
             }
         }
         return ['status' => 'error', 'message' => 'Unknown user'];    
+    }
+
+    public function telegramDisconnect(){
+        $stmt = $this->db->prepare("UPDATE users SET usertelegram = NULL WHERE userid = ?");
+        $stmt->bind_param("i", $this->userid);
+        $stmt->execute();
+        if($this->user = $this->get_user($this->userid)){
+            return ['status' => 'success', 'user' => $this->user];
+        }else{
+            return ['status' => 'error', 'message' => 'Disconect Telegram fail'];
+        }
+    }
+
+    public function telegramConnect(){
+        lecho("telegramConnect userid: $this->userid");
+        $telegramid = intval(tools::getRequestData('telegramid', 0));
+        lecho("telegramid:", $telegramid);
+        if($telegramid != 0){
+            $stmt = $this->db->prepare("UPDATE users SET usertelegram = ? WHERE userid = ?");
+            $stmt->bind_param("ii", $telegramid, $this->userid);
+            $stmt->execute();
+            if($this->user = $this->get_user($this->userid)){
+                return ['status' => 'success', 'user' => $this->user];
+            }
+        }
+        return ['status' => 'error', 'message' => 'Connect Telegram fail'];
     }
 
     public function mergeAccounts($fromUserId, $toUserId) {

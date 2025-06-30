@@ -33,10 +33,6 @@ header('Content-Type: application/json');
 try {
     $view = $_POST['view'] ?? $_GET['view'] ?? '';
 
-    // if (empty($view)) {
-    //     $view = tools::getRequestData('view');
-    // }
-
     // Si c'est un callback Auth0, forcer la vue
     if ($_SERVER['REQUEST_METHOD'] === 'GET' && strpos($_SERVER['REQUEST_URI'], '/api/callback') !== false) {
         $view = 'callback';
@@ -44,13 +40,8 @@ try {
      
     lecho("View:",$view);
 
-    // Debug temporaire
-    // if ($view === 'logphoto') {
-    //     lecho("DEBUG logphoto:");
-    //     lecho("POST:", $_POST);
-    //     lecho("Headers:", getallheaders());
-    //     lecho("Session:", $_SESSION ?? 'No session');
-    // }
+    lecho($_POST);
+    lecho($_GET);
     
     // Routes publiques (pas besoin de token)
     $publicRoutes = [
@@ -93,6 +84,8 @@ try {
         'userAction' => [UserService::class, 'userAction'],
         'userAction' => [UserService::class, 'userAction'],
         'getUserChannels' => [UserService::class, 'getUserChannels'],
+        'telegramDisconnect' => [UserService::class, 'telegramDisconnect'],
+        'telegramConnect' => [UserService::class, 'telegramConnect'],
 
     ];
 
