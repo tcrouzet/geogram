@@ -4,7 +4,7 @@ Geogram is a web app to track adventures.
 
 Look an implementation at [geo.zefal.com](https://geo.zefal.com/).
 
-You have to import app/database/schema.sql in a MySQL database, then set app/config/config.php file.
+You have to import app/database/schema.sql in a MySQL database, then set app/config/ files (models in app/config-samples)
 
 
 ### Telegram (optional)
