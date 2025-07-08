@@ -81,16 +81,30 @@ document.addEventListener('alpine:init', () => {
             log(urlParams);
             if (urlParams.get('login') === 'success') {
                 this.user = await this.checkAuthStatus();
+                if (!this.user){
+                    localStorage.removeItem('user');
+                    alert("Bad user");
+                }
+                reset = true;
+                // Nettoyer l'URL pour éviter les re-exécutions
+                window.history.replaceState({}, '', window.location.pathname);
             } else if (urlParams.get('login') === 'fail') {
+                localStorage.removeItem('user');
+                this.user = null;
                 alert(urlParams.get('message'));
             } else if (urlParams.get('login') === 'token') {
                 this.user = await this.checkAuthToken();
+                if (!this.user){
+                    localStorage.removeItem('user');
+                    alert("Bad user");
+                }
+                reset = true;
+                window.history.replaceState({}, '', window.location.pathname);
             } else {
                 this.user = this.getUserFromLocalStorage();
             }
-            // console.log("***Initializing header ended");
 
-            this.isLoggedIn = this.user !== null && this.user !== undefined;
+            this.isLoggedIn = !!this.user;
             if(this.isLoggedIn) {
                 log("***logged");
                 //console.log(this.user);
@@ -211,6 +225,7 @@ document.addEventListener('alpine:init', () => {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 return data.user;
             }
+            return null;
         },
 
         async checkAuthToken() {
@@ -227,6 +242,7 @@ document.addEventListener('alpine:init', () => {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 return data.user;
             }
+            return null;
         },
 
         getUserFromLocalStorage() {
