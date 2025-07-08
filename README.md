@@ -24,6 +24,7 @@ Problem with Photo Exif on Android.
 
 ### Done
 
+- 2025-07-07 Debug login with invitation link
 - 2025-06-30 Delete photos when upload fail, display last photo after upload…
 - 2025-06-24 Android gallery optimisation and multiple images publication (exif data OK)
 - 2025-06-10 Add town and weather with cron every 10 minutes
