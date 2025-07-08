@@ -710,68 +710,6 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        async get_localisation_old() {
-            if (!navigator.geolocation) {
-                this.showPopup('Geolocation not supported', true);
-                throw new Error('Geolocation not supported');
-            }
-
-            return new Promise((resolve, reject) => {
-                this.showPopup("Looking for position...");
-
-                const options = {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                };
-
-                let bestPosition = null;
-                let bestAccuracy = Infinity;
-
-                const watchId = navigator.geolocation.watchPosition(
-                    position => {
-                        const { latitude, longitude, accuracy } = position.coords;
-
-                        if (accuracy < bestAccuracy) {
-                            bestPosition = {
-                                latitude: latitude,
-                                longitude: longitude,
-                                timestamp: Math.floor(Date.now() / 1000)
-                            };
-                            bestAccuracy = Math.floor(accuracy);
-                        }
-                        log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
-
-                        if (bestAccuracy < 50) {
-                            navigator.geolocation.clearWatch(watchId);
-                            resolve(bestPosition);
-                        } else if (bestAccuracy < 10000) {
-                            // Afficher popup avec boutons OK/Cancel
-                            this.showPopup(
-                                `Accuracy: ${bestAccuracy}m`,
-                                true,  // OK button
-                                true,  // Cancel button
-                                () => { // OK callback
-                                    navigator.geolocation.clearWatch(watchId);
-                                    resolve(bestPosition);
-                                },
-                                () => { // Cancel callback
-                                    navigator.geolocation.clearWatch(watchId);
-                                    reject('Cancelled by user');
-                                }
-                            );
-                        }
-                    },
-                    error => {
-                        navigator.geolocation.clearWatch(watchId);
-                        this.showError('Geolocalisation Error: ' + error.message);
-                        reject('Cancelled by user');
-                    },
-                    options
-                );
-            });
-        },
-
         async get_localisation() {
             if (!navigator.geolocation) {
                 this.showPopup('Geolocation not supported', true);
