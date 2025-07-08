@@ -16,37 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `chats`
---
-
-DROP TABLE IF EXISTS `chats`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `chats` (
-  `chatid` bigint(20) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `link` varchar(100) DEFAULT NULL,
-  `chatname` varchar(100) DEFAULT NULL,
-  `start` int(11) DEFAULT 0,
-  `stop` int(11) DEFAULT 0,
-  `gpx` tinyint(1) NOT NULL DEFAULT 0,
-  `total_km` int(11) NOT NULL DEFAULT 0,
-  `total_dev` int(11) NOT NULL DEFAULT 0,
-  `unit` tinyint(4) NOT NULL DEFAULT 0,
-  `timediff` tinyint(4) NOT NULL DEFAULT 0,
-  `adminid` bigint(20) NOT NULL DEFAULT 0,
-  `photo` tinyint(1) NOT NULL DEFAULT 0,
-  `creationdate` timestamp NOT NULL DEFAULT current_timestamp(),
-  `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `mode` tinyint(4) NOT NULL DEFAULT 0,
-  `menuid` int(11) DEFAULT NULL,
-  `real_time` tinyint(4) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`chatid`),
-  UNIQUE KEY `chatname` (`chatname`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `connectors`
 --
 
@@ -61,26 +30,27 @@ CREATE TABLE `connectors` (
   `constatus` int(2) NOT NULL DEFAULT 0,
   PRIMARY KEY (`conid`),
   UNIQUE KEY `conrouteid` (`conrouteid`,`conuserid`)
-) ENGINE=InnoDB AUTO_INCREMENT=637 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=710 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `gpx`
+-- Table structure for table `context`
 --
 
-DROP TABLE IF EXISTS `gpx`;
+DROP TABLE IF EXISTS `context`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `gpx` (
-  `chatid` bigint(20) NOT NULL,
-  `point` int(11) NOT NULL,
-  `longitude` decimal(11,8) NOT NULL,
-  `latitude` decimal(10,8) NOT NULL,
-  `km` mediumint(9) NOT NULL,
-  `dev` mediumint(9) NOT NULL,
-  `track` tinyint(4) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`chatid`,`point`,`track`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+CREATE TABLE `context` (
+  `contextid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `lat_grid` decimal(8,5) NOT NULL,
+  `lon_grid` decimal(8,5) NOT NULL,
+  `city_name` varchar(255) DEFAULT NULL,
+  `weather_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`weather_data`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`contextid`),
+  UNIQUE KEY `grid_coords` (`lat_grid`,`lon_grid`),
+  KEY `cleanup_index` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=327 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -135,14 +105,13 @@ CREATE TABLE `rlogs` (
   `logdev` int(11) DEFAULT NULL,
   `logcomment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `logphoto` tinyint(1) NOT NULL DEFAULT 0,
-  `logweather` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`logweather`)),
-  `logcity` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`logcity`)),
+  `logcontext` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`logcontext`)),
   `logtime` timestamp NOT NULL DEFAULT current_timestamp(),
   `loginsertime` timestamp NOT NULL DEFAULT current_timestamp(),
   `logupdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`logid`),
   UNIQUE KEY `logroute` (`logroute`,`loguser`,`loglatitude`,`loglongitude`,`logphoto`,`logtime`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5217 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5831 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,7 +149,7 @@ CREATE TABLE `routes` (
   `routelocationduration` tinyint(4) NOT NULL DEFAULT 12,
   PRIMARY KEY (`routeid`),
   UNIQUE KEY `routename` (`routename`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -221,7 +190,7 @@ CREATE TABLE `users` (
   `usertelegram` bigint(20) DEFAULT NULL,
   `usertoken` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=351 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -233,4 +202,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-11  6:35:02
+-- Dump completed on 2025-07-01 10:09:18

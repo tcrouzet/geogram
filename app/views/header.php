@@ -81,6 +81,8 @@ document.addEventListener('alpine:init', () => {
             log(urlParams);
             if (urlParams.get('login') === 'success') {
                 this.user = await this.checkAuthStatus();
+            } else if (urlParams.get('login') === 'fail') {
+                alert(urlParams.get('message'));
             } else if (urlParams.get('login') === 'token') {
                 this.user = await this.checkAuthToken();
             } else {

@@ -185,11 +185,15 @@ class AuthService
                     'app_userid' => $user['user']['userid']
                 ]), time() + ($this->cookies_time), '/', '', true, true);
                 lecho("userid", $user['user']['userid']);
+                flushBuffer();
+                header('Location: /?login=success');
+                
+            }else{
+                lecho("login fail:" . $user['message']);
+                flushBuffer();
+                header('Location: /?login=fail&message='.urldecode($user['message']));
             }
     
-            flushBuffer();
-            // Rediriger vers l'app avec les données
-            header('Location: /?login=success');
             exit();
     
         } catch (\Exception $e) {

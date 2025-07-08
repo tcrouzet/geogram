@@ -33,9 +33,12 @@ class UserService
     public function findOrCreateUser($userInfo){
         if($userInfo["email"] && $user = $this->get_user($userInfo["email"])){
 
-            $this->improuveUser($user['userid'], $userInfo);
-            $user = $this->get_user($user['userid']);
-            return ['status' => "success", 'user' => $user];
+            if($this->improuveUser($user['userid'], $userInfo)){
+                $user = $this->get_user($user['userid']);
+                return ['status' => "success", 'user' => $user];
+            }else{
+                return ['status' => "error", 'message' => $this->error];
+            }
         }else{
             return $this->createUser($userInfo);
         }
@@ -113,11 +116,18 @@ class UserService
             lecho("Improve User link",$link);
             $route = (new RouteService())->get_route_by_link($link);
             if($route){
+                lecho("Link OK");
                 $status = 1;
-                if($route['routepublisherlink'] == $link)
+                if($route['routepublisherlink'] == $link){
+                    lecho("Publisher link");
                     $status = 2;
+                }
                 $this->connect($userid, $route['routeid'], $status);
                 $this->set_user_route($userid, $route['routeid']);
+            }else{
+                $this->error = "Invalid invitation link";
+                lecho($this->error);
+                return false;
             }
         }elseif($routeid){
             $this->connect($userid, $routeid, 2);
