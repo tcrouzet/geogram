@@ -10,7 +10,7 @@ You have to import app/database/schema.sql in a MySQL database, then set app/con
 ### Telegram (optional)
 
 1. Open @BotFather
-2. In BotFather, /setdomain@YourBotName yourWebApp (/setdomain@GeoBikepacking_bot https://geo.zefal.com/api/?view=telegram)
+2. In BotFather, /setdomain@YourBotName yourWebApp
 
 Finaly you have to open webhook.php from the web to activate your bot webhook.
 
