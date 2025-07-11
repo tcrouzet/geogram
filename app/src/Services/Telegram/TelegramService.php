@@ -56,8 +56,8 @@ class TelegramService
 
         if ($this->command()) return;
         if ($this->location()) return;
-        if ($this->text()) return;
         if ($this->photo()) return;
+        if ($this->text()) return;
 
     }
 
@@ -309,7 +309,10 @@ class TelegramService
                 lecho("Photo OK 2");
                 if(Tools::resizeImage($tempFile, $target, IMAGE_DEF)){
 
-                    if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'],"", $photoI, $this->timestamp, $this->message_id)) {
+                    //Commentaire
+                    $messageText = isset($this->message["caption"]) ? $this->message["caption"] : "";
+
+                    if ($map->newlog($this->user["userid"], $this->channel["routeid"], $lastLog['loglatitude'], $lastLog['loglongitude'], $messageText, $photoI, $this->timestamp, $this->message_id)) {
                         TelegramTools::todelete($this->telegram, $this->chatid, $this->message_id, $this->channel["routemode"],1);
                         TelegramTools::ShortLivedMessage($this->telegram, $this->chatid, "$this->username, your photo is on the map!", $this->channel["routeverbose"]);
                         lecho("photolog done");
