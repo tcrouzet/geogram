@@ -90,7 +90,7 @@
 
                                 <div class="log-content">
                                     <template x-if="log.photolog">
-                                        <img :src="log.photolog" class="log-photo" alt="Adventure photo" @click="openFullscreenPhoto(log)" style="cursor: pointer;">
+                                        <img :src="log.photolog" class="log-photo" alt="Adventure photo">
                                     </template>
                                     
                                     <template x-if="log.comment_formated">
@@ -223,83 +223,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal plein écran pour les photos -->
-    <div x-show="showFullscreenPhoto" 
-        class="fullscreen-photo-modal"
-        @keydown.window="handleKeydown($event)"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0">
-        
-        <div class="fullscreen-photo-content"
-            @touchstart="handleTouchStart($event)"
-            @touchend="handleTouchEnd($event)"
-            >
-            <!-- Bouton fermer -->
-            <button @click="closeFullscreenPhoto()" class="fullscreen-close-btn">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <!-- Flèche précédente -->
-            <button @click="prevPhoto()" 
-                    class="fullscreen-nav-btn fullscreen-prev-btn"
-                    x-show="currentPhotoIndex > 0">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            
-            <!-- Photo -->
-            <div class="fullscreen-photo-container">
-                <img :src="getCurrentPhoto()?.photolog" 
-                    :alt="getCurrentPhoto()?.username_formated"
-                    class="fullscreen-photo-img">
-            </div>
-            
-            <!-- Flèche suivante -->
-            <button @click="nextPhoto()" 
-                    class="fullscreen-nav-btn fullscreen-next-btn"
-                    x-show="currentPhotoIndex < photoLogIds.length - 1">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-
-            <!-- Informations de la photo en haut -->
-            <div class="fullscreen-photo-header" x-show="getCurrentPhoto()">
-                <div class="photo-header-content">
-                    <div class="marker markerStory" 
-                        :style="getCurrentPhoto()?.userphoto ? 
-                                `background-image: url('/userdata/users/${getCurrentPhoto()?.userid}/photo.jpeg');` :
-                                `background-color: ${getCurrentPhoto()?.usercolor};`">
-                        <template x-if="!getCurrentPhoto()?.userphoto">
-                            <span x-text="getCurrentPhoto()?.userinitials"></span>
-                        </template>
-                    </div>
-                    <span class="log-author" x-text="getCurrentPhoto()?.username_formated"></span>
-                    <span class="log-date" x-text="getCurrentPhoto()?.date_formated"></span>
-                </div>
-            </div>
-
-            <!-- Informations de la photo en bas (seulement commentaire et stats) -->
-            <div class="fullscreen-photo-info">
-                <div class="photo-stats">
-                    <span class="map-link" @click.stop="showUserOnMap(getCurrentPhoto())">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </span>
-                    <template x-if="getCurrentPhoto()?.logkm_km">
-                        <span x-text="getCurrentPhoto()?.logkm_km + 'km'"></span>
-                    </template>
-                    <template x-if="getCurrentPhoto()?.logdev">
-                        <span x-text="getCurrentPhoto()?.logdev + 'm+'"></span>
-                    </template>
-                    <span class="photo-counter" x-text="`${currentPhotoIndex + 1}/${photoLogIds.length}`"></span>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
 </main>
 
 <script>
@@ -392,12 +315,6 @@ document.addEventListener('alpine:init', () => {
         popupCancel: false,
         popupOKCallback: null,
         popupCancelCallback: null,
-        // Diaporama
-        showFullscreenPhoto: false,
-        currentPhotoIndex: 0,
-        photoLogIds: [],
-        touchStartX: 0,
-        touchEndX: 0,
 
         async init() {
             await initService.initComponent(this);
@@ -1360,7 +1277,6 @@ document.addEventListener('alpine:init', () => {
 
         async showUserOnMap(entry) {
             this.component = 'map';
-            this.showFullscreenPhoto = false;
             this.userMarkers(entry.userid);
             this.zoom_lastmarker(entry.userid, entry.logid);
         },
@@ -1582,86 +1498,6 @@ document.addEventListener('alpine:init', () => {
             $style = this.log.userphoto ? `background-image: url('/userdata/users/${this.log.userid}/photo.jpeg');`
                 : `background-color: ${this.log.usercolor};`;
             return $style;
-        },
-
-        openFullscreenPhoto(log) {
-            // Créer la liste des IDs des logs avec photos
-            this.photoLogIds = this.slogs
-                .filter(l => l.photolog)
-                .map(l => l.logid);
-            
-            // Trouver l'index de la photo cliquée
-            this.currentPhotoIndex = this.photoLogIds.findIndex(id => id === log.logid);
-            if (this.currentPhotoIndex === -1) this.currentPhotoIndex = 0;
-            
-            this.showFullscreenPhoto = true;
-            document.body.style.overflow = 'hidden';
-        },
-
-        closeFullscreenPhoto() {
-            this.showFullscreenPhoto = false;
-            document.body.style.overflow = 'auto';
-        },
-
-        nextPhoto() {
-            if (this.currentPhotoIndex < this.photoLogIds.length - 1) {
-                this.currentPhotoIndex++;
-            }
-        },
-
-        prevPhoto() {
-            if (this.currentPhotoIndex > 0) {
-                this.currentPhotoIndex--;
-            }
-        },
-
-        getCurrentPhoto() {
-            if (!this.showFullscreenPhoto || this.photoLogIds.length === 0) return null;
-            const currentLogId = this.photoLogIds[this.currentPhotoIndex];
-            return this.slogs.find(log => log.logid === currentLogId);
-        },
-
-        handleKeydown(event) {
-            if (!this.showFullscreenPhoto) return;
-            
-            switch(event.key) {
-                case 'Escape':
-                    this.closeFullscreenPhoto();
-                    break;
-                case 'ArrowLeft':
-                    this.prevPhoto();
-                    break;
-                case 'ArrowRight':
-                    this.nextPhoto();
-                    break;
-            }
-        },
-
-        handleTouchStart(e) {
-            log();
-            this.touchStartX = e.changedTouches[0].screenX;
-        },
-
-        handleTouchEnd(e) {
-            log();
-            this.touchEndX = e.changedTouches[0].screenX;
-            this.handleSwipe();
-        },
-
-        handleSwipe() {
-            log();
-            const swipeThreshold = 50; // Distance minimum pour déclencher le swipe
-            const diff = this.touchStartX - this.touchEndX;
-            
-            if (Math.abs(diff) > swipeThreshold) {
-                if (diff > 0) {
-                    // Swipe gauche = photo suivante
-                    this.nextPhoto();
-                } else {
-                    // Swipe droite = photo précédente
-                    this.prevPhoto();
-                }
-            }
         },
 
     }));

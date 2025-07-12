@@ -71,7 +71,7 @@ class MapService
         $hasStopFilter = !empty($stop);
 
         $query = "SELECT 
-                logid, logroute, loguser, loglatitude, loglongitude, logkm, logdev, logtime, logupdate, logcomment, logphoto, logcontext,
+                logid, logroute, loguser, loglatitude, loglongitude, logkm, logdev, logtime, logupdate, logcomment, logphoto, logcontext, logtelegramid,
                 userid, username, userphoto, usercolor, userinitials, userupdate
             FROM rlogs
             INNER JOIN users ON rlogs.loguser = users.userid
