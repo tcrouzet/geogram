@@ -393,17 +393,22 @@ class TelegramService
             lecho("IsNewChannel");
             $chat = $this->update["my_chat_member"]["chat"];
             
-            if ($chat['type'] === 'channel' || $chat['type'] === 'group') {
+            if ($chat['type'] === 'channel' || $chat['type'] === 'group' || $chat['type'] === 'supergroup') {
+
+                lecho("Chat type: " . $chat['type']);
 
                 $user = $this->update["my_chat_member"]["from"];
                 $chatId = round($chat['id']);
                 $userId = round($user['id']);
+                $title = $chat['title'];
 
                 if($this->update["my_chat_member"]["new_chat_member"]["status"] == "left"){
                     //Destruction du groupe
+                    lecho("Delete channel $chatId $title");
                     $this->deleteChannelConnexion($chatId);
                 }else{
-                    $this->newChannel($chatId, $userId, $chat['title'], $this->update["my_chat_member"]["new_chat_member"]["status"]);
+                    lecho("New channel $chatId $title");
+                    $this->newChannel($chatId, $userId, $title, $this->update["my_chat_member"]["new_chat_member"]["status"]);
                 }
 
                 //Implement
@@ -411,6 +416,7 @@ class TelegramService
 
                 return true;
             }
+            lecho("Not a channel or group");
         }
         return false;
     }

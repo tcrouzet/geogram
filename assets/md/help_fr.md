@@ -61,10 +61,10 @@ On peut lier à un groupe Telegram à une route de façon que les géolocalisati
 
 1. Créer un [compte Telegram](https://telegram.org/apps).
 1. [Connecter {GEONAME} à son compte Telegram.](/user) Important de ne pas sauter cette étape.
-1. Sur Telegram, créer un groupe Telegram en invitant comme premier utilisateur **{TELEGRAM_BOT}**.
+1. Sur Telegram, créer un groupe Telegram en invitant comme premier utilisateur **{TELEGRAM_BOT}** (attention de ne pas créer un Channel — conversations unidirectionnelles).
 1. Dans le groupe, un message vous indique l'ouverture de la connexion avec {GEONAME}.
 1. Sur Telegram, définir {TELEGRAM_BOT} comme administrateur du groupe (open the group, click on the group name, select Edit Group, then select Administrators, add {TELEGRAM_BOT}).
 1. Définir les permissions du bot (autoriser : envoyer des messages, envoyer des photos, interdire le reste).
 1. Sur {GEONAME}, [profil de la route, associer le canal Telegram.](/route) Il apparaît dans une liste déroulante ([à condition que votre profil user soit lui-même connecté à Telegram](/user)).
 1. En cas de problème, "/reconnect" retablit la connexion du groupe à {GEONAME}.
-1. La suppression de {TELEGRAM_BOT} du groupe Telegram détruit l'association avec {GEONAME}.
+1. La suppression de {TELEGRAM_BOT} du groupe Telegram détruit l'association avec {GEONAME}, sans pour autant détruire les messages déjà publiés (pour cela, il faut passer par les options de la route).
