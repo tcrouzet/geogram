@@ -1279,15 +1279,36 @@ document.addEventListener('alpine:init', () => {
         async uploadImage(file, gpsData) {
             log();
             try {
+                log(`Taille originale: ${file.size / 1024 / 1024} MB`);
+                
+                const options = {
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: IMAGE_DEF,
+                    useWebWorker: true,
+                    preserveExif: true,
+                    initialQuality: IMAGE_COMPRESS,
+                    fileType: 'image/webp',
+                    onProgress: (progress) => {
+                        this.showPopup(`Converting to WebP... ${Math.round(progress)}%`);
+                    }
+                };
+
+                // Compression + conversion WebP
+                const compressedFile = await imageCompression(file, options);
+                log(`Taille WebP: ${compressedFile.size / 1024 / 1024} MB`);
+                log(`Format: ${compressedFile.type}`);
+
+                this.showPopup("Uploading WebP image...");
 
                 const base64Image = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = (event) => resolve(event.target.result);
                     reader.onerror = (error) => reject(error);
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(compressedFile);
                 });
-                log("base64 OK");
-                
+
+                log("base64 OK (WebP compressed)");
+
                 if (!gpsData) {
                     log('Error:', "No GPS Data");
                     return { status: 'error', message: 'No GPS Data'};
@@ -1302,25 +1323,23 @@ document.addEventListener('alpine:init', () => {
                     timestamp: gpsData['timestamp']
                 });
 
-                log("Image upload response:", data);
-
+                log("WebP image upload response:", data);
                 if (data.status == 'success') {
-                    log("Image uploaded successfully");
+                    log("WebP image uploaded successfully");
                     this.data = data;
                     this.chooseMarkers(this.userid);
                     this.action_map();
                     this.zoom_lastmarker(this.userid);
-                }else{
-                    log("Image upload failed:", data);
+                } else {
+                    log("WebP image upload failed:", data);
                 }
-                
+
                 return data;
             } catch (error) {
-                log('Error uploading image:', error);
+                log('Error uploading WebP image:', error);
                 return { status: 'error', message: 'Upload exception: ' + error.message };
             }
         },
-
 
         showAccessMessage() {
             log();

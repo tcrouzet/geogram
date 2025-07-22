@@ -79,6 +79,9 @@ function version(){
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>const DEBUG = <?= DEBUG ? 'true' : 'false' ?>;</script>
     <script src="/assets/js/apiService.js?<?= version() ?>"></script>
+    <script>const IMAGE_DEF = <?= IMAGE_DEF ?>;</script>
+    <script>const IMAGE_COMPRESS = <?= IMAGE_COMPRESS ?>;</script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
 
     <link rel='stylesheet' id='style-css' href='assets/css/styles.css?<?= version() ?>' type='text/css' media='screen' />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
