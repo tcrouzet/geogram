@@ -273,15 +273,25 @@ class UserService
     public function updateuser(){
         lecho("Update user");
         $username = $_POST['username'] ?? '';
+        $useremail = $_POST['useremail'] ?? '';
+
+        if (empty($username) || empty($useremail)) {
+            return ['status' => 'error', 'message' => 'Username and email cannot be empty.'];
+        }
+        if (!filter_var($useremail, FILTER_VALIDATE_EMAIL)) {
+            return ['status' => 'error', 'message' => 'Invalid email format.'];
+        }
     
         if ($this->userid) {
     
             $user['username'] = $username;
+            $user['useremail'] = $useremail;
     
-            $stmt = $this->db->prepare("UPDATE users SET username = ? WHERE userid = ?");
-            $stmt->bind_param("si", $username, $this->userid);
+            $stmt = $this->db->prepare("UPDATE users SET username = ?, useremail= ? WHERE userid = ?");
+            $stmt->bind_param("ssi", $username, $useremail, $this->userid);
             if ($stmt->execute()){
                 $this->user['username'] = $username; 
+                $this->user['useremail'] = $useremail;
                 return ['status' => 'success', 'user' => $this->user];
             }else{
                 return ['status' => 'error', 'message' => 'Update fail'];
@@ -504,6 +514,12 @@ class UserService
             $routeid = isset($_POST['routeid']) ? intval($_POST['routeid']) : 0;
             if($routeid>0) {
                 $message = $this->purgeuser_route($this->userid,$routeid);
+            }
+        }else if($action == "deleteuser" && $this->userid > 0){
+            if ($this->delete_user($this->userid)) {
+                $message = "User deleted";
+            } else {
+                $message = "Delete user failed";
             }
         }else{
             return ['status' => 'error', 'message' => "Unknown action: $action"];        

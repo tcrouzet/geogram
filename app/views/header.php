@@ -100,6 +100,14 @@ document.addEventListener('alpine:init', () => {
                 }
                 reset = true;
                 window.history.replaceState({}, '', window.location.pathname);
+            } else if (urlParams.get('login') === 'qrcode') {
+                this.user = await this.checkAuthQR();
+                if (!this.user){
+                    localStorage.removeItem('user');
+                    alert("QR login failed");
+                }
+                reset = true;
+                window.history.replaceState({}, '', window.location.pathname);
             } else {
                 this.user = this.getUserFromLocalStorage();
             }
@@ -337,6 +345,50 @@ document.addEventListener('alpine:init', () => {
             const currentTime = Math.floor(Date.now() / 1000);
             
             return (currentTime - tokenTimestamp) < this.TOKEN_EXPIRY_SECONDS;
+        },
+
+        async checkAuthQR() {
+            log();
+            const urlParams = new URLSearchParams(window.location.search);
+            const routeid = urlParams.get('routeid');
+            
+            if (!routeid) {
+                log("No routeid");
+                return null;
+            }
+            
+            // Génération phoneimprint
+            const userCode = this.generateUserCode(routeid);
+
+            const data = await apiService.call('loginQR', {
+                routeid: routeid,
+                userCode: userCode
+            });
+
+            if (data.status == 'success') {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                return data.user;
+            }
+            return null;
+        },
+
+        generateUserCode(routeid) {
+            // Récupérer le tableau des userCodes par route
+            let userCodes = JSON.parse(localStorage.getItem('userCodes') || '{}');
+            
+            // Vérifier si on a déjà un code pour cette route
+            if (!userCodes[routeid]) {
+                // Générer un nouveau code pour cette route
+                userCodes[routeid] = Array.from({length: 32}, () => 
+                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+                    .charAt(Math.floor(Math.random() * 62))
+                ).join('');
+                
+                // Sauvegarder le tableau mis à jour
+                localStorage.setItem('userCodes', JSON.stringify(userCodes));
+            }
+            
+            return userCodes[routeid];
         },
 
     }));

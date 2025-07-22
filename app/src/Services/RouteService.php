@@ -7,6 +7,8 @@ use App\Services\UserService;
 use App\Services\Gpx\GpxService;
 use App\Services\Gpx\GpxTools;
 use App\Utils\Tools;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class RouteService 
 {
@@ -149,6 +151,7 @@ class RouteService
         $route['photopath'] = $this->fileManager->route_photo_web($route);
         $route['invitpath'] = $this->make_invitation_link($route);
         $route['publishpath'] = $this->make_publish_link($route);
+        $route['qrcodepath'] = $this->fileManager->route_QRcode_web($route);
         return $route;
     }
 
@@ -273,6 +276,8 @@ class RouteService
                 $routeviewerlink = $this->generateInvitation($routeid, 1);
                 $routepublisherlink = $this->generateInvitation($routeid, 2);
                 $this->updateRouteInvitation($routeid, $routeviewerlink, $routepublisherlink);
+
+                $this->routeQRcode($routeid);
             
                 $this->connect($userid,$routeid,3);
                 $route = [
@@ -294,6 +299,27 @@ class RouteService
         
         }
     
+    }
+
+    public function routeQRcode($routeid){
+        $qrcode_png = $this->fileManager->route_QRcode($routeid);
+        $loginUrl = BASE_URL . "/?login=qrcode&routeid=" . $routeid;
+        
+        $writer = new PngWriter();
+        
+        // Nouveau constructeur en v6
+        $qrCode = new QrCode(
+            data: $loginUrl,
+            size: 400,
+            margin: 20
+        );
+        
+        $result = $writer->write($qrCode);
+        
+        // Sauver le fichier
+        $result->saveToFile($qrcode_png);
+        
+        return true;
     }
 
     public function updateUserRoute($userid,$routeid){
@@ -407,6 +433,8 @@ class RouteService
         if ($routestop === 'null' || $routestop === '') {
             $routestop = '0000-00-00 00:00:00';
         }
+
+        $this->routeQRcode($routeid);
 
         // Requête modifiée pour gérer explicitement NULL
         $query = "UPDATE routes SET 

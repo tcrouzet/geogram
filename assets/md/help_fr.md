@@ -13,11 +13,11 @@ Contrairement à une app classique installée via un store, une web app s'utilis
 
 1. Même déconnecté de {GEONAME}, on peut suivre [les routes publiques](/routes).
 1. Une fois sur une route, on découvre la carte avec les dernières positions des aventuriers.
-1. <i class="fas fa-book"></i> affiche le mode story : détails de toutes les localisations. Les aventuriers peuvent éditer leurs commentaires ou les supprimmer.
+1. <i class="fas fa-book"></i> affiche le mode story : détails de toutes les localisations. Un clic sur une photo bascule en mode diaporama.
 1. <i class="fas fa-list"></i> affichage en mode liste : par défaut, dernières positions de tous les aventuriers.
-1. En mode liste ou story, cliquer sur le nom d'un aventurier affiche son historique.
-1. <i class="fas fa-map-marker-alt"></i> renvoie sur la carte à la position exacte.
-1. <i class="fas fa-map"></i> retour à la carte soit de tous les aventuriers, soit de l'aenturier sélectionné.
+1. En mode liste ou story, cliquer sur le nom d'un aventurier affiche son historique. Un lien avec son nom apparaît au-dessus de la carte.
+1. <i class="fas fa-map-marker-alt"></i> renvoie sur la carte à la position exacte (soit sur la carte générale, soit sur celle de l'aventurier s'il a été précédemment sélectionné).
+1. <i class="fas fa-map"></i> retour à la carte soit de tous les aventuriers, soit de l'aventurier sélectionné.
 1. <i class="fas fa-expand-arrows-alt"></i> affiche la route et tous les aventuriers sur la carte (mode par défaut).
 1. <i class="fas fa-compress"></i> zoome uniquement sur les aventuriers ou toutes les positions de l'aventurier sélectionné.
 
@@ -36,6 +36,7 @@ Contrairement à une app classique installée via un store, une web app s'utilis
 1. <i class="fas fa-images"></i> publier plusieurs photos en même temps.
 1. <i class="fas fa-map-marker-alt"></i> se géolocaliser.
 1. <i class="fas fa-camera"></i> publier une photo.
+1. En mode story, possibilité de commenter les géolocalisations et les photos, comme de les supprimer.
 
 ## Route administrateur
 

@@ -48,6 +48,7 @@ try {
         'loginSocial' => [AuthController::class, 'loginSocial'],
         'loginEmail' => [AuthController::class, 'loginEmail'],
         'loginToken' => [AuthController::class, 'loginToken'],
+        'loginQR' => [AuthController::class, 'loginQR'],
         'callback' => [AuthController::class, 'callback'],
         'getSession' => [AuthController::class, 'getSession'],
         'logout' => [AuthController::class, 'logout'],
@@ -81,7 +82,6 @@ try {
 
         'updateuser' => [UserService::class, 'updateuser'],
         'userphoto' => [UserService::class, 'userphoto'],
-        'userAction' => [UserService::class, 'userAction'],
         'userAction' => [UserService::class, 'userAction'],
         'getUserChannels' => [UserService::class, 'getUserChannels'],
         'telegramDisconnect' => [UserService::class, 'telegramDisconnect'],

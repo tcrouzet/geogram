@@ -7,11 +7,13 @@ use League\OAuth2\Client\Provider\Google;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\Services\UserService;
+use App\Services\RouteService;
 
 class AuthService 
 {
     private $provider = null;
     private $userService;
+    private $routeService;
     private $error = false;
     private $user = null;
     private $cookies_time = 60 * 60 * 24 * 30 * 6;
@@ -19,6 +21,7 @@ class AuthService
     public function __construct($user=null) {
         $this->user = $user;
         $this->userService = new UserService($user);
+        $this->routeService = new RouteService();
     }
 
     private function set_provider($providerName){
@@ -101,6 +104,53 @@ class AuthService
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
+
+    public function loginWithQR() {
+        try {
+            $routeid = $_POST['routeid'] ?? $_GET['routeid'] ?? null;
+            $userCode = $_POST['userCode'] ?? $_GET['userCode'] ?? null;
+            
+            lecho("loginWithQR:", $routeid, $userCode);
+
+            if(empty($routeid) || empty($userCode)){
+                return ['status' => 'error', 'message' => 'Missing routeid or phoneimprint'];
+            }
+
+            $route = $this->routeService->get_route_by_id($routeid);
+
+            if(!$route){
+                return ['status' => 'error', 'message' => 'Route not found'];
+            } 
+
+            $name = $userCode . "_" . $route['routeslug'];
+            $email = $name . '@qr.local';
+
+            $userInfo = [
+                "email" => $email,
+                "name" => $name
+            ];
+
+            $r = $this->userService->findOrCreateUser($userInfo);
+            
+            if($r['status'] == "success"){
+                $user = $r['user'];
+                
+                // Tes cookies existants
+                setcookie('user_session', json_encode([
+                    'app_userid' => $user['userid']
+                ]), time() + ($this->cookies_time), '/', '', true, true);
+                
+                return ['status' => 'success', 'user' => $user];
+            }
+
+            return ['status' => 'error', 'message' => 'QR login failed'];
+
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
 
     public function loginWithSocial() {
         lecho("AuthService loginSocial");

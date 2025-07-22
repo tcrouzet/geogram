@@ -63,9 +63,21 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
         ),
+        'E' => 
+        array (
+            'Endroid\\QrCode\\' => 15,
+        ),
+        'D' => 
+        array (
+            'DASPRiD\\Enum\\' => 13,
+        ),
         'C' => 
         array (
             'Cmfcmf\\' => 7,
+        ),
+        'B' => 
+        array (
+            'BaconQrCode\\' => 12,
         ),
         'A' => 
         array (
@@ -156,9 +168,21 @@ class ComposerStaticInit2a8f0a61248237dad9cf13876b73fc05
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
+        'Endroid\\QrCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/endroid/qr-code/src',
+        ),
+        'DASPRiD\\Enum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dasprid/enum/src',
+        ),
         'Cmfcmf\\' => 
         array (
             0 => __DIR__ . '/..' . '/cmfcmf/openweathermap-php-api/Cmfcmf',
+        ),
+        'BaconQrCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bacon/bacon-qr-code/src',
         ),
         'App\\' => 
         array (

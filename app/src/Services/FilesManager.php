@@ -146,6 +146,19 @@ class FilesManager {
         }
     }
 
+    public function route_QRcode($routeid) {
+        $dir = $this->route_dir($routeid);
+        if($dir)
+            return  $dir . "qr.png";
+        else
+            return false;
+    }
+
+    public function route_QRcode_web($route) {
+        $photo = $this->route_QRcode($route['routeid']);
+        return $this->relativize($photo,$this->datadir) . "?" . strtotime($route['routeupdate']);
+    }
+
     public function user_photo($userid) {
         $dir = $this->user_dir2($userid);
         if($dir)

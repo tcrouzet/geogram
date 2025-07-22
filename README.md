@@ -16,7 +16,7 @@ Finaly you have to open webhook.php from the web to activate your bot webhook.
 
 ### To Do
 
-Bar code for events
+Login with QR code for events
 
 ### Warning
 
@@ -24,7 +24,7 @@ Problem with Photo Exif on Android (better to use file upload).
 
 ### Done
 
-- 2025-07-22 Image compress/convert Webp before uploading | Validation for looking for position | No black screen after diaporama mode | Stay on good mal after upload or geolocation
+- 2025-07-22 Image compress/convert Webp before uploading | Validation for looking for position | No black screen after diaporama mode | Stay on good map after upload or geolocation
 - 2025-07-07 Debug login with invitation link
 - 2025-06-30 Delete photos when upload fail, display last photo after upload…
 - 2025-06-24 Android gallery optimisation and multiple images publication (exif data OK)

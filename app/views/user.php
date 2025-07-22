@@ -16,7 +16,7 @@
         <div id="splash">
 
             <label>Email</label>
-            <input type="email" placeholder="Email" class="input-field" x-model="user.useremail" disabled>
+            <input type="email" placeholder="Email" class="input-field" x-model="user.useremail" @change="updateUser">
 
             <label>User name</label>
             <input type="text" placeholder="User name" class="input-field" x-model="user.username" required  minlength="2" maxlength="30" @change="updateUser">
@@ -36,6 +36,9 @@
                 <template x-if="user.userroute > 0">
                     <button @click="user_actions(user.userid, 'purgeuser_route', $el.textContent, user.userroute)">Delete my logs only on current route</button>
                 </template>
+
+                <button @click="user_actions(user.userid,'deleteuser',$el.textContent)">Delete my user profile</button>
+
             </div>
             <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
@@ -155,7 +158,8 @@ document.addEventListener('alpine:init', () => {
         async updateUser() {
             log();
             const data = await apiService.call('updateuser', {
-                username: this.user.username
+                username: this.user.username,
+                useremail: this.user.useremail
             });
             if (data.status == 'success') {
                 log('User updated');
@@ -207,7 +211,7 @@ document.addEventListener('alpine:init', () => {
 
 
         user_actions(userid, action, message, routeid = null){
-            if (!confirm(' Do you really to ' + message.toLowerCase()) ) {
+            if (!confirm(' Do you really want to ' + message.toLowerCase()) ) {
                     return;
             }
 
@@ -234,6 +238,14 @@ document.addEventListener('alpine:init', () => {
             .then(data => {
                 this.actionError = data.message;
                 if (data.status === 'success') {
+
+                    // Si c'est un deleteuser, déconnecter l'utilisateur
+                    if (action === 'deleteuser') {
+                        this.user = null;
+                        this.updateHeader(this.user);
+                        window.location.href = '/';
+                    }
+
                     return true;
                 } else {
                     return false;

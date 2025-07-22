@@ -42,6 +42,17 @@ class AuthController
         }
     }
 
+    // Login QR
+    public function loginQR()
+    {
+        try {
+            lecho("AuthController loginGR");
+            return $this->authService->loginWithQR();
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
     // Login social
     public function loginSocial()
     {

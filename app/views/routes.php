@@ -90,12 +90,19 @@
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
+
                             <div x-show="route.routestatus > 1">
                                 <a :href="`${route.invitpath}`" x-text="'Invitation link for viewers'"></a>
                                 <button class="copy-button" @click="copyToClipboard(`${route.invitpath}`)">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
+
+                            <label>Login QR code</label>
+                            <img :src="route.qrcodepath" 
+                                alt="QR Code" 
+                                style="max-width: 200px; border: 2px solid #eee; border-radius: 5px;"
+                                x-show="route.qrcodepath">
 
                             <label>Route image (JPEG only):</label>
                             <input type="file" @change="handlePhotoUpload(route.routeid)" accept="image/jpeg" class="input-field">
