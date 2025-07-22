@@ -224,6 +224,7 @@
         </div>
     </div>
 
+
     <!-- Modal plein écran pour les photos -->
     <div x-show="showFullscreenPhoto" 
         class="fullscreen-photo-modal"
@@ -231,9 +232,7 @@
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0">
+        >
         
         <div class="fullscreen-photo-content"
             @touchstart="handleTouchStart($event)"
@@ -799,6 +798,7 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+
         async get_localisation() {
             if (!navigator.geolocation) {
                 this.showPopup('Geolocation not supported', true);
@@ -806,17 +806,37 @@ document.addEventListener('alpine:init', () => {
             }
 
             return new Promise((resolve, reject) => {
-                this.showPopup("Looking for position...");
-
                 const options = {
                     enableHighAccuracy: true,
-                    timeout: 15000, // Plus long timeout
+                    timeout: 15000,
                     maximumAge: 0
                 };
 
                 let bestPosition = null;
                 let bestAccuracy = Infinity;
-                let resolved = false; // Éviter les résolutions multiples
+                let resolved = false;
+
+                const updatePopupWithValidation = () => {
+                    if (bestPosition && !resolved) {
+                        this.showPopup(
+                            `Position found! Accuracy: ${bestAccuracy}m<br>Searching for better position...`,
+                            true,  // OK button pour valider
+                            true,  // Cancel button pour annuler
+                            () => {
+                                // OK - utiliser la position actuelle
+                                resolved = true;
+                                navigator.geolocation.clearWatch(watchId);
+                                resolve(bestPosition);
+                            },
+                            () => {
+                                // Cancel - annuler complètement
+                                resolved = true;
+                                navigator.geolocation.clearWatch(watchId);
+                                reject('Cancelled by user');
+                            }
+                        );
+                    }
+                };
 
                 const watchId = navigator.geolocation.watchPosition(
                     position => {
@@ -831,21 +851,11 @@ document.addEventListener('alpine:init', () => {
                                 timestamp: Math.floor(Date.now() / 1000)
                             };
                             bestAccuracy = Math.floor(accuracy);
-                        }
-                        
-                        log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
-
-                        // Mise à jour du message avec la précision actuelle
-                        this.showPopup(`Looking for position... Current accuracy: ${bestAccuracy}m`);
-
-                        if (bestAccuracy < 50) {
-                            resolved = true;
-                            navigator.geolocation.clearWatch(watchId);
-                            this.removePopup();
-                            resolve(bestPosition);
-                        } else if (bestAccuracy < 10000) {
-                            // Attendre un peu plus avant de proposer le choix
-                            // Vous pouvez ajuster cette logique selon vos besoins
+                            
+                            log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
+                            
+                            // Mettre à jour le popup avec la nouvelle précision
+                            updatePopupWithValidation();
                         }
                     },
                     error => {
@@ -854,7 +864,6 @@ document.addEventListener('alpine:init', () => {
                         navigator.geolocation.clearWatch(watchId);
                         
                         if (bestPosition) {
-                            // Si on a une position, même imprécise, la proposer
                             resolved = true;
                             this.removePopup();
                             resolve(bestPosition);
@@ -868,30 +877,10 @@ document.addEventListener('alpine:init', () => {
                     options
                 );
 
-                // Timeout personnalisé pour forcer un choix après X secondes
-                setTimeout(() => {
-                    if (!resolved && bestPosition) {
-                        // Proposer la meilleure position trouvée après 10 secondes
-                        this.showPopup(
-                            `Use current position? Accuracy: ${bestAccuracy}m`,
-                            true,  // OK
-                            true,  // Cancel
-                            () => {
-                                resolved = true;
-                                navigator.geolocation.clearWatch(watchId);
-                                resolve(bestPosition);
-                            },
-                            () => {
-                                resolved = true;
-                                navigator.geolocation.clearWatch(watchId);
-                                reject('Cancelled by user');
-                            }
-                        );
-                    }
-                }, 10000); // 10 secondes
+                // Affichage initial
+                this.showPopup("Looking for position...");
             });
         },
-
 
         async sendgeolocation() {
             log();
@@ -904,7 +893,7 @@ document.addEventListener('alpine:init', () => {
             });
             if (data.status == 'success') {
                 this.data = data;
-                this.chooseMarkers(this.userid);
+                this.chooseMarkers(this.storyUser);
                 this.zoom_lastmarker(this.userid);
             }
         },
@@ -1327,7 +1316,7 @@ document.addEventListener('alpine:init', () => {
                 if (data.status == 'success') {
                     log("WebP image uploaded successfully");
                     this.data = data;
-                    this.chooseMarkers(this.userid);
+                    this.chooseMarkers(this.storyUser);
                     this.action_map();
                     this.zoom_lastmarker(this.userid);
                 } else {

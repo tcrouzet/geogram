@@ -141,15 +141,27 @@ class Tools
         $height = $imageInfo[1];
         $type = $imageInfo[2];
 
-        $orientation = self::need2rotate($sourcefile);
+        $orientation = self::need2rotate($sourcefile); //False si orientation OK
     
         // Calculer le ratio de redimensionnement
         $ratio = min($maxSize / $width, $maxSize / $height);
         if($ratio>1) $ratio = 1;
+        $needsResize = ($ratio < 1);
+        
+        // Vérifier si traitement nécessaire
+        $isAlreadyWebP = ($type === IMAGETYPE_WEBP);
+        
+        // Si déjà WebP + bonne taille + pas de rotation = copie simple
+        if ($isAlreadyWebP && !$needsResize && !$orientation) {
+            if (copy($sourcefile, $targetfile)) {
+                return true;
+            }
+            return false;
+        }
+
+        // Créer une nouvelle image avec la taille calculée
         $newWidth = intval($width * $ratio);
         $newHeight = intval($height * $ratio);
-    
-        // Créer une nouvelle image avec la taille calculée
         $newImage = imagecreatetruecolor($newWidth, $newHeight);
         $white = imagecolorallocate($newImage, 255, 255, 255);
         imagefill($newImage, 0, 0, $white);
@@ -193,6 +205,7 @@ class Tools
         TempFiles::getInstance()->cleanup();
         return true;
     }
+
 
     public static function need2rotate($imagePath) {
         if (!function_exists('exif_read_data')) {
