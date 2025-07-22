@@ -416,11 +416,19 @@ class TelegramService
     }
 
     private function deleteChannelConnexion($chatId){
-        lecho("deleteChannelConnexion");
+        lecho("deleteChannelConnexion $chatId");
         $query = "DELETE FROM telegram WHERE channel_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $chatId);
-        return $stmt->execute();
+        $result = $stmt->execute();
+        if($result) {
+            $affectedRows = $stmt->affected_rows;
+            lecho("Deleted $affectedRows rows from telegram table for channel_id $chatId");
+            return true;
+        }
+        lecho("Channel disconnection error: " . $stmt->error);
+        TelegramTools::SendMessage($this->telegram, $chatId, "Channel disconnection error:" . $stmt->error);
+        return false;
     }    
 
     private function newChannel($chatId, $userId, $title, $status) {

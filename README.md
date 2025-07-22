@@ -20,7 +20,7 @@ Bar code for events
 
 ### Warning
 
-Problem with Photo Exif on Android.
+Problem with Photo Exif on Android (better to use file upload).
 
 ### Done
 
