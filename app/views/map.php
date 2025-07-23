@@ -798,10 +798,9 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-
         async get_localisation() {
             if (!navigator.geolocation) {
-                this.showPopup('Geolocation not supported', true);
+                await this.showError('Geolocation not supported');
                 throw new Error('Geolocation not supported');
             }
 
@@ -854,7 +853,16 @@ document.addEventListener('alpine:init', () => {
                             
                             log(`Latitude: ${latitude}, Longitude: ${longitude}, Précision: ${bestAccuracy}m`);
                             
-                            // Mettre à jour le popup avec la nouvelle précision
+                            // Validation automatique si très bonne précision
+                            if (bestAccuracy < 40) {
+                                resolved = true;
+                                navigator.geolocation.clearWatch(watchId);
+                                this.removePopup();
+                                resolve(bestPosition);
+                                return;
+                            }
+                            
+                            // Sinon, mettre à jour le popup avec possibilité de valider
                             updatePopupWithValidation();
                         }
                     },
