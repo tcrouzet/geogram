@@ -80,6 +80,8 @@ if($route_slug=="login"){
     }
 }elseif($route_slug=="routes"){
     require("app/views/routes.php");
+}elseif($route_slug=="route_users"){
+    require("app/views/route_users.php");
 }elseif($route_slug=="user"){
     require("app/views/user.php");
 }elseif($route_slug=="help"){

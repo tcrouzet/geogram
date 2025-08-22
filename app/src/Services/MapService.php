@@ -19,6 +19,7 @@ class MapService
     private $route;
     private $routeid;
     private $error = false;
+    private $timeFilter = true;
     
     public function __construct($user=null) 
     {
@@ -46,7 +47,7 @@ class MapService
         if(!$routeid){
             $routeid = $this->routeid;
         }
-        lecho("get_data $routeid");
+        lecho("getData $routeid");
 
         $route = $this->route->get_route_by_id($routeid);
         if(!$route){
@@ -67,8 +68,13 @@ class MapService
 
         $currentDate = date('Y-m-d H:i:s');
 
-        $hasStartFilter = !empty($start) && ($start < $currentDate);
-        $hasStopFilter = !empty($stop);
+        if($this->timeFilter){
+            $hasStartFilter = !empty($start) && ($start < $currentDate);
+            $hasStopFilter = !empty($stop);
+        }else{
+            $hasStartFilter = false;
+            $hasStopFilter = false;
+        }
 
         $query = "SELECT 
                 logid, logroute, loguser, loglatitude, loglongitude, logkm, logdev, logtime, logupdate, logcomment, logphoto, logcontext, logtelegramid,
@@ -144,6 +150,13 @@ class MapService
         }
         return ['status' => 'error', 'message' => 'Map format fail'];
     }
+
+    public function getAllData($routeid=null){
+        lecho("getAllData $routeid");
+        $this->timeFilter = false;
+        return $this->getData($routeid);
+    }
+
 
     public function contextToString($logcontext) {
         if (empty($logcontext)) {

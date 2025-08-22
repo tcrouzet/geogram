@@ -232,6 +232,16 @@ class TelegramService
             return false;
         }
 
+        // Vérifier si $this->user existe
+        if(!isset($this->user) || empty($this->user)){
+            return false;
+        }
+
+        // Vérifier si les trois variables nécessaires existent dans $this->user et $this->channel
+        if(!isset($this->user["userid"]) || !isset($this->channel["routeid"]) || !isset($this->channel["routelocationduration"])){
+            return false;
+        }
+
         lecho("text");
 
         $map = new MapService($this->user);

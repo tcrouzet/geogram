@@ -40,8 +40,8 @@ try {
      
     lecho("View:",$view);
 
-    lecho($_POST);
-    lecho($_GET);
+    lecho("POST:",$_POST);
+    lecho("GET:",$_GET);
     
     // Routes publiques (pas besoin de token)
     $publicRoutes = [
@@ -71,6 +71,7 @@ try {
         'submitComment' => [MapService::class, 'submitComment'],
         'deleteLog' => [MapService::class, 'deleteLog'],        
         'rotateImage' => [MapService::class, 'rotateImage'],
+        'getAllData' => [MapService::class, 'getAllData'],
         
         'getroutes' => [RouteService::class, 'getroutes'],
         'routeAction' => [RouteService::class, 'routeAction'],
