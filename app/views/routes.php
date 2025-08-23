@@ -163,7 +163,7 @@
                             <div id="actions">
                                 <button @click="route_actions(route.routeid,'purgephotos',$el.textContent)">Delete logs & photos</button>
                                 <button @click="route_actions(route.routeid,'deleteroute',$el.textContent)">Delete route</button>
-                                <button @click="goUsers()">Users</button>
+                                <button @click="goUsers()">All time users</button>
                             </div>
                             <div x-show="actionError" class="error-message" x-text="actionError"></div>
 
@@ -395,7 +395,9 @@ document.addEventListener('alpine:init', () => {
         },
 
         goUsers(){
-            window.location.href = `/route_users/`
+            // window.location.href = `/route_users/`
+            window.location.href = `/${this.route.routeslug}/list//all`;
+
         },
 
         handleGPXUpload(routeid) {

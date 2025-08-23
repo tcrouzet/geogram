@@ -348,6 +348,7 @@ document.addEventListener('alpine:init', () => {
         user: null,
         page: <?= json_encode($page) ?>,
         data: null,
+        loadAll: <?= json_encode($AllData) ?>,
         //Calculated
         isLoggedIn: false,
         isOnRoute: false,
@@ -400,6 +401,7 @@ document.addEventListener('alpine:init', () => {
 
         async init() {
             await initService.initComponent(this);
+            // this.isLoadAll();
             
             if(this.component == 'map' || this.component == 'list' || this.component == 'story'){
                 await this.getData();
@@ -447,7 +449,12 @@ document.addEventListener('alpine:init', () => {
 
         async getData() {
             log();
-            const data = await apiService.call('getData', {
+            let action = 'getData';
+            if(this.loadAll){
+                log("Load all data");
+                action = 'getAllData';
+            }
+            const data = await apiService.call(action, {
                 routeid: this.route.routeid,
             });
             
@@ -455,6 +462,18 @@ document.addEventListener('alpine:init', () => {
                 log("Data loaded successfully");
                 this.data = data;
             }
+        },
+
+        isAdminOnRoute() {
+            return this.isLoggedIn
+                && this.user
+                && this.user.constatus === 3
+                && this.route
+                && this.user.userroute === this.route.routeid;
+        },
+
+        isLaoadAll() {
+            this.loadAll = this.loadAll && this.isAdminOnRoute();
         },
 
         async initializeMap() {

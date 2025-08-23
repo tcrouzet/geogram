@@ -30,11 +30,13 @@ $url = str_replace(BASE_URL,"",$url);
 $parsed = parse_url($url);
 $path = trim($parsed['path'], "/");
 $parts = explode("/", $path);
+// All = true if 4 segments
+$AllData = array_key_exists(3, $parts);
 $parts = array_pad($parts, 3, '');
 //dump($parts);exit();
 
 //Init
-list($route_slug,$page,$UserStoryId)=$parts;
+list($route_slug ,$page, $UserStoryId)=$parts;
 $routeid = "";
 $route = null;
 $pagename = "";
@@ -80,8 +82,6 @@ if($route_slug=="login"){
     }
 }elseif($route_slug=="routes"){
     require("app/views/routes.php");
-}elseif($route_slug=="route_users"){
-    require("app/views/route_users.php");
 }elseif($route_slug=="user"){
     require("app/views/user.php");
 }elseif($route_slug=="help"){
