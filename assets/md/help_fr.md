@@ -32,7 +32,7 @@ Contrairement à une app classique installée via un store, une web app s'utilis
 ## Aventuriers
 
 1. [S'enregister via Google ou avec un email.](/login)
-2. [Rejoindre une route publique](/routes) ou accepter une invitation sous forme de lien hypertexte vers route privée ou semi-privée.
+2. [Rejoindre une route publique](/routes) ou accepter une invitation sous forme de lien hypertexte vers une route privée ou semi-privée.
 1. <i class="fas fa-images"></i> publier plusieurs photos en même temps.
 1. <i class="fas fa-map-marker-alt"></i> se géolocaliser.
 1. <i class="fas fa-camera"></i> publier une photo.
@@ -42,7 +42,7 @@ Contrairement à une app classique installée via un store, une web app s'utilis
 
 1. [Création de nouvelles routes.](/routes)
 1. Bouton "Edit" permet de paramétrer la route, notamment d'uploader un fichier GPX. Une route peut être privée (faut être invité pour visualiser et publier), semi-privée (faut être invité pour publier) ou ouverte (suffit d'être connecté pour publier).
-1. Pour inviter des spectateurs ou des aventuriers faut leur envoyer les liens affichés sous le champ "Status".
+1. Pour inviter des spectateurs ou des aventuriers, il faut leur envoyer les liens affichés sous le champ "Status".
 1. Possibilité de connecter la route à Telegram.
 1. Possibilité de purger ou détruire une route.
 
@@ -55,7 +55,7 @@ On peut lier une route à un groupe Telegram de façon que les géolocalisations
 1. Créer un [compte Telegram](https://telegram.org/apps).
 1. Rejoindre le groupe Telegram de la route (lien invitation envoyé par le créateur du groupe).
 1. Lors de première géolocalisation, peu importe la localisation, un compte Geogram est créé.
-1. La commande "/mail votre_email" affecte le mail au compte créé, ce qui permet d'utiliser [la web app](/).
+1. La commande "/mail votre_email" affecte le mail au compte créé, ce qui permet d'utiliser [la web app](/) indépendamment de Telegram.
 1. Les messages Telegram peuvent être automatiquement détruits après publication en fonction de la stratégie mise en place par l'administrateur de la route (par défaut, seules les géolocalisations sont détruites).
 1. Il est conseillé de mettre le groupe en mode silencieux.
 
@@ -68,5 +68,14 @@ On peut lier une route à un groupe Telegram de façon que les géolocalisations
 1. Sur Telegram, définir {TELEGRAM_BOT} comme administrateur du groupe (open the group, click on the group name, select Edit Group, then select Administrators, add {TELEGRAM_BOT}).
 1. Définir les permissions du bot (autoriser : envoyer des messages, envoyer des photos, interdire le reste).
 1. Sur {GEONAME}, [profil de la route, associer le canal Telegram.](/route) Il apparaît dans une liste déroulante ([à condition que votre profil user soit lui-même connecté à Telegram](/user)).
-1. En cas de problème, "/reconnect" retablit la connexion du groupe à {GEONAME}.
+1. En cas de problème, "/reconnect" rétablit la connexion du groupe à {GEONAME}.
 1. La suppression de {TELEGRAM_BOT} du groupe Telegram détruit l'association avec {GEONAME}, sans pour autant détruire les messages déjà publiés (pour cela, il faut passer par les options de la route).
+
+## Debug
+
+### Impossibilité de poster
+
+1. Allez sur votre [profil user](/user).
+1. En bas de la page, regadez "USER DATA".
+1. User Route doit indiquer la route sur laquelle vous voulez poster.
+1. Route User Status doit indiquer que vous avez le droit de poster sur cette route (status 2).

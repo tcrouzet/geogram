@@ -163,7 +163,8 @@
                             <div id="actions">
                                 <button @click="route_actions(route.routeid,'purgephotos',$el.textContent)">Delete logs & photos</button>
                                 <button @click="route_actions(route.routeid,'deleteroute',$el.textContent)">Delete route</button>
-                                <button @click="goUsers()">All time users</button>
+                                <button @click="goUsers()">List all time users</button>
+                                <button @click="route_actions(route.routeid,'renewInvitation',$el.textContent)">Renew invitation link/QR code</button>
                             </div>
                             <div x-show="actionError" class="error-message" x-text="actionError"></div>
 

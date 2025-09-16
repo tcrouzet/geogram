@@ -85,7 +85,7 @@ class AuthService
             }
 
             if(!$this->userService->is_token_valid($token)){
-                return ['status' => 'error', 'message' => 'Expired token'];
+                return ['status' => 'error', 'message' => $this->error];
             }
 
             $user = $this->userService->get_user($token);
@@ -97,7 +97,7 @@ class AuthService
                 
                 return ['status' => 'success', 'user' => $user];
             } else {
-                return ['status' => 'error', 'message' => "Unknown token"];
+                return ['status' => 'error', 'message' => $this->error];
             }
   
         } catch (\Exception $e) {

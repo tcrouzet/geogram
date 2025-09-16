@@ -166,7 +166,7 @@ class UserService
         } else if ($isToken) {
             lecho("isToken");
             if (!$this->is_token_valid($param)) {
-                lecho("Token expired");
+                lecho($this->error);
                 return false;
             }
             $query .= "u.usertoken = ?";
@@ -195,6 +195,8 @@ class UserService
             lecho($user);
             return $user;
         } else {
+            $this->error = "User not found";
+            lecho($this->error);
             return false;
         }
     }
@@ -461,12 +463,20 @@ class UserService
 
     public function is_token_valid($token, $expiration = TOKEN_EXPIRATION) {
         $parts = explode('_', $token);
-        if (count($parts) !== 3) return false;
+        if (count($parts) !== 3){
+            $this->error = "Invalid token format";
+            return false;
+        }
         
         $tokenTimestamp = intval($parts[1]);
         $currentTime = time();
+
+        if (($currentTime - $tokenTimestamp) > $expiration){
+            $this->error = "Expired token";
+            return false;
+        }
         
-        return ($currentTime - $tokenTimestamp) < $expiration;
+        return true;
     }
 
     public function set_user_telegram($userId,$telegramId){

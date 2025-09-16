@@ -224,7 +224,6 @@
         </div>
     </div>
 
-
     <!-- Modal plein écran pour les photos -->
     <div x-show="showFullscreenPhoto" 
         class="fullscreen-photo-modal"
@@ -1443,7 +1442,7 @@ document.addEventListener('alpine:init', () => {
                         <button @click="action_fitall()" class="small-bt">
                             <i class="fas fa-expand-arrows-alt"></i>
                         </button>
-                        <button @click="fit_markers()" class="small-bt">
+                        <button @click="action_fitgpx()" class="small-bt">
                             <i class="fas fa-compress"></i>
                         </button>
                         <button @click="action_gallery()" class="small-bt ${this.canPost ? '' : 'disabled-bt'}">

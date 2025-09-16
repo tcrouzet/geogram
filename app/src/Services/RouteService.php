@@ -193,6 +193,12 @@ class RouteService
                     return ['status' => 'redirect', 'url' => '/routes'];
                 }
             }
+        }else if($action == "renewInvitation"){
+            $routeviewerlink = $this->generateInvitation($routeid, 1);
+            $routepublisherlink = $this->generateInvitation($routeid, 2);
+            $this->routeQRcode($routeid);
+            $this->updateRouteInvitation($routeid, $routeviewerlink, $routepublisherlink);
+            return ['status' => 'redirect', 'url' => '/routes'];
         }else{
             return ['status' => 'error', 'message' => "Unknown action: $action"];        
         }
@@ -340,29 +346,90 @@ class RouteService
             return false;
     }
     
+    // public function generateInvitationOld($routeid, $status) {
+    //     $randomString = bin2hex(random_bytes(8));
+    //     $data = $routeid . '|' . $status . '|' . $randomString;
+    
+    //     $iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+    //     $encryptedData = openssl_encrypt($data, 'aes-256-cbc', JWT_SECRET, 0, $iv);
+    //     $token = base64_encode($iv . $encryptedData);
+    
+    //     return $token;
+    // }
+    
+    // public function decodeInvitationOld($token) {
+    //     $decoded = base64_decode($token);
+    //     $ivLength = openssl_cipher_iv_length('aes-256-cbc');
+    //     $iv = substr($decoded, 0, $ivLength);
+    //     $encryptedData = substr($decoded, $ivLength);
+    
+    //     $data = openssl_decrypt($encryptedData, 'aes-256-cbc', JWT_SECRET, 0, $iv);
+    //     if ($data === false) {
+    //         return false;
+    //     }
+    
+    //     list($routeid, $status, $randomString) = explode('|', $data);
+    //     lecho("Decoded invitation:", $routeid, $status);
+    //     return ['routeid' => $routeid, 'status' => $status];
+    // }
+
+    // AES-256-CBC avec token hexadécimal
     public function generateInvitation($routeid, $status) {
+        $ivLen = openssl_cipher_iv_length('aes-256-cbc');
+        $iv = random_bytes($ivLen);
+
+        // Données en clair (tu gardes tes pipes ici, ce n'est PAS le token)
         $randomString = bin2hex(random_bytes(8));
         $data = $routeid . '|' . $status . '|' . $randomString;
-    
-        $iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
-        $encryptedData = openssl_encrypt($data, 'aes-256-cbc', JWT_SECRET, 0, $iv);
-        $token = base64_encode($iv . $encryptedData);
-    
-        return $token;
-    }
-    
-    public function decodeInvitation($token) {
-        $decoded = base64_decode($token);
-        $ivLength = openssl_cipher_iv_length('aes-256-cbc');
-        $iv = substr($decoded, 0, $ivLength);
-        $encryptedData = substr($decoded, $ivLength);
-    
-        $data = openssl_decrypt($encryptedData, 'aes-256-cbc', JWT_SECRET, 0, $iv);
-        if ($data === false) {
+
+        // Clé binaire 32 octets
+        $key = hash('sha256', JWT_SECRET, true);
+
+        // Ciphertext binaire (important: OPENSSL_RAW_DATA)
+        $ciphertext = openssl_encrypt($data, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+        if ($ciphertext === false) {
+            $this->error = 'Encryption failed';
             return false;
         }
-    
-        list($routeid, $status, $randomString) = explode('|', $data);
+
+        // Token = hex( IV || ciphertext )
+        $token = bin2hex($iv . $ciphertext);
+        return $token; // uniquement 0-9 et a-f
+    }
+
+    public function decodeInvitation($token) {
+        $binary = hex2bin($token);
+        if ($binary === false) {
+            $this->error = 'Bad Invitation link';
+            return false;
+        }
+
+        $ivLen = openssl_cipher_iv_length('aes-256-cbc');
+        if (strlen($binary) < $ivLen) {
+            $this->error = 'Bad Invitation link length';
+            return false;
+        }
+
+        $iv = substr($binary, 0, $ivLen);
+        $ciphertext = substr($binary, $ivLen);
+
+        $key = hash('sha256', JWT_SECRET, true);
+
+        // Decrypt (OPENSSL_RAW_DATA car ciphertext binaire)
+        $data = openssl_decrypt($ciphertext, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+        if ($data === false) {
+            $this->error = 'Bad RSS Invitation';
+            return false;
+        }
+
+        $parts = explode('|', $data);
+        if (count($parts) !== 3) {
+            $this->error = 'Bad Invitation parts';
+            return false;
+        }
+
+        list($routeid, $status, $randomString) = $parts;
+        lecho("Decoded invitation:", $routeid, $status);
         return ['routeid' => $routeid, 'status' => $status];
     }
     
