@@ -817,6 +817,7 @@ document.addEventListener('alpine:init', () => {
                         this.sendgeolocation();
                     }
                 } catch (error) {
+                    this.removePopup();
                     console.error('Error or cancelled:', error);
                 }
             }else{
@@ -851,12 +852,14 @@ document.addEventListener('alpine:init', () => {
                                 // OK - utiliser la position actuelle
                                 resolved = true;
                                 navigator.geolocation.clearWatch(watchId);
+                                this.removePopup();
                                 resolve(bestPosition);
                             },
                             () => {
                                 // Cancel - annuler complètement
                                 resolved = true;
                                 navigator.geolocation.clearWatch(watchId);
+                                this.removePopup();
                                 reject('Cancelled by user');
                             }
                         );
