@@ -1418,26 +1418,26 @@ document.addEventListener('alpine:init', () => {
             // Définir quels boutons de mode afficher
             const modeButtons = {
                 'map': `
-                    <button @click="action_list()" class="small-bt">
+                    <button @click="action_list()" class="small-bt" title="List of adventurers">
                         <i class="fas fa-list"></i>
                     </button>
-                    <button @click="action_story()" class="small-bt">
+                    <button @click="action_story()" class="small-bt title="Route story">
                         <i class="fas fa-book"></i>
                     </button>
                 `,
                 'list': `
-                    <button @click="action_map()" class="small-bt">
+                    <button @click="action_map()" class="small-bt" title="Route map">
                         <i class="fas fa-map"></i>
                     </button>
-                    <button @click="action_story()" class="small-bt">
+                    <button @click="action_story()" class="small-bt" title="Route story">
                         <i class="fas fa-book"></i>
                     </button>
                 `,
                 'story': `
-                    <button @click="action_map()" class="small-bt">
+                    <button @click="action_map()" class="small-bt" title="Route map">
                         <i class="fas fa-map"></i>
                     </button>
-                    <button @click="action_list()" class="small-bt">
+                    <button @click="action_list()" class="small-bt" title="List of adventurers">
                         <i class="fas fa-list"></i>
                     </button>
                 `
@@ -1447,21 +1447,21 @@ document.addEventListener('alpine:init', () => {
                 <div id="mapfooter">
                     <div class="small-line">
                         ${modeButtons}
-                        <button @click="action_fitall()" class="small-bt">
+                        <button @click="action_fitall()" class="small-bt" title="All adventurers and track">
                             <i class="fas fa-expand-arrows-alt"></i>
                         </button>
-                        <button @click="action_fitgpx()" class="small-bt">
+                        <button @click="action_fitgpx()" class="small-bt" title="Fit track">
                             <i class="fas fa-compress"></i>
                         </button>
-                        <button @click="action_gallery()" class="small-bt ${this.canPost ? '' : 'disabled-bt'}">
+                        <button @click="action_gallery()" class="small-bt ${this.canPost ? '' : 'disabled-bt'}" title="Post photos from gallery">
                             <i class="fas fa-images"></i>
                         </button>
                     </div>
                     <div class="big-line">
-                        <button @click="action_localise()" class="big-bt ${this.canPost ? '' : 'disabled-bt'}">
+                        <button @click="action_localise()" class="big-bt ${this.canPost ? '' : 'disabled-bt'}" title="Post geolocation">
                             <i class="fas fa-map-marker-alt"></i>
                         </button>
-                        <button @click="action_photo()" class="big-bt ${this.canPost ? '' : 'disabled-bt'}">
+                        <button @click="action_photo()" class="big-bt ${this.canPost ? '' : 'disabled-bt'}" title="Take photo">
                             <i class="fas fa-camera"></i>
                         </button>
                     </div>

@@ -33,46 +33,8 @@ class RouteService
         return $this->error;
     }
 
+
     public function getroutesOld(): array {
-        lecho("getroutes user: $this->userid");
-        
-        $query = "SELECT *
-            FROM connectors c
-            INNER JOIN routes r ON c.conrouteid = r.routeid
-            WHERE c.conuserid = ?
-
-            UNION
-
-            SELECT NULL AS conid, r.routeid AS conrouteid, NULL AS conuserid, NULL AS contime, 0 AS constatus, r.*
-            FROM routes r
-            WHERE r.routestatus <2
-            AND NOT EXISTS (
-                SELECT 1 
-                FROM connectors c
-                WHERE c.conrouteid = r.routeid AND c.conuserid = ?
-            );
-            ";
-
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $this->userid, $this->userid);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if($result){
-            $routes = $result->fetch_all(MYSQLI_ASSOC);
-            
-            $superchargedRoutes = array_map(
-                function($route) {
-                    $supercharged = $this->supercharge($route);
-                    return $supercharged;
-                },
-                $routes
-            );
-            return ['status' => 'success', 'routes' => $superchargedRoutes, 'serverTimestamp' => time()];
-        }
-        return ['status' => 'error', 'message' => "Loading routes fail"];
-    }
-
-    public function getroutes(): array {
         lecho("getroutes user: $this->userid");
 
         // Récupérer la route "connectée" (userroute)
@@ -107,6 +69,81 @@ class RouteService
             ORDER BY
                 CASE
                     WHEN r.routeid = ? THEN 0
+                    WHEN c.constatus = 3 THEN 1
+                    WHEN c.constatus = 2 THEN 2
+                    WHEN c.constatus = 1 THEN 3
+                    WHEN c.constatus = 0 THEN 4
+                    ELSE 5
+                END ASC,
+                r.routestart DESC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            return ['status' => 'error', 'message' => 'Prepare failed: ' . $this->db->error];
+        }
+
+        $stmt->bind_param("ii", $this->userid, $userroute);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result) {
+            $routes = $result->fetch_all(MYSQLI_ASSOC);
+
+            $superchargedRoutes = array_map(function($route) {
+                return $this->supercharge($route);
+            }, $routes);
+
+            return [
+                'status' => 'success',
+                'routes' => $superchargedRoutes,
+                'serverTimestamp' => time()
+            ];
+        }
+
+        return ['status' => 'error', 'message' => "Loading routes fail"];
+    }
+
+
+    public function getroutes(): array {
+        lecho("getroutes user: $this->userid");
+
+        // Récupère l'ID de la route connectée (userroute)
+        $userroute = 0;
+        if ($this->user && isset($this->user['userroute'])) {
+            $userroute = (int) $this->user['userroute'];
+        } else if ($this->userid) {
+            $u = $this->userService->get_user($this->userid);
+            if ($u && isset($u['userroute'])) {
+                $userroute = (int) $u['userroute'];
+            }
+        }
+
+        // Règles d'inclusion:
+        // - routes liées (c.conid IS NOT NULL)
+        // - routes publiques non liées (r.routestatus < 2)  <-- toujours incluses
+        //
+        // Tri:
+        // - 0: route connectée (r.routeid = $userroute)
+        // - 1: constatus = 3
+        // - 2: constatus = 2
+        // - 3: constatus = 1
+        // - 4: constatus = 0 (si utilisé)
+        // - 5: publiques non liées
+        $sql = "
+            SELECT
+                c.conid, c.conrouteid, c.conuserid, c.contime, c.constatus,
+                r.*
+            FROM routes r
+            LEFT JOIN connectors c
+            ON c.conrouteid = r.routeid
+            AND c.conuserid  = ?
+            WHERE
+                c.conid IS NOT NULL
+            OR r.routestatus < 2
+            ORDER BY
+                (r.routeid = ?) DESC,
+                CASE
                     WHEN c.constatus = 3 THEN 1
                     WHEN c.constatus = 2 THEN 2
                     WHEN c.constatus = 1 THEN 3
