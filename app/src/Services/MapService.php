@@ -138,6 +138,7 @@ class MapService
                 else
                     $row['username']='Unknown';
                 $row['date_formated'] = Tools::MyDateFormat($row['logtime'],$route);
+                $row['time_formated'] = Tools::MyRealDateFormat($row['logtime'],$route);
                 $row['photopath'] = $this->fileManager->user_photo_web($row);
                 $row['photolog'] = $this->fileManager->user_route_photo_web($row, $row['logphoto']);
                 $row['comment_formated'] = Tools::formatMessage($row['logcomment']);

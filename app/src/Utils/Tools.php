@@ -10,6 +10,19 @@ class Tools
         return self::timestamp_to_date($timestampInput, $route["routeunit"], $justhour, $route["routetimediff"]);
     }
 
+    public static function MyRealDateFormat($timestampInput, $route, $justhour=false){
+        if (is_numeric($timestampInput) && (int)$timestampInput == $timestampInput && $timestampInput > 0) {
+            $timestamp = $timestampInput;
+        } else {
+            $timestamp = strtotime($timestampInput);
+        }
+
+        $adjusted = self::timezone($timestamp, $route["routetimediff"]);
+        $format = ($route["routeunit"] == 1) ? "g:ia" : "G:i";
+        if (!$justhour) $format .= " Y/n/j";
+        return date($format, $adjusted);
+    }
+
     public static function timestamp_to_date($timestampInput, $unit=0, $justhour=false, $timediff=0){
         if (is_numeric($timestampInput) && (int)$timestampInput == $timestampInput && $timestampInput > 0) {
             $timestamp = $timestampInput;
@@ -33,7 +46,9 @@ class Tools
             }
         }else{
             $days = floor($diff / 86400);
-            return $days . "d";    
+            $remDay  = $diff % 86400;
+            $hours   = intdiv($remDay, 3600);
+            return $days . "d" . ($hours>0 ? $hours."h" : "");
         }
 
         $adjustedTimestamp = self::timezone($timestamp, $timediff);

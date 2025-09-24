@@ -81,7 +81,10 @@
                                         x-text="log.username_formated"
                                         @click.stop="showUserStory(log)">
                                     </span>
-                                    <span class="log-date" x-text="log.date_formated"></span>
+                                    <span class="log-date"
+                                        x-text="datemode ? log.date_formated : log.time_formated"
+                                        @click.stop="datemode = !datemode"
+                                    ></span>
                                 </div>
                                 <template x-if="log.logcontext">
                                     <div class="log-context" x-html="log.logcontext"></div>
@@ -177,11 +180,14 @@
 
                     <div class="list-content">
                         <template x-for="entry in logs" :key="entry.logid">
-                            <div class="list-row" @click="showUserStory(entry)">
+                            <div class="list-row">
                                 <div class="user-col">
                                     <i class="fas fa-map-marker-alt" @click.stop="showUserOnMap(entry)"></i>
-                                    <span x-text="entry.date_formated" class="list-date"></span>
-                                    <span x-text="entry.username"></span>
+                                    <span class="log-date"
+                                        x-text="datemode ? entry.date_formated : entry.time_formated"
+                                        @click.stop="datemode = !datemode"
+                                    ></span>
+                                    <span x-text="entry.username" @click="showUserStory(entry)"></span>
                                 </div>
                                 <div class="stats">
                                     <span x-text="entry.logkm_km"></span>
@@ -397,6 +403,8 @@ document.addEventListener('alpine:init', () => {
         photoLogIds: [],
         touchStartX: 0,
         touchEndX: 0,
+        //Commutator
+        datemode: true,
 
         async init() {
             await initService.initComponent(this);
