@@ -19,7 +19,7 @@ class Tools
 
         $adjusted = self::timezone($timestamp, $route["routetimediff"]);
         $format = ($route["routeunit"] == 1) ? "g:ia" : "G:i";
-        if (!$justhour) $format .= " Y/n/j";
+        if (!$justhour) $format .= " y/n/j";
         return date($format, $adjusted);
     }
 
