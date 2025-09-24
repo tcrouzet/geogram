@@ -791,6 +791,7 @@ textarea {
 
 .log-date{
     cursor: pointer;
+    min-width: 3rem;
 }
 
 .story-logs {
