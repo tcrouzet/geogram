@@ -80,7 +80,7 @@ En cas de bug, [contactez-moi…](/contact/)
 
 ### Déconnexion/Reconnexion
 
-Procédure réflexe car elle règles souvent bien des problèmes.
+Procédure réflexe : elle règle souvent bien des problèmes (surtout après mise à jour du logiciel).
 
 ### Impossibilité de poster
 
