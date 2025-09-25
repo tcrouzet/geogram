@@ -52,12 +52,14 @@ On peut lier une route à un groupe Telegram de façon que les géolocalisations
 
 ### Aventurier
 
-1. Créer un [compte Telegram](https://telegram.org/apps).
-1. Rejoindre le groupe Telegram de la route (lien invitation envoyé par le créateur du groupe).
-1. Lors de première géolocalisation, peu importe la localisation, un compte Geogram est créé.
-1. La commande "/mail votre_email" affecte le mail au compte créé, ce qui permet d'utiliser [la web app](/) indépendamment de Telegram.
-1. Les messages Telegram peuvent être automatiquement détruits après publication en fonction de la stratégie mise en place par l'administrateur de la route (par défaut, seules les géolocalisations sont détruites).
-1. Il est conseillé de mettre le groupe en mode silencieux.
+1. Créer un [compte Telegram](https://telegram.org/apps).
+2. Rejoindre le groupe Telegram de la route (lien invitation envoyé par le créateur du groupe).
+3. Lors de première géolocalisation, peu importe la localisation, un compte {GEONAME} est créé.
+4. Vos géolocalisations, commentaires et photos se retrouvent ainsi publiés sur {GEONAME}. Les photos et commentaires sont associés à la dernière géolocalisation. Il est donc conseillé de toujours se géolocaliser au préalable.
+5. Vos messages Telegram peuvent être automatiquement détruits après publication en fonction de la stratégie mise en place par l'administrateur de la route (par défaut, seules les géolocalisations sont détruites).
+6. Il est conseillé de mettre le groupe en mode silencieux pour ne pas être embêté par les géolocalisations des autres aventuriers.
+7. Le compte {GEONAME} créé automatiquement depuis Telegram n’est pas accessible/utilisable depuis la [Web app](/). Pour l'activer, saisir la commande "/mail votre_email" dans Telegram. Elle affecte votre mail au compte, ce qui permet ensuite de [se connecter à la Web app](/login) indépendamment de Telegram. Vous pourrez alors poster vos géolocalisations, commentaires et photos indifféremment depuis Telegram ou la Web app. Les actions menées sur la Web app ne se répercutent pas sur Telegram.
+
 
 ### Administrateur
 
@@ -71,11 +73,18 @@ On peut lier une route à un groupe Telegram de façon que les géolocalisations
 1. En cas de problème, "/reconnect" rétablit la connexion du groupe à {GEONAME}.
 1. La suppression de {TELEGRAM_BOT} du groupe Telegram détruit l'association avec {GEONAME}, sans pour autant détruire les messages déjà publiés (pour cela, il faut passer par les options de la route).
 
+
 ## Debug
+
+En cas de bug, [contactez-moi…](/contact/)
+
+### Déconnexion/Reconnexion
+
+Procédure réflexe car elle règles souvent bien des problèmes.
 
 ### Impossibilité de poster
 
 1. Allez sur votre [profil user](/user).
-1. En bas de la page, regadez "USER DATA".
+1. En bas de la page, regardez "USER DATA".
 1. User Route doit indiquer la route sur laquelle vous voulez poster.
 1. Route User Status doit indiquer que vous avez le droit de poster sur cette route (status 2).
