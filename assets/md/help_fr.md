@@ -76,15 +76,34 @@ On peut lier une route à un groupe Telegram de façon que les géolocalisations
 
 ## Debug
 
-En cas de bug, [contactez-moi…](/contact/)
+En cas de bug percistant, [contactez-moi…](/contact/)
 
-### Déconnexion/Reconnexion
+### Geolocation failed
 
-Procédure réflexe : elle règle souvent bien des problèmes (surtout après mise à jour du logiciel).
+#### iOS (Safari, Chrome, Firefox)
+1. Réglages > Confidentialité et sécurité > Service de localisation > Activé
+1. Réglages > Confidentialité et sécurité > Service de localisation > Safari (ou votre navigateur) > Lorsque l’app est active + Localisation précise
+1. Ouvrez {GEONAME} dans le navigateur, demandez une géolocalisation, autorisez
+1. Si vous avez déjà refusé et que la demande ne s’affiche plus:
+  - Réglages > Safari > Avancé > Données de sites web > recherchez {GEONAME} > Supprimer
+  - Rouvrez le site et autorisez la localisation
+
+#### Android (Chrome, Firefox, etc.)
+1. Paramètres > Position > Activé (Précision élevée si disponible)
+1. Paramètres > Applications > [Votre navigateur] > Autorisations > Localisation > Autoriser seulement si l’application est utilisée
+1. Ouvrez {GEONAME} dans le navigateur, demander géolocalisation et autorisez
+1. Si vous avez déjà refusé: Chrome: ⋮ > Paramètres > Paramètres du site > Position > trouvez {GEONAME} > Autoriser
 
 ### Impossibilité de poster
+
+Sous la map, le bouton de geolocalisation est grisé.
 
 1. Allez sur votre [profil user](/user).
 1. En bas de la page, regardez "USER DATA".
 1. User Route doit indiquer la route sur laquelle vous voulez poster.
 1. Route User Status doit indiquer que vous avez le droit de poster sur cette route (status 2).
+1. Sinon vous devez redemander un lien d'invitation à l'administrateur de la route.
+
+### Déconnexion/Reconnexion
+
+Procédure réflexe : elle règle souvent bien des problèmes (surtout après mise à jour du logiciel).

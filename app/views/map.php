@@ -825,6 +825,22 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        getGeolocationErrorMessage(error, { helpUrl = '/help' } = {}) {
+            // error.code: 1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT
+            switch (error.code) {
+                case 1: // PERMISSION_DENIED
+                    return `Your browser blocked geolocation. <a href="${helpUrl}" target="_blank" rel="noopener">Visit the Help page</a>, Debug section, to learn how to enable it.`;
+                case 2: // POSITION_UNAVAILABLE
+                    return `We couldn't get your position (signal or service issue). Please move to an open area, enable location services, and try again. <a href="${helpUrl}" target="_blank" rel="noopener">Help</a>`;
+                case 3: // TIMEOUT
+                    return `Geolocation timed out. Try again, ensure GPS/location is enabled, and check your connection. <a href="${helpUrl}" target="_blank" rel="noopener">Help</a>`;
+                default:
+                // Fallback si message inconnu
+                const msg = (error && error.message) ? ` (${error.message})` : '';
+                return `Geolocation failed${msg}. <a href="${helpUrl}" target="_blank" rel="noopener">Help</a>`;
+            }
+        },
+
         async get_localisation() {
             if (!navigator.geolocation) {
                 await this.showError('Geolocation not supported');
@@ -906,7 +922,7 @@ document.addEventListener('alpine:init', () => {
                             resolve(bestPosition);
                         } else {
                             resolved = true;
-                            this.showPopup('Geolocation failed: ' + error.message, true, false, () => {
+                            this.showPopup(this.getGeolocationErrorMessage(error), true, false, () => {
                                 reject('Geolocation failed');
                             });
                         }
