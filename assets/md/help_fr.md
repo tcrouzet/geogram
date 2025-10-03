@@ -1,13 +1,13 @@
 # {GEONAME}
 
-{GEONAME} est une web app pour partager et documenter des **aventures** en semi-temp réel.
+{GEONAME} permet de partager et documenter des **aventures** en semi-temp réel.
 Les **aventuriers** se géolocalisent, publient des photos et des commentaires.
 Les **spectateurs** suivent leur progression sur la carte.
 {GEONAME} est une instance de [Geogram](https://github.com/tcrouzet/geogram), distribuée en open source par [Thierry Crouzet](https://tcrouzet.com/) et développée pour éviter des solutions de tracking payantes (en Europe, la couverture mobile est désormais quasi universelle et les services de secours peuvent repérer n'importe quel mobile à quelques mètres près).  
 
-## Web app
+## PWA (progressive web app)
 
-Contrairement à une app classique installée via un store, une web app s'utilise dans le navigateur web du mobile. Pour une meilleure ergonomie, on ajoute la web app à l'écran d'accueil du mobile. Sur iOS, ouvrir {GEONAME} avec un navigateur, puis bouton de partage, menu "Sur l'écran d'accueil". Sur Android, ouvrir {GEONAME} avec un navigateur, puis clic sur les trois points et sélection "Écran d'accueil".
+{GEONAME} est une [progressive web app](https://fr.wikipedia.org/wiki/Progressive_web_app). Contrairement à une app installée via un store, une web app s'utilise dans le navigateur web du mobile. Pour une meilleure ergonomie, on ajoute la web app à l'écran d'accueil du mobile. Sur iOS, ouvrir {GEONAME} avec un navigateur, puis bouton de partage, menu "Sur l'écran d'accueil". Sur Android, ouvrir {GEONAME} avec un navigateur, puis clic sur les trois points et sélection "Écran d'accueil".
 
 ## Spectateurs (non enregistrés)
 
