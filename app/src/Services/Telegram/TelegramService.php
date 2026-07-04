@@ -157,10 +157,28 @@ class TelegramService
         lecho("commandStart");
         if ( isset($this->message["text"]) && strpos( stripslashes($this->message["text"]), '/') === 0 ){
             TelegramTools::deleteMessage($this->telegram, $this->chatid, $this->message_id);
+            if($this->routeLink()) return true;
             if($this->geogram()) return true;
             if($this->updateMail()) return true;
             if($this->reconnect()) return true;
             // More commands to come
+            return true;
+        }
+        return false;
+    }
+
+    private function routeLink(){
+        if ( isset($this->message["text"]) && $this->message["text"] === "/link" ){
+            lecho("route link command");
+
+            if (empty($this->channel['routeslug'])) {
+                TelegramTools::SendMessage($this->telegram, $this->chatid, "No route page available yet.");
+                return true;
+            }
+
+            $routeUrl = rtrim(BASE_URL, '/') . '/' . ltrim($this->channel['routeslug'], '/');
+            $message = "Route page: $routeUrl";
+            TelegramTools::SendMessage($this->telegram, $this->chatid, $message);
             return true;
         }
         return false;

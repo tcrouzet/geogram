@@ -59,6 +59,7 @@ On peut lier une route à un groupe Telegram de façon que les géolocalisations
 5. Vos messages Telegram peuvent être automatiquement détruits après publication en fonction de la stratégie mise en place par l'administrateur de la route (par défaut, seules les géolocalisations sont détruites).
 6. Il est conseillé de mettre le groupe en mode silencieux pour ne pas être embêté par les géolocalisations des autres aventuriers.
 7. Le compte {GEONAME} créé automatiquement depuis Telegram n’est pas accessible/utilisable depuis la [Web app](/). Pour l'activer, saisir la commande "/mail votre_email" dans Telegram. Elle affecte votre mail au compte, ce qui permet ensuite de [se connecter à la Web app](/login) indépendamment de Telegram. Vous pourrez alors poster vos géolocalisations, commentaires et photos indifféremment depuis Telegram ou la Web app. Les actions menées sur la Web app ne se répercutent pas sur Telegram.
+8. /link publie sur le groupe Telegram l'adresse web de la route.
 
 
 ### Administrateur
