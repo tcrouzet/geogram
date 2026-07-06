@@ -642,15 +642,43 @@ class RouteService
         return ['status' => 'error', 'message' => 'Unknown user'];
     }
     
+    /**
+     * Convertit un code d'erreur PHP UPLOAD_ERR_* en message lisible.
+     */
+    private function uploadErrorMessage(int $code): string {
+        switch ($code) {
+            case UPLOAD_ERR_INI_SIZE:
+                return 'File exceeds upload_max_filesize (php.ini)';
+            case UPLOAD_ERR_FORM_SIZE:
+                return 'File exceeds MAX_FILE_SIZE specified in the form';
+            case UPLOAD_ERR_PARTIAL:
+                return 'File was only partially uploaded';
+            case UPLOAD_ERR_NO_FILE:
+                return 'No file was uploaded';
+            case UPLOAD_ERR_NO_TMP_DIR:
+                return 'Missing temporary folder on server';
+            case UPLOAD_ERR_CANT_WRITE:
+                return 'Failed to write file to disk on server';
+            case UPLOAD_ERR_EXTENSION:
+                return 'A PHP extension stopped the file upload';
+            default:
+                return 'Unknown upload error (code ' . $code . ')';
+        }
+    }
+
     public function gpxupload(){
         lecho("gpxUpload");
     
         $userid = $_POST['userid'] ?? '';
-    
-        if (!isset($_FILES['gpxfile']) || $_FILES['gpxfile']['error'] !== UPLOAD_ERR_OK) {
-            return ['status' => 'error', 'message' => 'Bad gpx file'];
+
+        if (!isset($_FILES['gpxfile'])) {
+            return ['status' => 'error', 'message' => 'No file received'];
         }
-    
+
+        if ($_FILES['gpxfile']['error'] !== UPLOAD_ERR_OK) {
+            return ['status' => 'error', 'message' => $this->uploadErrorMessage($_FILES['gpxfile']['error'])];
+        }
+        
         $routeid = $_POST['routeid'] ?? '';
         if(empty($routeid)){
             return ['status' => 'error', 'message' => 'Empty routename'];
